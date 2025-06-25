@@ -31,4 +31,11 @@ public class Review {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public Review(String content, double rating, Restaurant restaurant, Member member) {
+        this.content = content;
+        this.rating = rating;
+        this.restaurant = restaurant;
+        this.member = member;
+    }
 }
