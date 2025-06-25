@@ -1,5 +1,6 @@
 package com.wellmeet.restaurant.domain.crawlingreview.domain;
 
+import com.wellmeet.common.domain.BaseEntity;
 import com.wellmeet.restaurant.domain.Restaurant;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CrawlingReview {
+public class CrawlingReview extends BaseEntity {
 
     @Id
     private String id;
