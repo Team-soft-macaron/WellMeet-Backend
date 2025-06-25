@@ -15,9 +15,4 @@ public class Atmosphere extends BaseEntity {
     @Id
     private Long id;
     private String name;
-
-    public Atmosphere(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
 }

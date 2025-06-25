@@ -24,10 +24,4 @@ public class CrawlingReviewAtmosphere {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "atmosphere_id")
     private Atmosphere atmosphere;
-
-    public CrawlingReviewAtmosphere(Long id, CrawlingReview crawlingReview, Atmosphere atmosphere) {
-        this.id = id;
-        this.crawlingReview = crawlingReview;
-        this.atmosphere = atmosphere;
-    }
 }

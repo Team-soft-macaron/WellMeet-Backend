@@ -24,11 +24,4 @@ public class CrawlingReview extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
-
-    public CrawlingReview(String id, String content, double rating, Restaurant restaurant) {
-        this.id = id;
-        this.content = content;
-        this.rating = rating;
-        this.restaurant = restaurant;
-    }
 }
