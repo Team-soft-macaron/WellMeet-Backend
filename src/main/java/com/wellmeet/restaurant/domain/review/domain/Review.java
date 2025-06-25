@@ -1,5 +1,6 @@
 package com.wellmeet.restaurant.domain.review.domain;
 
+import com.wellmeet.common.domain.BaseEntity;
 import com.wellmeet.member.domain.Member;
 import com.wellmeet.restaurant.domain.Restaurant;
 import jakarta.persistence.Entity;
@@ -16,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Review {
+public class Review extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
