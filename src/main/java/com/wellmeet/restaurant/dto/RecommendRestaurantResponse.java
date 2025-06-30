@@ -1,12 +1,9 @@
 package com.wellmeet.restaurant.dto;
 
 import com.wellmeet.restaurant.domain.Restaurant;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PUBLIC)
 public class RecommendRestaurantResponse {
 
     private final Long id;

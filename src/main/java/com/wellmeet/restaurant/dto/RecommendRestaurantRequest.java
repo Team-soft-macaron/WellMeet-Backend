@@ -1,13 +1,14 @@
 package com.wellmeet.restaurant.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wellmeet.restaurant.domain.crawlingreview.domain.VibeName;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PUBLIC)
+@NoArgsConstructor
 public class RecommendRestaurantRequest {
 
-    private final VibeName vibeName;
+    @JsonProperty("vibe")
+    private VibeName vibeName;
 }

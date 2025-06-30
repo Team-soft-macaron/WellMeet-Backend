@@ -22,15 +22,13 @@ public class CrawlingReview extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String content;
-    private double rating;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
-    public CrawlingReview(String content, double rating, Restaurant restaurant) {
+    public CrawlingReview(String content, Restaurant restaurant) {
         this.content = content;
-        this.rating = rating;
         this.restaurant = restaurant;
     }
 }
