@@ -4,9 +4,6 @@ on:
   pull_request:
     branches:
       - develop
-  push:
-    branches:
-      - feat/SCRUM-23
 
 permissions:
   contents: read
