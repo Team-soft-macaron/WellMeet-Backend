@@ -20,24 +20,27 @@ import org.springframework.http.HttpStatus;
 
 class RestaurantControllerTest extends BaseControllerTest {
 
+    private static final double LATITUDE = 132.1;
+    private static final double LONGITUDE = 123.1;
+
     @Test
     void getRecommendRestaurants() {
         Arrays.stream(values())
                 .forEach(vibeName -> vibeRepository.save(new Vibe(vibeName.name())));
 
-        Restaurant restaurant1 = new Restaurant("restaurant1", "address1", 132.1, 123.1);
+        Restaurant restaurant1 = new Restaurant("restaurant1", "address1", LATITUDE, LONGITUDE);
         Restaurant savedRestaurant1 = restaurantRepository.save(restaurant1);
         createCrawlingReviews(savedRestaurant1, CLASSIC, CLASSIC, CLASSIC, CLEAN, LIVELY);
 
-        Restaurant restaurant2 = new Restaurant("restaurant2", "address2", 132.1, 123.1);
+        Restaurant restaurant2 = new Restaurant("restaurant2", "address2", LATITUDE, LONGITUDE);
         Restaurant savedRestaurant2 = restaurantRepository.save(restaurant2);
         createCrawlingReviews(savedRestaurant2, CLASSIC, CLASSIC, LIVELY, MODERN);
 
-        Restaurant restaurant3 = new Restaurant("restaurant3", "address3", 132.1, 123.1);
+        Restaurant restaurant3 = new Restaurant("restaurant3", "address3", LATITUDE, LONGITUDE);
         Restaurant savedRestaurant3 = restaurantRepository.save(restaurant3);
         createCrawlingReviews(savedRestaurant3, CLASSIC, CLASSIC, LIVELY);
 
-        Restaurant restaurant4 = new Restaurant("restaurant4", "address4", 132.1, 123.1);
+        Restaurant restaurant4 = new Restaurant("restaurant4", "address4", LATITUDE, LONGITUDE);
         Restaurant savedRestaurant4 = restaurantRepository.save(restaurant4);
         createCrawlingReviews(savedRestaurant4, LIVELY, LIVELY, LIVELY);
 
