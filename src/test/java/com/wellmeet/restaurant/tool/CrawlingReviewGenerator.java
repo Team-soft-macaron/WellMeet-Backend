@@ -30,8 +30,7 @@ public class CrawlingReviewGenerator {
     public void generate(Restaurant restaurant, VibeName vibeName) {
         CrawlingReview crawlingReview = new CrawlingReview("content", restaurant);
         CrawlingReview savedCrawlingReview = crawlingReviewRepository.save(crawlingReview);
-        Vibe vibe = vibeRepository.findByName(vibeName.name())
-                .orElseThrow();
+        Vibe vibe = vibeRepository.findByName(vibeName.name()).orElseThrow();
         crawlingReviewVibeRepository.save(new CrawlingReviewVibe(savedCrawlingReview, vibe));
     }
 }
