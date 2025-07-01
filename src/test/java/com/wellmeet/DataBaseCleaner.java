@@ -37,26 +37,14 @@ public class DataBaseCleaner implements BeforeEachCallback {
 
     @SuppressWarnings("unchecked")
     private List<String> findTableNames(EntityManager em) {
-        String currentDatabase = getCurrentDatabaseName(em);
         String tableNameSelectQuery = """
                 SELECT TABLE_NAME
                 FROM INFORMATION_SCHEMA.TABLES
-                WHERE TABLE_SCHEMA = :databaseName
+                WHERE TABLE_SCHEMA = 'test'
                 AND TABLE_TYPE = 'BASE TABLE'
                 """;
 
         return em.createNativeQuery(tableNameSelectQuery)
-                .setParameter("databaseName", currentDatabase)
                 .getResultList();
-    }
-
-    private String getCurrentDatabaseName(EntityManager em) {
-        try {
-            String query = "SELECT DATABASE()";
-            Object result = em.createNativeQuery(query).getSingleResult();
-            return result.toString();
-        } catch (Exception e) {
-            return "test";
-        }
     }
 }
