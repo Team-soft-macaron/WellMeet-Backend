@@ -1,5 +1,6 @@
 package com.wellmeet.restaurant.service;
 
+import com.wellmeet.restaurant.domain.crawlingreview.domain.VibeName;
 import com.wellmeet.restaurant.dto.RecommendRestaurantRequest;
 import com.wellmeet.restaurant.dto.RecommendRestaurantResponse;
 import com.wellmeet.restaurant.repository.RestaurantRepository;
@@ -13,8 +14,8 @@ public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
 
-    public List<RecommendRestaurantResponse> getRecommendRestaurants(RecommendRestaurantRequest request) {
-        String requestedVibeName = request.getVibeName().name();
+    public List<RecommendRestaurantResponse> getRecommendRestaurants(VibeName vibeName) {
+        String requestedVibeName = vibeName.name();
         return restaurantRepository.findRestaurantsOrderedByVibeRatio(requestedVibeName).stream()
                 .map(RecommendRestaurantResponse::new)
                 .toList();

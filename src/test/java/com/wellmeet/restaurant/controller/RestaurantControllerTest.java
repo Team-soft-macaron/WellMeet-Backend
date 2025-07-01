@@ -47,13 +47,9 @@ class RestaurantControllerTest extends BaseControllerTest {
         Restaurant savedRestaurant4 = restaurantRepository.save(restaurant4);
         createCrawlingReviews(savedRestaurant4, LIVELY, LIVELY, LIVELY);
 
-
-        RecommendRestaurantRequest request = new RecommendRestaurantRequest(CLASSIC);
-
         RecommendRestaurantResponse[] responses = given()
                 .contentType(ContentType.JSON)
-                .body(request)
-                .when().get("/api/restaurant/recommend")
+                .when().get("/api/restaurant/recommend/CLASSIC")
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().as(RecommendRestaurantResponse[].class);
         assertThat(responses).hasSize(3);
