@@ -21,11 +21,13 @@ public class Restaurant extends BaseEntity {
     private String address;
     private double latitude;
     private double longitude;
+    private String mainImage;
 
-    public Restaurant(String name, String address, double latitude, double longitude) {
+    public Restaurant(String name, String address, double latitude, double longitude, String mainImage) {
         this.name = name;
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.mainImage = mainImage;
     }
 }
