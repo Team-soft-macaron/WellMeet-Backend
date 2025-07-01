@@ -1,3 +1,5 @@
 spring:
+  application:
+    name: WellMeet-Backend
   profiles:
     active: local
