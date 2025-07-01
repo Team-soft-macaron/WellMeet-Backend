@@ -30,18 +30,33 @@ public class DataBaseCleaner implements BeforeEachCallback {
     private void truncateTables(EntityManager em) {
         em.createNativeQuery("SET FOREIGN_KEY_CHECKS = 0").executeUpdate();
         for (String tableName : findTableNames(em)) {
-            em.createNativeQuery("TRUNCATE TABLE %s RESTART IDENTITY".formatted(tableName)).executeUpdate();
+            em.createNativeQuery("TRUNCATE TABLE %s".formatted(tableName)).executeUpdate();
         }
         em.createNativeQuery("SET FOREIGN_KEY_CHECKS = 1").executeUpdate();
     }
 
     @SuppressWarnings("unchecked")
     private List<String> findTableNames(EntityManager em) {
+        String currentDatabase = getCurrentDatabaseName(em);
         String tableNameSelectQuery = """
                 SELECT TABLE_NAME
                 FROM INFORMATION_SCHEMA.TABLES
-                WHERE TABLE_SCHEMA = 'PUBLIC'
+                WHERE TABLE_SCHEMA = :databaseName
+                AND TABLE_TYPE = 'BASE TABLE'
                 """;
-        return em.createNativeQuery(tableNameSelectQuery).getResultList();
+
+        return em.createNativeQuery(tableNameSelectQuery)
+                .setParameter("databaseName", currentDatabase)
+                .getResultList();
+    }
+
+    private String getCurrentDatabaseName(EntityManager em) {
+        try {
+            String query = "SELECT DATABASE()";
+            Object result = em.createNativeQuery(query).getSingleResult();
+            return result.toString();
+        } catch (Exception e) {
+            return "test";
+        }
     }
 }
