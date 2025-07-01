@@ -1,5 +1,6 @@
 package com.wellmeet.restaurant.repository;
 
+import com.wellmeet.restaurant.domain.BoundingBox;
 import com.wellmeet.restaurant.domain.Restaurant;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,6 +17,8 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
             WHERE EXISTS (
                 SELECT 1 FROM CrawlingReview cr WHERE cr.restaurant = r
             )
+            AND r.latitude BETWEEN :#{#boundingBox.minLatitude} AND :#{#boundingBox.maxLatitude}
+            AND r.longitude BETWEEN :#{#boundingBox.minLongitude} AND :#{#boundingBox.maxLongitude}
             AND EXISTS (
                         SELECT 1\s
                         FROM CrawlingReview cr3
@@ -31,5 +34,16 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
                 WHERE cr2.restaurant = r
             ) DESC
             """)
-    List<Restaurant> findRestaurantsOrderedByVibeRatio(@Param("vibeName") String vibeName);
+    List<Restaurant> findRestaurantsOrderedByVibeRatioWithBoundBox(
+            @Param("vibeName") String vibeName,
+            @Param("boundingBox") BoundingBox boundingBox
+    );
+
+    @Query(value = """
+            SELECT r
+            FROM Restaurant r
+            WHERE r.latitude BETWEEN :#{#boundingBox.minLatitude} AND :#{#boundingBox.maxLatitude}
+            AND r.longitude BETWEEN :#{#boundingBox.minLongitude} AND :#{#boundingBox.maxLongitude}
+            """)
+    List<Restaurant> findWithBoundBox(@Param("boundingBox") BoundingBox boundingBox);
 }
