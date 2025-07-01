@@ -2,13 +2,15 @@ package com.wellmeet.restaurant.dto;
 
 import com.wellmeet.restaurant.domain.Restaurant;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class RecommendRestaurantResponse {
 
-    private final Long id;
-    private final String name;
-    private final String address;
+    private Long id;
+    private String name;
+    private String address;
 
     public RecommendRestaurantResponse(Restaurant restaurant) {
         this.id = restaurant.getId();

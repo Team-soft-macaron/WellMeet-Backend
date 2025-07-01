@@ -1,0 +1,47 @@
+package com.wellmeet;
+
+import com.wellmeet.restaurant.repository.RestaurantRepository;
+import com.wellmeet.restaurant.repository.crawlingreview.repository.VibeRepository;
+import com.wellmeet.restaurant.tool.CrawlingReviewGenerator;
+import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.filter.log.RequestLoggingFilter;
+import io.restassured.filter.log.ResponseLoggingFilter;
+import io.restassured.specification.RequestSpecification;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
+
+@ExtendWith(DataBaseCleaner.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public abstract class BaseControllerTest {
+
+    @Autowired
+    protected RestaurantRepository restaurantRepository;
+
+    @Autowired
+    protected VibeRepository vibeRepository;
+
+    @Autowired
+    protected CrawlingReviewGenerator crawlingReviewGenerator;
+
+    @LocalServerPort
+    private int port;
+
+    private RequestSpecification spec;
+
+    @BeforeEach
+    void setEnvironment() {
+        RestAssured.port = port;
+        spec = new RequestSpecBuilder()
+                .addFilter(new RequestLoggingFilter())
+                .addFilter(new ResponseLoggingFilter())
+                .build();
+    }
+
+    protected RequestSpecification given() {
+        return RestAssured.given(spec);
+    }
+}
