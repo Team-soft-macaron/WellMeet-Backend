@@ -11,10 +11,12 @@ public class RecommendRestaurantResponse {
     private Long id;
     private String name;
     private String address;
+    private String mainImage;
 
     public RecommendRestaurantResponse(Restaurant restaurant) {
         this.id = restaurant.getId();
         this.name = restaurant.getName();
         this.address = restaurant.getAddress();
+        this.mainImage = restaurant.getMainImage();
     }
 }
