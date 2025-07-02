@@ -15,10 +15,11 @@ public class RestaurantResponse {
     private double latitude;
     private double longitude;
     private String thumbnail;
-    private List<MenuResponse> menus;
-    private List<ReviewResponse> reviews;
+    private List<RepresentativeMenuResponse> menus;
+    private List<RepresentativeReviewResponse> reviews;
 
-    public RestaurantResponse(Restaurant restaurant, List<ReviewResponse> reviews, List<MenuResponse> menus) {
+    public RestaurantResponse(Restaurant restaurant, List<RepresentativeReviewResponse> reviews,
+                              List<RepresentativeMenuResponse> menus) {
         this.id = restaurant.getId();
         this.name = restaurant.getName();
         this.address = restaurant.getAddress();

@@ -6,12 +6,12 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class MenuResponse {
+public class RepresentativeMenuResponse {
 
     private String name;
     private int price;
 
-    public MenuResponse(Menu menu) {
+    public RepresentativeMenuResponse(Menu menu) {
         this.name = menu.getName();
         this.price = menu.getPrice();
     }
