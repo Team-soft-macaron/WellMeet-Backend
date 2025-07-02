@@ -8,10 +8,15 @@ import static com.wellmeet.restaurant.domain.crawlingreview.domain.VibeName.valu
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.wellmeet.BaseControllerTest;
+import com.wellmeet.member.domain.Member;
 import com.wellmeet.restaurant.domain.Restaurant;
 import com.wellmeet.restaurant.domain.crawlingreview.domain.Vibe;
 import com.wellmeet.restaurant.domain.crawlingreview.domain.VibeName;
+import com.wellmeet.restaurant.domain.menu.domain.Menu;
+import com.wellmeet.restaurant.domain.review.domain.Review;
+import com.wellmeet.restaurant.domain.review.domain.Situation;
 import com.wellmeet.restaurant.dto.RecommendRestaurantResponse;
+import com.wellmeet.restaurant.dto.RestaurantResponse;
 import io.restassured.http.ContentType;
 import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +33,7 @@ class RestaurantControllerTest extends BaseControllerTest {
     @BeforeEach
     void setEnvironment() {
         Arrays.stream(values())
-                .forEach(vibeName -> vibeRepository.save(new Vibe(vibeName.name())));
+                .forEach(vibeName -> vibeRepository.save(new Vibe(vibeName)));
     }
 
     @Test
@@ -82,6 +87,33 @@ class RestaurantControllerTest extends BaseControllerTest {
                 .extract().as(RecommendRestaurantResponse[].class);
 
         assertThat(responses).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("레스토랑 상세 조회")
+    void getRestaurant() {
+        Restaurant restaurant = new Restaurant("restaurant1", "address1", LATITUDE, LONGITUDE, MAIN_IMAGE);
+        restaurantRepository.save(restaurant);
+        Menu menu1 = new Menu("menu1", "description1", 10000, restaurant);
+        menuRepository.save(menu1);
+        Menu menu2 = new Menu("menu2", "description2", 15000, restaurant);
+        menuRepository.save(menu2);
+        Member member = new Member("nickname");
+        memberRepository.save(member);
+        Review review1 = new Review("review1", 5, Situation.DATE, restaurant, member);
+        reviewRepository.save(review1);
+        Review review2 = new Review("review2", 4, Situation.BUSINESS, restaurant, member);
+        reviewRepository.save(review2);
+
+        RestaurantResponse restaurantResponse = given()
+                .contentType(ContentType.JSON)
+                .when().get("/api/restaurant/{id}", restaurant.getId())
+                .then().statusCode(HttpStatus.OK.value())
+                .extract().as(RestaurantResponse.class);
+
+        assertThat(restaurantResponse.getId()).isEqualTo(restaurant.getId());
+        assertThat(restaurantResponse.getMenus()).hasSize(2);
+        assertThat(restaurantResponse.getReviews()).hasSize(2);
     }
 
     private void createCrawlingReviews(Restaurant restaurant, VibeName... vibeNames) {

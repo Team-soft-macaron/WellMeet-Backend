@@ -9,10 +9,10 @@ public class BoundingBox {
 
     private static final double RADIUS = 5.0;
     private static final double DEGREES_TO_KM = 111.0;
-    private static final double MINIMUM_LATITUDE = -90.0;
-    private static final double MAXIMUM_LATITUDE = 90.0;
-    private static final double MINIMUM_LONGITUDE = -180.0;
-    private static final double MAXIMUM_LONGITUDE = 180.0;
+    protected static final double MINIMUM_LATITUDE = -90.0;
+    protected static final double MAXIMUM_LATITUDE = 90.0;
+    protected static final double MINIMUM_LONGITUDE = -180.0;
+    protected static final double MAXIMUM_LONGITUDE = 180.0;
 
     private final double minLatitude;
     private final double maxLatitude;

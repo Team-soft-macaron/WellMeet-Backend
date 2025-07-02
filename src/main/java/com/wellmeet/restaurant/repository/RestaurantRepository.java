@@ -2,6 +2,7 @@ package com.wellmeet.restaurant.repository;
 
 import com.wellmeet.restaurant.domain.BoundingBox;
 import com.wellmeet.restaurant.domain.Restaurant;
+import com.wellmeet.restaurant.domain.crawlingreview.domain.VibeName;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -35,7 +36,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
             ) DESC
             """)
     List<Restaurant> findRestaurantsOrderedByVibeRatioWithBoundBox(
-            @Param("vibeName") String vibeName,
+            @Param("vibeName") VibeName vibeName,
             @Param("boundingBox") BoundingBox boundingBox
     );
 
