@@ -35,7 +35,7 @@ class RestaurantRepositoryTest extends BaseRepositoryTest {
     @BeforeEach
     void setEnvironment() {
         Arrays.stream(values())
-                .forEach(vibeName -> vibeRepository.save(new Vibe(vibeName.name())));
+                .forEach(vibeName -> vibeRepository.save(new Vibe(vibeName)));
     }
 
     @Test
@@ -59,7 +59,7 @@ class RestaurantRepositoryTest extends BaseRepositoryTest {
 
         BoundingBox boundingBox = new BoundingBox(LATITUDE, LONGITUDE);
         List<Restaurant> restaurantsOrderedByVibeRatio = restaurantRepository.findRestaurantsOrderedByVibeRatioWithBoundBox(
-                CLASSIC.name(), boundingBox
+                CLASSIC, boundingBox
         );
 
         assertThat(restaurantsOrderedByVibeRatio).hasSize(3);
