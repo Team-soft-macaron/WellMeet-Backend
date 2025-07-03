@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS member
 CREATE TABLE IF NOT EXISTS restaurant
 (
     id         BIGINT AUTO_INCREMENT PRIMARY KEY,
+    place_id   VARCHAR(100) NOT NULL UNIQUE,
     name       VARCHAR(200) NOT NULL,
     address    VARCHAR(500) NOT NULL,
     thumbnail  VARCHAR(500),
