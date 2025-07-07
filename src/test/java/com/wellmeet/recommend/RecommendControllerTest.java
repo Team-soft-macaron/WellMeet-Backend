@@ -106,6 +106,7 @@ class RecommendControllerTest extends BaseControllerTest {
 
         RestaurantResponse restaurantResponse = given()
                 .contentType(ContentType.JSON)
+                .queryParam("memberId", member.getId())
                 .when().get("/api/restaurant/{id}", restaurant.getId())
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().as(RestaurantResponse.class);
