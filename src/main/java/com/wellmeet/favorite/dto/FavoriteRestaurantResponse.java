@@ -11,13 +11,14 @@ public class FavoriteRestaurantResponse {
     private Long id;
     private String name;
     private String address;
-    private double rating = 4.5;
+    private double rating;
     private String thumbnail;
 
-    public FavoriteRestaurantResponse(Restaurant restaurant) {
+    public FavoriteRestaurantResponse(Restaurant restaurant, double rating) {
         this.id = restaurant.getId();
         this.name = restaurant.getName();
         this.address = restaurant.getAddress();
+        this.rating = rating;
         this.thumbnail = restaurant.getThumbnail();
     }
 }
