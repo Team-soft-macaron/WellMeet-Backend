@@ -34,7 +34,10 @@ public class RecommendController {
     }
 
     @GetMapping("/api/restaurant/{id}")
-    public RestaurantResponse getRestaurant(@PathVariable Long id) {
-        return recommendService.getRestaurant(id);
+    public RestaurantResponse getRestaurant(
+            @RequestParam(value = "memberId") Long memberId,
+            @PathVariable Long id
+    ) {
+        return recommendService.getRestaurant(id, memberId);
     }
 }

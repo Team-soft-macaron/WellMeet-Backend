@@ -2,7 +2,8 @@ CREATE TABLE IF NOT EXISTS member
 (
     id         BIGINT AUTO_INCREMENT PRIMARY KEY,
     nickname   VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_member_nickname (nickname)
 );
 
 CREATE TABLE IF NOT EXISTS restaurant
@@ -14,14 +15,18 @@ CREATE TABLE IF NOT EXISTS restaurant
     thumbnail  VARCHAR(500),
     latitude   DOUBLE NOT NULL,
     longitude  DOUBLE NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_restaurant_location (latitude, longitude),
+    INDEX idx_restaurant_name (name)
 );
 
 CREATE TABLE IF NOT EXISTS vibe
 (
     id         BIGINT AUTO_INCREMENT PRIMARY KEY,
     name       VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_vibe_name (name),
+    CHECK (name IN ('LUXURIOUS', 'QUIET', 'LIVELY', 'CLASSIC', 'MODERN', 'CLEAN', 'ROMANTIC'))
 );
 
 CREATE TABLE IF NOT EXISTS crawling_review
@@ -30,7 +35,8 @@ CREATE TABLE IF NOT EXISTS crawling_review
     content       TEXT,
     restaurant_id BIGINT NOT NULL,
     created_at    TIMESTAMP,
-    FOREIGN KEY (restaurant_id) REFERENCES restaurant (id)
+    FOREIGN KEY (restaurant_id) REFERENCES restaurant (id),
+    INDEX idx_crawling_review_restaurant (restaurant_id)
 );
 
 CREATE TABLE IF NOT EXISTS review
@@ -43,7 +49,11 @@ CREATE TABLE IF NOT EXISTS review
     member_id     BIGINT NOT NULL,
     created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (restaurant_id) REFERENCES restaurant (id),
-    FOREIGN KEY (member_id) REFERENCES member (id)
+    FOREIGN KEY (member_id) REFERENCES member (id),
+    CHECK (rating >= 0.0 AND rating <= 5.0),
+    CHECK (situation IN ('DATE', 'FAMILY', 'BUSINESS') OR situation IS NULL),
+    INDEX idx_review_restaurant (restaurant_id),
+    INDEX idx_review_member (member_id)
 );
 
 CREATE TABLE IF NOT EXISTS crawling_review_vibe
@@ -63,15 +73,18 @@ CREATE TABLE IF NOT EXISTS menu
     description   TEXT,
     price         INT NOT NULL,
     restaurant_id BIGINT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (restaurant_id) REFERENCES restaurant (id)
+    created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (restaurant_id) REFERENCES restaurant (id),
+    INDEX idx_menu_restaurant (restaurant_id),
+    INDEX idx_menu_price (price)
 );
 
 CREATE TABLE IF NOT EXISTS tag
 (
-    id   BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name       VARCHAR(100) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    name VARCHAR(100) NOT NULL
+    UNIQUE KEY unique_tag_name (name)
 );
 
 CREATE TABLE IF NOT EXISTS review_tag
@@ -82,4 +95,16 @@ CREATE TABLE IF NOT EXISTS review_tag
     FOREIGN KEY (review_id) REFERENCES review (id),
     FOREIGN KEY (tag_id) REFERENCES tag (id),
     UNIQUE KEY unique_review_tag (review_id, tag_id)
+);
+
+CREATE TABLE IF NOT EXISTS member_restaurant
+(
+    id            BIGINT AUTO_INCREMENT PRIMARY KEY,
+    member_id     BIGINT NOT NULL,
+    restaurant_id BIGINT NOT NULL,
+    FOREIGN KEY (member_id) REFERENCES member (id),
+    FOREIGN KEY (restaurant_id) REFERENCES restaurant (id),
+    UNIQUE KEY unique_member_restaurant (member_id, restaurant_id),
+    INDEX idx_member_restaurant_member (member_id),
+    INDEX idx_member_restaurant_restaurant (restaurant_id)
 );

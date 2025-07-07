@@ -12,14 +12,22 @@ public class RestaurantResponse {
     private Long id;
     private String name;
     private String address;
+    private double rating;
+    private int reviewCount;
+    private boolean favorite;
     private double latitude;
     private double longitude;
     private String thumbnail;
     private List<RepresentativeMenuResponse> menus;
     private List<RepresentativeReviewResponse> reviews;
 
-    public RestaurantResponse(Restaurant restaurant, List<RepresentativeReviewResponse> reviews,
-                              List<RepresentativeMenuResponse> menus) {
+    public RestaurantResponse(
+            Restaurant restaurant,
+            List<RepresentativeReviewResponse> reviews,
+            List<RepresentativeMenuResponse> menus,
+            boolean isFavorite,
+            double rating
+    ) {
         this.id = restaurant.getId();
         this.name = restaurant.getName();
         this.address = restaurant.getAddress();
@@ -28,5 +36,8 @@ public class RestaurantResponse {
         this.thumbnail = restaurant.getThumbnail();
         this.reviews = reviews;
         this.menus = menus;
+        this.favorite = isFavorite;
+        this.rating = rating;
+        this.reviewCount = reviews.size();
     }
 }

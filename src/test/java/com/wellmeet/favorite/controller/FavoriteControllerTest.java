@@ -3,7 +3,6 @@ package com.wellmeet.favorite.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.wellmeet.BaseControllerTest;
-import com.wellmeet.favorite.dto.FavoriteRestaurantRequest;
 import com.wellmeet.favorite.dto.FavoriteRestaurantResponse;
 import com.wellmeet.member.domain.Member;
 import com.wellmeet.member.domain.MemberRestaurant;
@@ -48,13 +47,11 @@ class FavoriteControllerTest extends BaseControllerTest {
         Member testUser = memberRepository.save(new Member("testUser"));
         Restaurant restaurant = restaurantRepository.save(
                 new Restaurant("Restaurant 1", "Address 1", 38.5, 128.2, "https://example.com/restaurant1.jpg"));
-        FavoriteRestaurantRequest request = new FavoriteRestaurantRequest(restaurant.getId());
 
         FavoriteRestaurantResponse response = given()
                 .contentType("application/json")
                 .queryParam("memberId", testUser.getId())
-                .body(request)
-                .when().post("/api/favorite/restaurant")
+                .when().post("/api/favorite/restaurant/{restaurantId}", restaurant.getId())
                 .then().statusCode(HttpStatus.CREATED.value())
                 .extract().as(FavoriteRestaurantResponse.class);
 

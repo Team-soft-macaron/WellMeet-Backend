@@ -1,6 +1,7 @@
 package com.wellmeet.recommend.review.service;
 
 import com.wellmeet.recommend.restaurant.dto.RepresentativeReviewResponse;
+import com.wellmeet.recommend.review.domain.Review;
 import com.wellmeet.recommend.review.repository.ReviewRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -17,5 +18,13 @@ public class ReviewService {
                 .stream()
                 .map(RepresentativeReviewResponse::new)
                 .toList();
+    }
+
+    public double getAverageRating(Long restaurantId) {
+        return reviewRepository.findByRestaurantId(restaurantId)
+                .stream()
+                .mapToDouble(Review::getRating)
+                .average()
+                .orElse(0.0);
     }
 }
