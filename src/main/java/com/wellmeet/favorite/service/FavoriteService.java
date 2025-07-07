@@ -1,6 +1,5 @@
 package com.wellmeet.favorite.service;
 
-import com.wellmeet.favorite.dto.FavoriteRestaurantRequest;
 import com.wellmeet.favorite.dto.FavoriteRestaurantResponse;
 import com.wellmeet.member.domain.Member;
 import com.wellmeet.member.domain.MemberRestaurant;
@@ -27,11 +26,18 @@ public class FavoriteService {
                 .toList();
     }
 
-    public FavoriteRestaurantResponse addFavoriteRestaurant(Long memberId, FavoriteRestaurantRequest request) {
+    public FavoriteRestaurantResponse addFavoriteRestaurant(Long memberId, Long restaurantId) {
         Member member = memberService.getById(memberId);
-        Restaurant restaurant = restaurantService.getById(request.getRestaurantId());
+        Restaurant restaurant = restaurantService.getById(restaurantId);
         MemberRestaurant memberRestaurant = new MemberRestaurant(member, restaurant);
         memberRestaurantService.save(memberRestaurant);
         return new FavoriteRestaurantResponse(restaurant);
+    }
+
+    public void removeFavoriteRestaurant(Long memberId, Long restaurantId) {
+        Member member = memberService.getById(memberId);
+        Restaurant restaurant = restaurantService.getById(restaurantId);
+        MemberRestaurant memberRestaurant = memberRestaurantService.getByMemberAndRestaurant(member, restaurant);
+        memberRestaurantService.delete(memberRestaurant);
     }
 }

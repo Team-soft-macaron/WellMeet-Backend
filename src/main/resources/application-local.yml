@@ -17,3 +17,6 @@ spring:
       mode: always
       platform: mysql
       encoding: UTF-8
+
+cors:
+  origin: http://localhost:5173

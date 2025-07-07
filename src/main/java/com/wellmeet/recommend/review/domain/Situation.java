@@ -5,9 +5,9 @@ import lombok.Getter;
 @Getter
 public enum Situation {
 
-    DATE("데이트", "http://example.com/logo/date.png"),
-    FAMILY("가족 모임", "http://example.com/logo/family.png"),
-    BUSINESS("비즈니스 미팅", "http://example.com/logo/business.png"),
+    DATE("데이트", "💕"),
+    FAMILY("가족 모임", "🎎"),
+    BUSINESS("비즈니스 미팅", "🧳"),
     ;
 
     private final String name;

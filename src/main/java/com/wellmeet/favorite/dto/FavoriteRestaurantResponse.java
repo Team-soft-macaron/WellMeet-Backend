@@ -11,6 +11,7 @@ public class FavoriteRestaurantResponse {
     private Long id;
     private String name;
     private String address;
+    private double rating = 4.5;
     private String thumbnail;
 
     public FavoriteRestaurantResponse(Restaurant restaurant) {
