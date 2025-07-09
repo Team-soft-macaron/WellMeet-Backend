@@ -40,19 +40,19 @@ class RestaurantRepositoryTest extends BaseRepositoryTest {
     @Test
     @DisplayName("추천 레스토랑 조회 - vibe에 따른 비율로 정렬")
     void findRestaurantsOrderedByVibeRatioWithBoundBox() {
-        Restaurant restaurant1 = new Restaurant("restaurant1", "address1", LATITUDE, LONGITUDE, THUMBNAIL);
+        Restaurant restaurant1 = new Restaurant("restaurant1", "address1", LATITUDE, LONGITUDE, THUMBNAIL, "123");
         Restaurant savedRestaurant1 = restaurantRepository.save(restaurant1);
         createCrawlingReviews(savedRestaurant1, CLASSIC, CLASSIC, CLASSIC, CLEAN, LIVELY);
 
-        Restaurant restaurant2 = new Restaurant("restaurant2", "address2", LATITUDE, LONGITUDE, THUMBNAIL);
+        Restaurant restaurant2 = new Restaurant("restaurant2", "address2", LATITUDE, LONGITUDE, THUMBNAIL, "124");
         Restaurant savedRestaurant2 = restaurantRepository.save(restaurant2);
         createCrawlingReviews(savedRestaurant2, CLASSIC, CLASSIC, LIVELY, MODERN);
 
-        Restaurant restaurant3 = new Restaurant("restaurant3", "address3", LATITUDE, LONGITUDE, THUMBNAIL);
+        Restaurant restaurant3 = new Restaurant("restaurant3", "address3", LATITUDE, LONGITUDE, THUMBNAIL, "125");
         Restaurant savedRestaurant3 = restaurantRepository.save(restaurant3);
         createCrawlingReviews(savedRestaurant3, CLASSIC, CLASSIC, LIVELY);
 
-        Restaurant restaurant4 = new Restaurant("restaurant4", "address4", LATITUDE, LONGITUDE, THUMBNAIL);
+        Restaurant restaurant4 = new Restaurant("restaurant4", "address4", LATITUDE, LONGITUDE, THUMBNAIL, "126");
         Restaurant savedRestaurant4 = restaurantRepository.save(restaurant4);
         createCrawlingReviews(savedRestaurant4, LIVELY, LIVELY, LIVELY);
 
@@ -70,11 +70,12 @@ class RestaurantRepositoryTest extends BaseRepositoryTest {
     @Test
     @DisplayName("주변 레스토랑 조회 - BoundingBox를 이용한 레스토랑 조회")
     void findWithBoundBox() {
-        Restaurant restaurant1 = new Restaurant("restaurant1", "address1", LATITUDE, LONGITUDE, THUMBNAIL);
+        Restaurant restaurant1 = new Restaurant("restaurant1", "address1", LATITUDE, LONGITUDE, THUMBNAIL, "123");
         restaurantRepository.save(restaurant1);
-        Restaurant restaurant2 = new Restaurant("restaurant2", "address2", LATITUDE, LONGITUDE, THUMBNAIL);
+        Restaurant restaurant2 = new Restaurant("restaurant2", "address2", LATITUDE, LONGITUDE, THUMBNAIL, "124");
         restaurantRepository.save(restaurant2);
-        Restaurant restaurant3 = new Restaurant("restaurant3", "address3", LATITUDE - 3, LONGITUDE + 3, THUMBNAIL);
+        Restaurant restaurant3 = new Restaurant("restaurant3", "address3", LATITUDE - 3, LONGITUDE + 3, THUMBNAIL,
+                "125");
         restaurantRepository.save(restaurant3);
 
         BoundingBox boundingBox = new BoundingBox(LATITUDE, LONGITUDE);

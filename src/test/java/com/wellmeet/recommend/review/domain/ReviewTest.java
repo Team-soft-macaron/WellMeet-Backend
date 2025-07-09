@@ -17,7 +17,7 @@ class ReviewTest {
     @ParameterizedTest
     void ratingWithRange(double rating) {
         Restaurant restaurant = new Restaurant("Test Restaurant", "Test Address", 37.5665, 126.978,
-                "https://example.com/image.jpg");
+                "https://example.com/image.jpg", "123");
         Member member = new Member("testuser");
 
         assertThatThrownBy(() -> new Review("Great food!", rating, Situation.BUSINESS, restaurant, member))
