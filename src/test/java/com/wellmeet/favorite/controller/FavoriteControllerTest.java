@@ -6,7 +6,7 @@ import com.wellmeet.BaseControllerTest;
 import com.wellmeet.favorite.dto.FavoriteRestaurantResponse;
 import com.wellmeet.member.domain.Member;
 import com.wellmeet.member.domain.MemberRestaurant;
-import com.wellmeet.recommend.restaurant.domain.Restaurant;
+import com.wellmeet.restaurant.domain.Restaurant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;

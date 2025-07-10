@@ -1,6 +1,6 @@
 package com.wellmeet.member.domain;
 
-import com.wellmeet.recommend.restaurant.domain.Restaurant;
+import com.wellmeet.restaurant.domain.Restaurant;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
