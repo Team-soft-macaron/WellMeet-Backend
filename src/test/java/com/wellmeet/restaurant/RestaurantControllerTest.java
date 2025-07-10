@@ -1,11 +1,11 @@
-package com.wellmeet.restaurant.controller;
+package com.wellmeet.restaurant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.wellmeet.BaseControllerTest;
 import com.wellmeet.member.domain.Member;
-import com.wellmeet.recommend.dto.RecommendRestaurantResponse;
 import com.wellmeet.restaurant.domain.Restaurant;
+import com.wellmeet.restaurant.dto.NearbyRestaurantResponse;
 import com.wellmeet.restaurant.dto.RestaurantResponse;
 import com.wellmeet.restaurant.model.menu.domain.Menu;
 import com.wellmeet.restaurant.model.review.domain.Review;
@@ -32,11 +32,11 @@ class RestaurantControllerTest extends BaseControllerTest {
                 "125");
         restaurantRepository.save(restaurant3);
 
-        RecommendRestaurantResponse[] responses = given()
+        NearbyRestaurantResponse[] responses = given()
                 .contentType(ContentType.JSON)
                 .when().get("/api/restaurants/nearby?latitude=" + LATITUDE + "&longitude=" + LONGITUDE)
                 .then().statusCode(HttpStatus.OK.value())
-                .extract().as(RecommendRestaurantResponse[].class);
+                .extract().as(NearbyRestaurantResponse[].class);
 
         assertThat(responses).hasSize(2);
     }
