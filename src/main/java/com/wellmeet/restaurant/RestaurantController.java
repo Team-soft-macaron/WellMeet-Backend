@@ -1,0 +1,34 @@
+package com.wellmeet.restaurant;
+
+import com.wellmeet.restaurant.dto.NearbyRestaurantResponse;
+import com.wellmeet.restaurant.dto.RestaurantResponse;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequiredArgsConstructor
+public class RestaurantController {
+
+    private final RestaurantService restaurantService;
+
+
+    @GetMapping("/api/restaurants/nearby")
+    public List<NearbyRestaurantResponse> getNearbyRestaurants(
+            @RequestParam(value = "latitude") double latitude,
+            @RequestParam(value = "longitude") double longitude
+    ) {
+        return restaurantService.findWithNearbyRestaurant(latitude, longitude);
+    }
+
+    @GetMapping("/api/restaurant/{id}")
+    public RestaurantResponse getRestaurant(
+            @RequestParam(value = "memberId") Long memberId,
+            @PathVariable Long id
+    ) {
+        return restaurantService.getRestaurant(id, memberId);
+    }
+}

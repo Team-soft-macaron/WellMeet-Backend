@@ -5,7 +5,7 @@ import com.wellmeet.exception.WellMeetException;
 import com.wellmeet.member.domain.Member;
 import com.wellmeet.member.domain.MemberRestaurant;
 import com.wellmeet.member.repository.MemberRestaurantRepository;
-import com.wellmeet.recommend.restaurant.domain.Restaurant;
+import com.wellmeet.restaurant.domain.Restaurant;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

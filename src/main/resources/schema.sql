@@ -32,9 +32,9 @@ CREATE TABLE IF NOT EXISTS vibe
 CREATE TABLE IF NOT EXISTS crawling_review
 (
     id            BIGINT AUTO_INCREMENT PRIMARY KEY,
-    content       TEXT,
+    content       TEXT NOT NULL,
     restaurant_id BIGINT NOT NULL,
-    created_at    TIMESTAMP,
+    created_at    TIMESTAMP NOT NULL,
     FOREIGN KEY (restaurant_id) REFERENCES restaurant (id),
     INDEX idx_crawling_review_restaurant (restaurant_id)
 );
@@ -42,9 +42,9 @@ CREATE TABLE IF NOT EXISTS crawling_review
 CREATE TABLE IF NOT EXISTS review
 (
     id            BIGINT AUTO_INCREMENT PRIMARY KEY,
-    content       TEXT,
+    content       TEXT NOT NULL,
     rating        DOUBLE NOT NULL,
-    situation     VARCHAR(50),
+    situation     VARCHAR(50) NOT NULL,
     restaurant_id BIGINT NOT NULL,
     member_id     BIGINT NOT NULL,
     created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

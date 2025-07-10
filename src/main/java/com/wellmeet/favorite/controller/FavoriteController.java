@@ -21,7 +21,7 @@ public class FavoriteController {
 
     @GetMapping("/api/favorite/restaurants")
     public List<FavoriteRestaurantResponse> getFavoriteRestaurants(
-            @RequestParam("memberId") Long memberId
+            @RequestParam("memberId") Long memberId // TODO : 로그인 구현 후 ArgumentResolver를 활용하도록 변경
     ) {
         return favoriteService.getFavoriteRestaurants(memberId);
     }
