@@ -51,7 +51,7 @@ class RecommendControllerTest extends BaseControllerTest {
 
         RecommendRestaurantResponse[] responses = given()
                 .contentType(ContentType.JSON)
-                .when().get("/api/restaurants/recommend?" +
+                .when().get("/api/recommend/restaurant?" +
                         "vibe=" + CLASSIC.name() +
                         "&latitude=" + LATITUDE +
                         "&longitude=" + LONGITUDE)

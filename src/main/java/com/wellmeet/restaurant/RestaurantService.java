@@ -7,6 +7,7 @@ import com.wellmeet.member.service.MemberRestaurantService;
 import com.wellmeet.recommend.crawlingreview.domain.VibeName;
 import com.wellmeet.recommend.dto.RecommendRestaurantResponse;
 import com.wellmeet.restaurant.domain.BoundingBox;
+import com.wellmeet.restaurant.domain.PremiumOption;
 import com.wellmeet.restaurant.domain.Restaurant;
 import com.wellmeet.restaurant.dto.NearbyRestaurantResponse;
 import com.wellmeet.restaurant.dto.RepresentativeMenuResponse;
@@ -14,6 +15,8 @@ import com.wellmeet.restaurant.dto.RepresentativeReviewResponse;
 import com.wellmeet.restaurant.dto.RestaurantResponse;
 import com.wellmeet.restaurant.model.menu.service.MenuService;
 import com.wellmeet.restaurant.model.review.service.ReviewService;
+import com.wellmeet.restaurant.repository.PremiumOptionRepository;
+import com.wellmeet.restaurant.repository.RestaurantPremiumOptionRepository;
 import com.wellmeet.restaurant.repository.RestaurantRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +27,8 @@ import org.springframework.stereotype.Service;
 public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
+    private final PremiumOptionRepository premiumOptionRepository;
+    private final RestaurantPremiumOptionRepository restaurantPremiumOptionRepository;
     private final ReviewService reviewService;
     private final MenuService menuService;
     private final MemberRestaurantService memberRestaurantService;
@@ -76,5 +81,15 @@ public class RestaurantService {
         List<RepresentativeMenuResponse> menus = menuService.findByRestaurantId(restaurant.getId());
         double rating = reviewService.getAverageRating(restaurant.getId());
         return new RestaurantResponse(restaurant, reviews, menus, isFavorite, rating);
+    }
+
+    public PremiumOption getOptionByRestaurantAndOptionId(Restaurant restaurant, Long optionId) {
+        return restaurantPremiumOptionRepository.findByRestaurantAndPremiumOptionId(restaurant, optionId)
+                .orElseThrow(() -> new WellMeetException(ErrorCode.PREMIUM_OPTION_NOT_FOUND))
+                .getPremiumOption();
+    }
+
+    public double getAverageRating(Long restaurantId) {
+        return reviewService.getAverageRating(restaurantId);
     }
 }

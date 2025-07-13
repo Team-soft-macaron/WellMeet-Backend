@@ -6,17 +6,18 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@RequestMapping("/api/restaurant")
 @RestController
 @RequiredArgsConstructor
 public class RestaurantController {
 
     private final RestaurantService restaurantService;
 
-
-    @GetMapping("/api/restaurants/nearby")
+    @GetMapping("/nearby")
     public List<NearbyRestaurantResponse> getNearbyRestaurants(
             @RequestParam(value = "latitude") double latitude,
             @RequestParam(value = "longitude") double longitude
@@ -24,7 +25,7 @@ public class RestaurantController {
         return restaurantService.findWithNearbyRestaurant(latitude, longitude);
     }
 
-    @GetMapping("/api/restaurant/{id}")
+    @GetMapping("/{id}")
     public RestaurantResponse getRestaurant(
             @RequestParam(value = "memberId") Long memberId,
             @PathVariable Long id

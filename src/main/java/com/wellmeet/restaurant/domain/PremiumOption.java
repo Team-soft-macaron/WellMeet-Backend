@@ -1,6 +1,5 @@
-package com.wellmeet.member.domain;
+package com.wellmeet.restaurant.domain;
 
-import com.wellmeet.restaurant.domain.Restaurant;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -16,25 +15,27 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberRestaurant {
+public class PremiumOption {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    private String name;
 
-    // TODO : 소프트 참조 방식으로 변경
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
-    public MemberRestaurant(Member member, Restaurant restaurant) {
-        this.member = member;
+    private String description;
+    private int price;
+
+    public PremiumOption(String name, Restaurant restaurant, String description, int price) {
+        this.name = name;
         this.restaurant = restaurant;
+        this.description = description;
+        this.price = price;
     }
 }

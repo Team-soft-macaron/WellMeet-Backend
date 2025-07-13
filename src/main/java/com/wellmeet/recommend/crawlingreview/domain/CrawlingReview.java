@@ -29,6 +29,7 @@ public class CrawlingReview { // TODO : MSA를 도입하면서 추천 서버를 
     @NotNull
     private LocalDateTime createdAt;
 
+    // TODO : 소프트 참조 방식으로 변경
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
