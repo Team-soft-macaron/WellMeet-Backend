@@ -30,7 +30,7 @@ public class RestaurantController {
             @RequestParam(value = "memberId") Long memberId,
             @PathVariable Long id
     ) {
-        System.out.println("dycjd qkedma");
+        System.out.println("dycjd qkedmasa");
         return restaurantService.getRestaurant(id, memberId);
     }
 }
