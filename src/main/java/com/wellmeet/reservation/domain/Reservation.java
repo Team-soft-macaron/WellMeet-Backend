@@ -26,7 +26,7 @@ public class Reservation extends BaseEntity {
     private Long id;
 
     @NotNull
-    private LocalDateTime dateTime;
+    private LocalDateTime reservationDateTime;
 
     @NotNull
     private ReservationStatus status;
@@ -45,9 +45,9 @@ public class Reservation extends BaseEntity {
     private int partySize;
     private String specialRequest;
 
-    public Reservation(LocalDateTime dateTime, String purpose,
+    public Reservation(LocalDateTime reservationDateTime, String purpose,
                        Restaurant restaurant, Long memberId, int partySize, String specialRequest) {
-        this.dateTime = dateTime;
+        this.reservationDateTime = reservationDateTime;
         this.status = ReservationStatus.PENDING;
         this.purpose = purpose;
         this.restaurant = restaurant;
@@ -66,7 +66,7 @@ public class Reservation extends BaseEntity {
             int partySize,
             String specialRequest
     ) {
-        this.dateTime = dateTime;
+        this.reservationDateTime = dateTime;
         this.purpose = purpose;
         this.partySize = partySize;
         this.specialRequest = specialRequest;

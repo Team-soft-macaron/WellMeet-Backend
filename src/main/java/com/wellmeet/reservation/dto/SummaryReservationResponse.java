@@ -20,7 +20,7 @@ public class SummaryReservationResponse {
     public SummaryReservationResponse(Reservation reservation) {
         this.id = reservation.getId();
         this.restaurantName = reservation.getRestaurantName();
-        this.dateTime = reservation.getDateTime();
+        this.dateTime = reservation.getReservationDateTime();
         this.partySize = reservation.getPartySize();
         this.purpose = reservation.getPurpose();
         this.status = reservation.getStatus();

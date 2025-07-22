@@ -31,7 +31,7 @@ public class ReservationResponse {
         this.restaurantRating = rating;
         this.latitude = reservation.getRestaurant().getLatitude();
         this.longitude = reservation.getRestaurant().getLongitude();
-        this.dateTime = reservation.getDateTime();
+        this.dateTime = reservation.getReservationDateTime();
         this.partySize = reservation.getPartySize();
         this.purpose = reservation.getPurpose();
         this.specialRequest = reservation.getSpecialRequest();

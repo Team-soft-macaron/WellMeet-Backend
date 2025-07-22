@@ -22,7 +22,7 @@ public class CreateReservationResponse {
     public CreateReservationResponse(Reservation reservation, List<String> options) {
         this.restaurantName = reservation.getRestaurant().getName();
         this.status = reservation.getStatus();
-        this.dateTime = reservation.getDateTime();
+        this.dateTime = reservation.getReservationDateTime();
         this.partySize = reservation.getPartySize();
         this.purpose = reservation.getPurpose();
         this.specialRequest = reservation.getSpecialRequest();
