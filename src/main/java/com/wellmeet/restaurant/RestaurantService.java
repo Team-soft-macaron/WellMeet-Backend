@@ -16,7 +16,6 @@ import com.wellmeet.restaurant.dto.RestaurantResponse;
 import com.wellmeet.restaurant.model.menu.service.MenuService;
 import com.wellmeet.restaurant.model.review.service.ReviewService;
 import com.wellmeet.restaurant.repository.PremiumOptionRepository;
-import com.wellmeet.restaurant.repository.RestaurantPremiumOptionRepository;
 import com.wellmeet.restaurant.repository.RestaurantRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +27,6 @@ public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
     private final PremiumOptionRepository premiumOptionRepository;
-    private final RestaurantPremiumOptionRepository restaurantPremiumOptionRepository;
     private final ReviewService reviewService;
     private final MenuService menuService;
     private final MemberRestaurantService memberRestaurantService;
@@ -84,9 +82,8 @@ public class RestaurantService {
     }
 
     public PremiumOption getOptionByRestaurantAndOptionId(Restaurant restaurant, Long optionId) {
-        return restaurantPremiumOptionRepository.findByRestaurantAndPremiumOptionId(restaurant, optionId)
-                .orElseThrow(() -> new WellMeetException(ErrorCode.PREMIUM_OPTION_NOT_FOUND))
-                .getPremiumOption();
+        return premiumOptionRepository.findByRestaurantAndId(restaurant, optionId)
+                .orElseThrow(() -> new WellMeetException(ErrorCode.PREMIUM_OPTION_NOT_FOUND));
     }
 
     public double getAverageRating(Long restaurantId) {

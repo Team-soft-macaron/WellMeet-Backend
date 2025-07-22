@@ -1,7 +1,6 @@
-package com.wellmeet.favorite.controller;
+package com.wellmeet.favorite;
 
 import com.wellmeet.favorite.dto.FavoriteRestaurantResponse;
-import com.wellmeet.favorite.service.FavoriteService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,7 +20,7 @@ public class FavoriteController {
 
     private final FavoriteService favoriteService;
 
-    @GetMapping("/restaurant")
+    @GetMapping("/restaurant/list")
     public List<FavoriteRestaurantResponse> getFavoriteRestaurants(
             @RequestParam("memberId") Long memberId // TODO : 로그인 구현 후 ArgumentResolver를 활용하도록 변경
     ) {
