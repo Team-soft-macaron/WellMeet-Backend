@@ -32,10 +32,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setting dev-secret.yml
-        run: |
-          echo "${{ secrets.DEV_SECRET_YML }}" > ./src/main/resources/dev-secret.yml
-
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
@@ -84,10 +80,6 @@ jobs:
         with:
           name: deploy-scripts
           path: ~/app/scripts
-
-      - name: Create dev-secret.yml
-        run: |
-          echo "${{ secrets.DEV_SECRET_YML }}" > ~/app/dev-secret.yml
 
       - name: Replace application to latest
         run: sudo sh ~/app/scripts/replace-new-version.sh
