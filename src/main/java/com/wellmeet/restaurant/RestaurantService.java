@@ -4,8 +4,6 @@ import com.wellmeet.common.util.DistanceCalculator;
 import com.wellmeet.exception.ErrorCode;
 import com.wellmeet.exception.WellMeetException;
 import com.wellmeet.member.service.MemberRestaurantService;
-import com.wellmeet.recommend.crawlingreview.domain.VibeName;
-import com.wellmeet.recommend.dto.RecommendRestaurantResponse;
 import com.wellmeet.restaurant.domain.BoundingBox;
 import com.wellmeet.restaurant.domain.PremiumOption;
 import com.wellmeet.restaurant.domain.Restaurant;
@@ -30,26 +28,6 @@ public class RestaurantService {
     private final ReviewService reviewService;
     private final MenuService menuService;
     private final MemberRestaurantService memberRestaurantService;
-
-    // TODO : 리팩토링을 해야 하지만 추천 서버 분리 후 삭제할 예정이므로 우선 보류
-    public List<RecommendRestaurantResponse> findNearbyRestaurantsOrderedByVibeRatio(VibeName vibeName,
-                                                                                     double latitude,
-                                                                                     double longitude) {
-        BoundingBox boundingBox = new BoundingBox(latitude, longitude);
-        return restaurantRepository.findRestaurantsOrderedByVibeRatioWithBoundBox(vibeName, boundingBox)
-                .stream()
-                .map(restaurant -> getRecommendRestaurantResponse(restaurant, latitude, longitude))
-                .toList();
-    }
-
-    // TODO : 리팩토링을 해야 하지만 추천 서버 분리 후 삭제할 예정이므로 우선 보류
-    private RecommendRestaurantResponse getRecommendRestaurantResponse(Restaurant restaurant, double latitude,
-                                                                       double longitude) {
-        double rating = reviewService.getAverageRating(restaurant.getId());
-        double distance = DistanceCalculator.calculateDistance(latitude, longitude, restaurant.getLatitude(),
-                restaurant.getLongitude());
-        return new RecommendRestaurantResponse(restaurant, distance, rating);
-    }
 
     public List<NearbyRestaurantResponse> findWithNearbyRestaurant(double latitude, double longitude) {
         BoundingBox boundingBox = new BoundingBox(latitude, longitude);
