@@ -23,6 +23,6 @@ sudo nohup java \
     -Dspring.profiles.active=dev \
     -Duser.timezone=Asia/Seoul \
     -Dserver.port=8080 \
-    -Ddd.service=wellmeet \
+    -Ddd.service=WellMeet-Backend \
     -Ddd.env=dev \
     -jar "$JAR_FILE" &
