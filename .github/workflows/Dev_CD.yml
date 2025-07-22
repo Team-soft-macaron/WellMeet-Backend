@@ -29,10 +29,8 @@ jobs:
           --health-retries=3
 
     steps:
-      - name: Checkout Develop Branch
+      - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          ref: "develop"
 
       - name: Setting dev-secret.yml
         run: |
