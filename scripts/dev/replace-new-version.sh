@@ -1,5 +1,20 @@
 #!/bin/bash
 
+# 로그 파일 설정
+LOG_DIR="/home/ubuntu/app/logs"
+LOG_FILE="$LOG_DIR/deployment-$(date +%Y%m%d-%H%M%S).log"
+
+# 로그 디렉토리 생성
+mkdir -p "$LOG_DIR"
+
+# 로깅 함수
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
+}
+
+log "=== 배포 시작 ==="
+log "현재 작업 디렉토리: $(pwd)"
+
 PID=$(lsof -t -i:8080)
 
 # 프로세스 종료
@@ -19,10 +34,22 @@ fi
 
 JAR_FILE=$(ls /home/ubuntu/app/*.jar | head -n 1)
 
+log "JAR 파일 실행: $JAR_FILE"
+
+# 애플리케이션 로그 파일 설정
+APP_LOG_DIR="/home/ubuntu/app/logs"
+APP_LOG_FILE="$APP_LOG_DIR/application-$(date +%Y%m%d-%H%M%S).log"
+
+log "애플리케이션 로그 파일: $APP_LOG_FILE"
+
 sudo nohup java \
     -Dspring.profiles.active=dev \
     -Duser.timezone=Asia/Seoul \
     -Dserver.port=8080 \
     -Ddd.service=WellMeet-Backend \
     -Ddd.env=dev \
-    -jar "$JAR_FILE" &
+    -jar "$JAR_FILE" > "$APP_LOG_FILE" 2>&1 &
+
+log "애플리케이션이 백그라운드에서 실행되었습니다."
+log "로그 확인: tail -f $APP_LOG_FILE"
+log "=== 배포 완료 ==="
