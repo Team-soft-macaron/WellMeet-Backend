@@ -2,11 +2,9 @@ package com.wellmeet;
 
 import com.wellmeet.member.repository.MemberRepository;
 import com.wellmeet.member.repository.MemberRestaurantRepository;
-import com.wellmeet.recommend.crawlingreview.repository.VibeRepository;
 import com.wellmeet.restaurant.model.menu.repository.MenuRepository;
 import com.wellmeet.restaurant.model.review.repository.ReviewRepository;
 import com.wellmeet.restaurant.repository.RestaurantRepository;
-import com.wellmeet.restaurant.tool.CrawlingReviewGenerator;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.RequestLoggingFilter;
@@ -26,9 +24,6 @@ public abstract class BaseControllerTest {
     protected RestaurantRepository restaurantRepository;
 
     @Autowired
-    protected VibeRepository vibeRepository;
-
-    @Autowired
     protected MenuRepository menuRepository;
 
     @Autowired
@@ -39,9 +34,6 @@ public abstract class BaseControllerTest {
 
     @Autowired
     protected MemberRestaurantRepository memberRestaurantRepository;
-
-    @Autowired
-    protected CrawlingReviewGenerator crawlingReviewGenerator;
 
     @LocalServerPort
     private int port;
