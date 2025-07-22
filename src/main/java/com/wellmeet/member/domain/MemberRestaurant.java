@@ -27,6 +27,7 @@ public class MemberRestaurant {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    // TODO : 소프트 참조 방식으로 변경
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")

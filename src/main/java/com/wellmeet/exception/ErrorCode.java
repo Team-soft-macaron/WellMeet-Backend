@@ -15,6 +15,8 @@ public enum ErrorCode {
     CORS_ORIGIN_EMPTY(HttpStatus.INTERNAL_SERVER_ERROR, "CORS Origin 은 적어도 한 개 있어야 합니다"),
     CORS_ORIGIN_STRING_BLANK(HttpStatus.INTERNAL_SERVER_ERROR, "CORS Origin 에 빈 값이 들어올 수 없습니다"),
     MEMBER_RESTAURANT_NOT_FOUND(HttpStatus.NOT_FOUND, "즐겨찾기 하지 않은 레스토랑입니다."),
+    PREMIUM_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 프리미엄 옵션을 찾을 수 없습니다."),
+    UNAUTHORIZED_RESERVATION_ACCESS(HttpStatus.BAD_REQUEST, "예약에 대한 권한이 없습니다."),
     ;
 
     private final HttpStatus status;

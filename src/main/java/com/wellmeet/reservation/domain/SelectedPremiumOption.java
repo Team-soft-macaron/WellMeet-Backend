@@ -1,5 +1,6 @@
-package com.wellmeet.recommend.crawlingreview.domain;
+package com.wellmeet.reservation.domain;
 
+import com.wellmeet.restaurant.domain.PremiumOption;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CrawlingReviewVibe {
+public class SelectedPremiumOption {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,16 +24,20 @@ public class CrawlingReviewVibe {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "crawling_review_id")
-    private CrawlingReview crawlingReview;
+    @JoinColumn(name = "reservation_id")
+    private Reservation reservation;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "vibe_id")
-    private Vibe vibe;
+    @JoinColumn(name = "premium_option_id")
+    private PremiumOption premiumOption;
 
-    public CrawlingReviewVibe(CrawlingReview crawlingReview, Vibe vibe) {
-        this.crawlingReview = crawlingReview;
-        this.vibe = vibe;
+    public SelectedPremiumOption(Reservation reservation, PremiumOption premiumOption) {
+        this.reservation = reservation;
+        this.premiumOption = premiumOption;
+    }
+
+    public String getName() {
+        return premiumOption.getName();
     }
 }

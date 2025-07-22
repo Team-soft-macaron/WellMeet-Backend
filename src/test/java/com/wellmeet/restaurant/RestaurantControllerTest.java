@@ -34,7 +34,7 @@ class RestaurantControllerTest extends BaseControllerTest {
 
         NearbyRestaurantResponse[] responses = given()
                 .contentType(ContentType.JSON)
-                .when().get("/api/restaurants/nearby?latitude=" + LATITUDE + "&longitude=" + LONGITUDE)
+                .when().get("/api/restaurant/nearby?latitude=" + LATITUDE + "&longitude=" + LONGITUDE)
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().as(NearbyRestaurantResponse[].class);
 

@@ -32,7 +32,7 @@ class FavoriteControllerTest extends BaseControllerTest {
         FavoriteRestaurantResponse[] responses = given()
                 .contentType("application/json")
                 .queryParam("memberId", testUser.getId())
-                .when().get("/api/favorite/restaurants")
+                .when().get("/api/favorite/restaurant/list")
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().as(FavoriteRestaurantResponse[].class);
 

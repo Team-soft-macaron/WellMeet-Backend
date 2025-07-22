@@ -1,4 +1,4 @@
-package com.wellmeet.favorite.service;
+package com.wellmeet.favorite;
 
 import com.wellmeet.favorite.dto.FavoriteRestaurantResponse;
 import com.wellmeet.member.domain.Member;
