@@ -5,7 +5,6 @@ import com.wellmeet.member.domain.MemberRestaurant;
 import com.wellmeet.restaurant.domain.Restaurant;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,5 +15,5 @@ public interface MemberRestaurantRepository extends JpaRepository<MemberRestaura
 
     Optional<MemberRestaurant> findByMemberAndRestaurant(Member member, Restaurant restaurant);
 
-    boolean existsByMemberIdAndRestaurantId(Long memberId, UUID restaurantId);
+    boolean existsByMemberIdAndRestaurantId(Long memberId, String restaurantId);
 }

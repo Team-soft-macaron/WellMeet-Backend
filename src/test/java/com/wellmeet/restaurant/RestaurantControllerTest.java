@@ -25,13 +25,15 @@ class RestaurantControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("주변 레스토랑 조회")
     void getNearbyRestaurants() {
-        Restaurant restaurant1 = new Restaurant(UUID.randomUUID(), "restaurant1", "address1", LATITUDE, LONGITUDE,
+        Restaurant restaurant1 = new Restaurant(UUID.randomUUID().toString(), "restaurant1", "address1", LATITUDE,
+                LONGITUDE,
                 THUMBNAIL);
         restaurantRepository.save(restaurant1);
-        Restaurant restaurant2 = new Restaurant(UUID.randomUUID(), "restaurant2", "address2", LATITUDE, LONGITUDE,
+        Restaurant restaurant2 = new Restaurant(UUID.randomUUID().toString(), "restaurant2", "address2", LATITUDE,
+                LONGITUDE,
                 THUMBNAIL);
         restaurantRepository.save(restaurant2);
-        Restaurant restaurant3 = new Restaurant(UUID.randomUUID(), "restaurant3", "address3", LATITUDE - 3,
+        Restaurant restaurant3 = new Restaurant(UUID.randomUUID().toString(), "restaurant3", "address3", LATITUDE - 3,
                 LONGITUDE + 3, THUMBNAIL);
         restaurantRepository.save(restaurant3);
 
@@ -47,7 +49,8 @@ class RestaurantControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("레스토랑 상세 조회")
     void getRestaurant() {
-        Restaurant restaurant = new Restaurant(UUID.randomUUID(), "restaurant1", "address1", LATITUDE, LONGITUDE,
+        Restaurant restaurant = new Restaurant(UUID.randomUUID().toString(), "restaurant1", "address1", LATITUDE,
+                LONGITUDE,
                 THUMBNAIL);
         restaurantRepository.save(restaurant);
         Menu menu1 = new Menu("menu1", "description1", 10000, restaurant);
