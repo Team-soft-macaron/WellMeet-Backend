@@ -20,13 +20,13 @@ class FavoriteControllerTest extends BaseControllerTest {
         Member testUser = memberRepository.save(new Member("testUser"));
         Member anotherUser = memberRepository.save(new Member("anotherUser"));
         Restaurant restaurant1 = restaurantRepository.save(
-                new Restaurant(UUID.randomUUID(), "Restaurant 1", "Address 1", 38.5, 128.2,
+                new Restaurant(UUID.randomUUID().toString(), "Restaurant 1", "Address 1", 38.5, 128.2,
                         "https://example.com/restaurant1.jpg"));
         Restaurant restaurant2 = restaurantRepository.save(
-                new Restaurant(UUID.randomUUID(), "Restaurant 2", "Address 2", 38.5, 128.2,
+                new Restaurant(UUID.randomUUID().toString(), "Restaurant 2", "Address 2", 38.5, 128.2,
                         "https://example.com/restaurant2.jpg"));
         Restaurant restaurant3 = restaurantRepository.save(
-                new Restaurant(UUID.randomUUID(), "Restaurant 3", "Address 3", 38.5, 128.2,
+                new Restaurant(UUID.randomUUID().toString(), "Restaurant 3", "Address 3", 38.5, 128.2,
                         "https://example.com/restaurant3.jpg"));
         memberRestaurantRepository.save(new MemberRestaurant(testUser, restaurant1));
         memberRestaurantRepository.save(new MemberRestaurant(testUser, restaurant2));
@@ -50,7 +50,7 @@ class FavoriteControllerTest extends BaseControllerTest {
     void addFavoriteRestaurant() {
         Member testUser = memberRepository.save(new Member("testUser"));
         Restaurant restaurant = restaurantRepository.save(
-                new Restaurant(UUID.randomUUID(), "Restaurant 1", "Address 1", 38.5, 128.2,
+                new Restaurant(UUID.randomUUID().toString(), "Restaurant 1", "Address 1", 38.5, 128.2,
                         "https://example.com/restaurant1.jpg"));
 
         FavoriteRestaurantResponse response = given()

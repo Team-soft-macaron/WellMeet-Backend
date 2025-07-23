@@ -4,7 +4,6 @@ import com.wellmeet.common.domain.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
-import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class Restaurant extends BaseEntity {
 
     @Id
-    private UUID id;
+    private String id;
 
     @NotBlank
     private String name;
@@ -27,7 +26,7 @@ public class Restaurant extends BaseEntity {
     private double longitude;
     private String thumbnail;
 
-    public Restaurant(UUID id, String name, String address, double latitude, double longitude, String thumbnail) {
+    public Restaurant(String id, String name, String address, double latitude, double longitude, String thumbnail) {
         this.id = id;
         this.name = name;
         this.address = address;

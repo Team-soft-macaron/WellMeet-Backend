@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS member
 
 CREATE TABLE IF NOT EXISTS restaurant
 (
-    id         UUID PRIMARY KEY,
+    id         VARCHAR(255) PRIMARY KEY,
     name       VARCHAR(200) NOT NULL,
     address    VARCHAR(500) NOT NULL,
     thumbnail  VARCHAR(500),
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS review
     content       TEXT NOT NULL,
     rating        DOUBLE NOT NULL,
     situation     VARCHAR(50) NOT NULL,
-    restaurant_id UUID NOT NULL,
+    restaurant_id VARCHAR(255) NOT NULL,
     member_id     BIGINT NOT NULL,
     created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (restaurant_id) REFERENCES restaurant (id),
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS menu
     name          VARCHAR(200) NOT NULL,
     description   TEXT,
     price         INT NOT NULL,
-    restaurant_id UUID NOT NULL,
+    restaurant_id VARCHAR(255) NOT NULL,
     created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (restaurant_id) REFERENCES restaurant (id),
     INDEX idx_menu_restaurant (restaurant_id),
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS member_restaurant
 (
     id            BIGINT AUTO_INCREMENT PRIMARY KEY,
     member_id     BIGINT NOT NULL,
-    restaurant_id UUID NOT NULL,
+    restaurant_id VARCHAR(255) NOT NULL,
     FOREIGN KEY (member_id) REFERENCES member (id),
     FOREIGN KEY (restaurant_id) REFERENCES restaurant (id),
     UNIQUE KEY unique_member_restaurant (member_id, restaurant_id),
@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS premium_option
     name          VARCHAR(200) NOT NULL,
     description   TEXT,
     price         INT NOT NULL,
-    restaurant_id UUID NOT NULL,
+    restaurant_id VARCHAR(255) NOT NULL,
     FOREIGN KEY (restaurant_id) REFERENCES restaurant (id),
     INDEX idx_premium_option_restaurant (restaurant_id)
 );
@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS reservation
     reservation_date_time  TIMESTAMP NOT NULL,
     status                 VARCHAR(50) NOT NULL,
     purpose                VARCHAR(500) NOT NULL,
-    restaurant_id          UUID NOT NULL,
+    restaurant_id          VARCHAR(255) NOT NULL,
     member_id              BIGINT NOT NULL,
     party_size             INT NOT NULL,
     special_request        TEXT,

@@ -4,7 +4,6 @@ import com.wellmeet.restaurant.dto.RepresentativeReviewResponse;
 import com.wellmeet.restaurant.model.review.domain.Review;
 import com.wellmeet.restaurant.model.review.repository.ReviewRepository;
 import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,14 +13,14 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
 
-    public List<RepresentativeReviewResponse> findByRestaurantId(UUID restaurantId) {
+    public List<RepresentativeReviewResponse> findByRestaurantId(String restaurantId) {
         return reviewRepository.findByRestaurantId(restaurantId)
                 .stream()
                 .map(RepresentativeReviewResponse::new)
                 .toList();
     }
 
-    public double getAverageRating(UUID restaurantId) {
+    public double getAverageRating(String restaurantId) {
         return reviewRepository.findByRestaurantId(restaurantId)
                 .stream()
                 .mapToDouble(Review::getRating)

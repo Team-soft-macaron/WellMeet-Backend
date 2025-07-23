@@ -2,7 +2,6 @@ package com.wellmeet.favorite;
 
 import com.wellmeet.favorite.dto.FavoriteRestaurantResponse;
 import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,7 +31,7 @@ public class FavoriteController {
     @ResponseStatus(HttpStatus.CREATED)
     public FavoriteRestaurantResponse addFavoriteRestaurant(
             @RequestParam("memberId") Long memberId,
-            @PathVariable("restaurantId") UUID restaurantId
+            @PathVariable("restaurantId") String restaurantId
     ) {
         return favoriteService.addFavoriteRestaurant(memberId, restaurantId);
     }
@@ -41,7 +40,7 @@ public class FavoriteController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeFavoriteRestaurant(
             @RequestParam("memberId") Long memberId,
-            @PathVariable("restaurantId") UUID restaurantId
+            @PathVariable("restaurantId") String restaurantId
     ) {
         favoriteService.removeFavoriteRestaurant(memberId, restaurantId);
     }

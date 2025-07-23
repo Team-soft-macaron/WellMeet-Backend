@@ -16,7 +16,6 @@ import com.wellmeet.restaurant.model.review.service.ReviewService;
 import com.wellmeet.restaurant.repository.PremiumOptionRepository;
 import com.wellmeet.restaurant.repository.RestaurantRepository;
 import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -46,12 +45,12 @@ public class RestaurantService {
         return new NearbyRestaurantResponse(restaurant, distance, rating);
     }
 
-    public Restaurant getById(UUID id) {
+    public Restaurant getById(String id) {
         return restaurantRepository.findById(id)
                 .orElseThrow(() -> new WellMeetException(ErrorCode.RESTAURANT_NOT_FOUND));
     }
 
-    public RestaurantResponse getRestaurant(UUID id, Long memberId) {
+    public RestaurantResponse getRestaurant(String id, Long memberId) {
         boolean isFavorite = memberRestaurantService.isFavorite(memberId, id);
         Restaurant restaurant = getById(id);
         List<RepresentativeReviewResponse> reviews = reviewService.findByRestaurantId(restaurant.getId());
@@ -65,7 +64,7 @@ public class RestaurantService {
                 .orElseThrow(() -> new WellMeetException(ErrorCode.PREMIUM_OPTION_NOT_FOUND));
     }
 
-    public double getAverageRating(UUID restaurantId) {
+    public double getAverageRating(String restaurantId) {
         return reviewService.getAverageRating(restaurantId);
     }
 }

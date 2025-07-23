@@ -17,7 +17,8 @@ class ReviewTest {
     @ValueSource(doubles = {Review.MINIMUM_RATING - 0.1, Review.MAXIMUM_RATING + 0.1})
     @ParameterizedTest
     void ratingWithRange(double rating) {
-        Restaurant restaurant = new Restaurant(UUID.randomUUID(), "Test Restaurant", "Test Address", 37.5665, 126.978,
+        Restaurant restaurant = new Restaurant(UUID.randomUUID().toString(), "Test Restaurant", "Test Address", 37.5665,
+                126.978,
                 "https://example.com/image.jpg");
         Member member = new Member("testuser");
 
