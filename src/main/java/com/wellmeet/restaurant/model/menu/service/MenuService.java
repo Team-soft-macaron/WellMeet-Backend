@@ -1,8 +1,9 @@
 package com.wellmeet.restaurant.model.menu.service;
 
-import com.wellmeet.restaurant.model.menu.repository.MenuRepository;
 import com.wellmeet.restaurant.dto.RepresentativeMenuResponse;
+import com.wellmeet.restaurant.model.menu.repository.MenuRepository;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +13,7 @@ public class MenuService {
 
     private final MenuRepository menuRepository;
 
-    public List<RepresentativeMenuResponse> findByRestaurantId(Long restaurantId) {
+    public List<RepresentativeMenuResponse> findByRestaurantId(UUID restaurantId) {
         return menuRepository.findByRestaurantId(restaurantId)
                 .stream()
                 .map(RepresentativeMenuResponse::new)

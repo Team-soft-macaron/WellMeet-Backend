@@ -2,6 +2,7 @@ package com.wellmeet.restaurant.dto;
 
 import com.wellmeet.restaurant.domain.Restaurant;
 import java.util.List;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RestaurantResponse {
 
-    private Long id;
+    private UUID id;
     private String name;
     private String address;
     private double rating;

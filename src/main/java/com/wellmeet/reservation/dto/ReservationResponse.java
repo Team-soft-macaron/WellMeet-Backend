@@ -4,6 +4,7 @@ import com.wellmeet.reservation.domain.Reservation;
 import com.wellmeet.reservation.domain.ReservationStatus;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ReservationResponse {
 
-    private Long restaurantId;
+    private UUID restaurantId;
     private String restaurantName;
     private String restaurantAddress;
     private double restaurantRating;

@@ -3,13 +3,14 @@ package com.wellmeet.restaurant.repository;
 import com.wellmeet.restaurant.domain.BoundingBox;
 import com.wellmeet.restaurant.domain.Restaurant;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
+public interface RestaurantRepository extends JpaRepository<Restaurant, UUID> {
 
     @Query(value = """
             SELECT r

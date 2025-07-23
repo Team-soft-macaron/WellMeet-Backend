@@ -11,6 +11,7 @@ import com.wellmeet.restaurant.model.menu.domain.Menu;
 import com.wellmeet.restaurant.model.review.domain.Review;
 import com.wellmeet.restaurant.model.review.domain.Situation;
 import io.restassured.http.ContentType;
+import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -24,12 +25,14 @@ class RestaurantControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("주변 레스토랑 조회")
     void getNearbyRestaurants() {
-        Restaurant restaurant1 = new Restaurant("restaurant1", "address1", LATITUDE, LONGITUDE, THUMBNAIL, "123");
+        Restaurant restaurant1 = new Restaurant(UUID.randomUUID(), "restaurant1", "address1", LATITUDE, LONGITUDE,
+                THUMBNAIL);
         restaurantRepository.save(restaurant1);
-        Restaurant restaurant2 = new Restaurant("restaurant2", "address2", LATITUDE, LONGITUDE, THUMBNAIL, "124");
+        Restaurant restaurant2 = new Restaurant(UUID.randomUUID(), "restaurant2", "address2", LATITUDE, LONGITUDE,
+                THUMBNAIL);
         restaurantRepository.save(restaurant2);
-        Restaurant restaurant3 = new Restaurant("restaurant3", "address3", LATITUDE - 3, LONGITUDE + 3, THUMBNAIL,
-                "125");
+        Restaurant restaurant3 = new Restaurant(UUID.randomUUID(), "restaurant3", "address3", LATITUDE - 3,
+                LONGITUDE + 3, THUMBNAIL);
         restaurantRepository.save(restaurant3);
 
         NearbyRestaurantResponse[] responses = given()
@@ -44,7 +47,8 @@ class RestaurantControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("레스토랑 상세 조회")
     void getRestaurant() {
-        Restaurant restaurant = new Restaurant("restaurant1", "address1", LATITUDE, LONGITUDE, THUMBNAIL, "123");
+        Restaurant restaurant = new Restaurant(UUID.randomUUID(), "restaurant1", "address1", LATITUDE, LONGITUDE,
+                THUMBNAIL);
         restaurantRepository.save(restaurant);
         Menu menu1 = new Menu("menu1", "description1", 10000, restaurant);
         menuRepository.save(menu1);

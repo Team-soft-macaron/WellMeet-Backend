@@ -1,13 +1,10 @@
 package com.wellmeet.restaurant.domain;
 
 import com.wellmeet.common.domain.BaseEntity;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,12 +15,7 @@ import lombok.NoArgsConstructor;
 public class Restaurant extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @NotNull
-    @Column(unique = true)
-    private String placeId;
+    private UUID id;
 
     @NotBlank
     private String name;
@@ -35,13 +27,12 @@ public class Restaurant extends BaseEntity {
     private double longitude;
     private String thumbnail;
 
-    public Restaurant(String name, String address, double latitude, double longitude, String thumbnail,
-                      String placeId) {
+    public Restaurant(UUID id, String name, String address, double latitude, double longitude, String thumbnail) {
+        this.id = id;
         this.name = name;
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
         this.thumbnail = thumbnail;
-        this.placeId = placeId;
     }
 }
