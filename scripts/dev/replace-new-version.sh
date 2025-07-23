@@ -1,20 +1,5 @@
 #!/bin/bash
 
-# 로그 파일 설정
-LOG_DIR="/home/ubuntu/app/logs"
-LOG_FILE="$LOG_DIR/deployment-$(date +%Y%m%d-%H%M%S).log"
-
-# 로그 디렉토리 생성
-mkdir -p "$LOG_DIR"
-
-# 로깅 함수
-log() {
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
-}
-
-log "=== 배포 시작 ==="
-log "현재 작업 디렉토리: $(pwd)"
-
 PID=$(lsof -t -i:8080)
 
 # 프로세스 종료
