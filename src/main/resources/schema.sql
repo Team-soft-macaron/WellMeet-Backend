@@ -8,8 +8,7 @@ CREATE TABLE IF NOT EXISTS member
 
 CREATE TABLE IF NOT EXISTS restaurant
 (
-    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
-    place_id   VARCHAR(100) NOT NULL UNIQUE,
+    id         UUID PRIMARY KEY,
     name       VARCHAR(200) NOT NULL,
     address    VARCHAR(500) NOT NULL,
     thumbnail  VARCHAR(500),
@@ -20,32 +19,13 @@ CREATE TABLE IF NOT EXISTS restaurant
     INDEX idx_restaurant_name (name)
 );
 
-CREATE TABLE IF NOT EXISTS vibe
-(
-    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name       VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY unique_vibe_name (name),
-    CHECK (name IN ('LUXURIOUS', 'QUIET', 'LIVELY', 'CLASSIC', 'MODERN', 'CLEAN', 'ROMANTIC'))
-);
-
-CREATE TABLE IF NOT EXISTS crawling_review
-(
-    id            BIGINT AUTO_INCREMENT PRIMARY KEY,
-    content       TEXT NOT NULL,
-    restaurant_id BIGINT NOT NULL,
-    created_at    TIMESTAMP NOT NULL,
-    FOREIGN KEY (restaurant_id) REFERENCES restaurant (id),
-    INDEX idx_crawling_review_restaurant (restaurant_id)
-);
-
 CREATE TABLE IF NOT EXISTS review
 (
     id            BIGINT AUTO_INCREMENT PRIMARY KEY,
     content       TEXT NOT NULL,
     rating        DOUBLE NOT NULL,
     situation     VARCHAR(50) NOT NULL,
-    restaurant_id BIGINT NOT NULL,
+    restaurant_id UUID NOT NULL,
     member_id     BIGINT NOT NULL,
     created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (restaurant_id) REFERENCES restaurant (id),
@@ -56,23 +36,13 @@ CREATE TABLE IF NOT EXISTS review
     INDEX idx_review_member (member_id)
 );
 
-CREATE TABLE IF NOT EXISTS crawling_review_vibe
-(
-    id                 BIGINT AUTO_INCREMENT PRIMARY KEY,
-    crawling_review_id BIGINT NOT NULL,
-    vibe_id            BIGINT NOT NULL,
-    FOREIGN KEY (crawling_review_id) REFERENCES crawling_review (id),
-    FOREIGN KEY (vibe_id) REFERENCES vibe (id),
-    UNIQUE KEY unique_crawling_review_vibe (crawling_review_id, vibe_id)
-);
-
 CREATE TABLE IF NOT EXISTS menu
 (
     id            BIGINT AUTO_INCREMENT PRIMARY KEY,
     name          VARCHAR(200) NOT NULL,
     description   TEXT,
     price         INT NOT NULL,
-    restaurant_id BIGINT NOT NULL,
+    restaurant_id UUID NOT NULL,
     created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (restaurant_id) REFERENCES restaurant (id),
     INDEX idx_menu_restaurant (restaurant_id),
@@ -101,10 +71,49 @@ CREATE TABLE IF NOT EXISTS member_restaurant
 (
     id            BIGINT AUTO_INCREMENT PRIMARY KEY,
     member_id     BIGINT NOT NULL,
-    restaurant_id BIGINT NOT NULL,
+    restaurant_id UUID NOT NULL,
     FOREIGN KEY (member_id) REFERENCES member (id),
     FOREIGN KEY (restaurant_id) REFERENCES restaurant (id),
     UNIQUE KEY unique_member_restaurant (member_id, restaurant_id),
     INDEX idx_member_restaurant_member (member_id),
     INDEX idx_member_restaurant_restaurant (restaurant_id)
+);
+
+CREATE TABLE IF NOT EXISTS premium_option
+(
+    id            BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name          VARCHAR(200) NOT NULL,
+    description   TEXT,
+    price         INT NOT NULL,
+    restaurant_id UUID NOT NULL,
+    FOREIGN KEY (restaurant_id) REFERENCES restaurant (id),
+    INDEX idx_premium_option_restaurant (restaurant_id)
+);
+
+CREATE TABLE IF NOT EXISTS reservation
+(
+    id                     BIGINT AUTO_INCREMENT PRIMARY KEY,
+    reservation_date_time  TIMESTAMP NOT NULL,
+    status                 VARCHAR(50) NOT NULL,
+    purpose                VARCHAR(500) NOT NULL,
+    restaurant_id          UUID NOT NULL,
+    member_id              BIGINT NOT NULL,
+    party_size             INT NOT NULL,
+    special_request        TEXT,
+    created_at             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (restaurant_id) REFERENCES restaurant (id),
+    CHECK (status IN ('PENDING', 'CONFIRMED', 'CANCELED')),
+    INDEX idx_reservation_restaurant (restaurant_id),
+    INDEX idx_reservation_member (member_id),
+    INDEX idx_reservation_datetime (reservation_date_time)
+);
+
+CREATE TABLE IF NOT EXISTS selected_premium_option
+(
+    id                BIGINT AUTO_INCREMENT PRIMARY KEY,
+    reservation_id    BIGINT NOT NULL,
+    premium_option_id BIGINT NOT NULL,
+    FOREIGN KEY (reservation_id) REFERENCES reservation (id),
+    FOREIGN KEY (premium_option_id) REFERENCES premium_option (id),
+    UNIQUE KEY unique_reservation_premium_option (reservation_id, premium_option_id)
 );

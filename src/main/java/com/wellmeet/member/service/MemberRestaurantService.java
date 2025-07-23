@@ -7,6 +7,7 @@ import com.wellmeet.member.domain.MemberRestaurant;
 import com.wellmeet.member.repository.MemberRestaurantRepository;
 import com.wellmeet.restaurant.domain.Restaurant;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +34,7 @@ public class MemberRestaurantService {
         memberRestaurantRepository.delete(memberRestaurant);
     }
 
-    public boolean isFavorite(Long memberId, Long restaurantId) {
+    public boolean isFavorite(Long memberId, UUID restaurantId) {
         return memberRestaurantRepository.existsByMemberIdAndRestaurantId(memberId, restaurantId);
     }
 }

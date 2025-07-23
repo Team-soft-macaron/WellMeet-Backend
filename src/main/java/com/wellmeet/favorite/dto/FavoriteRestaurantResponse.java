@@ -1,6 +1,7 @@
 package com.wellmeet.favorite.dto;
 
 import com.wellmeet.restaurant.domain.Restaurant;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -8,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class FavoriteRestaurantResponse {
 
-    private Long id;
+    private UUID id;
     private String name;
     private String address;
     private double rating;

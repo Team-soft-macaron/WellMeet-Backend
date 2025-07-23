@@ -3,6 +3,7 @@ package com.wellmeet.restaurant;
 import com.wellmeet.restaurant.dto.NearbyRestaurantResponse;
 import com.wellmeet.restaurant.dto.RestaurantResponse;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,9 +29,8 @@ public class RestaurantController {
     @GetMapping("/{id}")
     public RestaurantResponse getRestaurant(
             @RequestParam(value = "memberId") Long memberId,
-            @PathVariable Long id
+            @PathVariable UUID id
     ) {
-        System.out.println("dycjd qkedmasa");
         return restaurantService.getRestaurant(id, memberId);
     }
 }

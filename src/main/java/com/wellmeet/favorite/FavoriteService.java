@@ -9,6 +9,7 @@ import com.wellmeet.restaurant.RestaurantService;
 import com.wellmeet.restaurant.domain.Restaurant;
 import com.wellmeet.restaurant.model.review.service.ReviewService;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +34,7 @@ public class FavoriteService {
         return new FavoriteRestaurantResponse(restaurant, rating);
     }
 
-    public FavoriteRestaurantResponse addFavoriteRestaurant(Long memberId, Long restaurantId) {
+    public FavoriteRestaurantResponse addFavoriteRestaurant(Long memberId, UUID restaurantId) {
         Member member = memberService.getById(memberId);
         Restaurant restaurant = restaurantService.getById(restaurantId);
         MemberRestaurant memberRestaurant = new MemberRestaurant(member, restaurant);
@@ -41,7 +42,7 @@ public class FavoriteService {
         return getFavoriteRestaurantResponse(restaurant);
     }
 
-    public void removeFavoriteRestaurant(Long memberId, Long restaurantId) {
+    public void removeFavoriteRestaurant(Long memberId, UUID restaurantId) {
         Member member = memberService.getById(memberId);
         Restaurant restaurant = restaurantService.getById(restaurantId);
         MemberRestaurant memberRestaurant = memberRestaurantService.getByMemberAndRestaurant(member, restaurant);
