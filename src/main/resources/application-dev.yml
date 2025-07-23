@@ -13,8 +13,12 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: validate
-    defer-datasource-initialization: false
+      ddl-auto: none
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
   flyway:
     enabled: true
     baseline-on-migrate: true
