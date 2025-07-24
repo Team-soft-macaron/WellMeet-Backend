@@ -41,6 +41,7 @@
 
 **Reference**:
 [AWS 아키텍처 Ver.0](https://unifolio0.notion.site/AWS-Architecture-235c9077da2480648b0cd3081b3bb9b8?source=copy_link)
+![img.png](images/aws_architecture_ver0.png)
 
 ### 2-3. 데이터베이스 ERD 및 RDB 구조
 
