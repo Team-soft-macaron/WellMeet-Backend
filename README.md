@@ -1,8 +1,4 @@
-<div align="center">
-
 # WellMeet Backend API Server
-
-</div>
 
 ## 목차
 
