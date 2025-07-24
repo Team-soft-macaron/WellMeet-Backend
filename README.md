@@ -27,7 +27,7 @@
 ### 1-4. 개발 환경
 
 - Front-end: `TypeScript`, `React.js`
-- Back-end: `Java`, `Spring Boot`, `JPA`, `Mysql`, `PostgreSQL`, `AWS`
+- Back-end: `Java`, `Spring Boot`, `JPA`, `MySQL`, `PostgreSQL`, `AWS`
 
 ## 2. 개발 결과물
 
