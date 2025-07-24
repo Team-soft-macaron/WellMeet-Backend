@@ -35,16 +35,16 @@
 
 **Reference**:
 [백엔드 아키텍처 Ver.0](https://unifolio0.notion.site/Backend-Architecture-235c9077da24809cb0d1eae8868d6187?source=copy_link)
-![img.png](images/be_architecture_ver0.png)
+![백엔드 아키텍처 Ver.0](images/be_architecture_ver0.png)
 
 ### 2-2. AWS 아키텍처
 
 **Reference**:
 [AWS 아키텍처 Ver.0](https://unifolio0.notion.site/AWS-Architecture-235c9077da2480648b0cd3081b3bb9b8?source=copy_link)
-![img.png](images/aws_architecture_ver0.png)
+![AWS 아키텍처 Ver.0](images/aws_architecture_ver0.png)
 
 ### 2-3. 데이터베이스 ERD 및 RDB 구조
 
 **Reference**:
 [Erd Diagram Ver.0](https://unifolio0.notion.site/Erd-Diagram-23ac9077da24804099a6d8d2331ad610?source=copy_link)
-![WellMeet ERD Ver.0](images/erd_ver0.png)
+![Erd Diagram Ver.0](images/erd_ver0.png)
