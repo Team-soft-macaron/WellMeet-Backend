@@ -7,7 +7,7 @@ import com.wellmeet.member.service.MemberRestaurantService;
 import com.wellmeet.member.service.MemberService;
 import com.wellmeet.restaurant.RestaurantService;
 import com.wellmeet.restaurant.domain.Restaurant;
-import com.wellmeet.restaurant.model.review.service.ReviewService;
+import com.wellmeet.restaurant.review.ReviewService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

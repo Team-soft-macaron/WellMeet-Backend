@@ -2,9 +2,9 @@ package com.wellmeet;
 
 import com.wellmeet.member.repository.MemberRepository;
 import com.wellmeet.member.repository.MemberRestaurantRepository;
-import com.wellmeet.restaurant.model.menu.repository.MenuRepository;
-import com.wellmeet.restaurant.model.review.repository.ReviewRepository;
+import com.wellmeet.restaurant.menu.repository.MenuRepository;
 import com.wellmeet.restaurant.repository.RestaurantRepository;
+import com.wellmeet.restaurant.review.repository.ReviewRepository;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.RequestLoggingFilter;

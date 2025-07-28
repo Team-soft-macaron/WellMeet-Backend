@@ -1,4 +1,4 @@
-package com.wellmeet.restaurant.model.review.domain;
+package com.wellmeet.restaurant.review.domain;
 
 import com.wellmeet.common.domain.BaseEntity;
 import com.wellmeet.exception.ErrorCode;

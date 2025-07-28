@@ -1,6 +1,6 @@
-package com.wellmeet.restaurant.model.menu.repository;
+package com.wellmeet.restaurant.menu.repository;
 
-import com.wellmeet.restaurant.model.menu.domain.Menu;
+import com.wellmeet.restaurant.menu.domain.Menu;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

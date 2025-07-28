@@ -1,8 +1,8 @@
-package com.wellmeet.restaurant.model.review.service;
+package com.wellmeet.restaurant.review;
 
 import com.wellmeet.restaurant.dto.RepresentativeReviewResponse;
-import com.wellmeet.restaurant.model.review.domain.Review;
-import com.wellmeet.restaurant.model.review.repository.ReviewRepository;
+import com.wellmeet.restaurant.review.domain.Review;
+import com.wellmeet.restaurant.review.repository.ReviewRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

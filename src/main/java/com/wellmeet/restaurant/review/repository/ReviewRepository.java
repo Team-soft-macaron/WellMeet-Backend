@@ -1,6 +1,6 @@
-package com.wellmeet.restaurant.model.review.repository;
+package com.wellmeet.restaurant.review.repository;
 
-import com.wellmeet.restaurant.model.review.domain.Review;
+import com.wellmeet.restaurant.review.domain.Review;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
