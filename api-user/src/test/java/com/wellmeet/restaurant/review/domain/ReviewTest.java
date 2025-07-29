@@ -1,4 +1,4 @@
-package com.wellmeet.restaurant.model.review.domain;
+package com.wellmeet.restaurant.review.domain;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -6,8 +6,6 @@ import com.wellmeet.exception.ErrorCode;
 import com.wellmeet.exception.WellMeetException;
 import com.wellmeet.member.domain.Member;
 import com.wellmeet.restaurant.domain.Restaurant;
-import com.wellmeet.restaurant.review.domain.Review;
-import com.wellmeet.restaurant.review.domain.Situation;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
