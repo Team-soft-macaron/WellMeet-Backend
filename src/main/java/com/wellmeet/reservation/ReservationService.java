@@ -53,12 +53,32 @@ public class ReservationService {
         return selectedPremiumOptionRepository.save(selectedOption);
     }
 
-    @Transactional
-    public void cancel(Long reservationId, Long memberId) {
+    @Transactional(readOnly = true)
+    public List<SummaryReservationResponse> getReservations(Long memberId) {
+        return reservationRepository.findAllByMemberId(memberId)
+                .stream()
+                .map(SummaryReservationResponse::new)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public ReservationResponse getReservation(Long reservationId, Long memberId) {
         Reservation reservation = reservationRepository.findByIdAndMemberId(reservationId, memberId)
                 .orElseThrow(() -> new WellMeetException(ErrorCode.UNAUTHORIZED_RESERVATION_ACCESS));
-        reservation.cancel();
-        reservationRepository.save(reservation);
+        double rating = restaurantService.getAverageRating(reservation.getRestaurant().getId());
+        List<String> selectedOptions = selectedPremiumOptionRepository.findAllByReservationId(reservationId)
+                .stream()
+                .map(SelectedPremiumOption::getName)
+                .toList();
+        return new ReservationResponse(reservation, rating, selectedOptions);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReservationResponse> getReservationsByRestaurant(String restaurantId, Long memberId) {
+        return reservationRepository.findAllByRestaurantId(restaurantId)
+                .stream()
+                .map(reservation -> getReservation(reservation.getId(), memberId))
+                .toList();
     }
 
     @Transactional
@@ -85,23 +105,11 @@ public class ReservationService {
         return new CreateReservationResponse(reservation, optionNames);
     }
 
-    @Transactional(readOnly = true)
-    public List<SummaryReservationResponse> getReservations(Long memberId) {
-        return reservationRepository.findAllByMemberId(memberId)
-                .stream()
-                .map(SummaryReservationResponse::new)
-                .toList();
-    }
-
-    @Transactional(readOnly = true)
-    public ReservationResponse getReservation(Long reservationId, Long memberId) {
+    @Transactional
+    public void cancel(Long reservationId, Long memberId) {
         Reservation reservation = reservationRepository.findByIdAndMemberId(reservationId, memberId)
                 .orElseThrow(() -> new WellMeetException(ErrorCode.UNAUTHORIZED_RESERVATION_ACCESS));
-        double rating = restaurantService.getAverageRating(reservation.getRestaurant().getId());
-        List<String> selectedOptions = selectedPremiumOptionRepository.findAllByReservationId(reservationId)
-                .stream()
-                .map(SelectedPremiumOption::getName)
-                .toList();
-        return new ReservationResponse(reservation, rating, selectedOptions);
+        reservation.cancel();
+        reservationRepository.save(reservation);
     }
 }

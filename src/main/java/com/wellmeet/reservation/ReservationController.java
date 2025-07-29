@@ -26,6 +26,15 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
+    @PostMapping
+    @ResponseStatus(value = HttpStatus.CREATED)
+    public CreateReservationResponse reserve(
+            @RequestParam(value = "memberId") Long memberId, // TODO : 로그인 구현 후 ArgumentResolver를 활용하도록 변경
+            @Valid @RequestBody CreateReservationRequest request
+    ) {
+        return reservationService.reserve(memberId, request);
+    }
+
     @GetMapping
     public List<SummaryReservationResponse> getReservations(
             @RequestParam(value = "memberId") Long memberId // TODO : 로그인 구현 후 ArgumentResolver를 활용하도록 변경
@@ -41,13 +50,12 @@ public class ReservationController {
         return reservationService.getReservation(reservationId, memberId);
     }
 
-    @PostMapping
-    @ResponseStatus(value = HttpStatus.CREATED)
-    public CreateReservationResponse reserve(
+    @GetMapping("{restaurantId}")
+    public List<ReservationResponse> getReservationsByRestaurant(
             @RequestParam(value = "memberId") Long memberId, // TODO : 로그인 구현 후 ArgumentResolver를 활용하도록 변경
-            @Valid @RequestBody CreateReservationRequest request
+            @PathVariable String restaurantId
     ) {
-        return reservationService.reserve(memberId, request);
+        return reservationService.getReservationsByRestaurant(restaurantId, memberId);
     }
 
     @PutMapping("/{reservationId}")

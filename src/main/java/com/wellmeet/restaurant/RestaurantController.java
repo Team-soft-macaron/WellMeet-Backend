@@ -1,5 +1,6 @@
 package com.wellmeet.restaurant;
 
+import com.wellmeet.restaurant.dto.AvailableDateResponse;
 import com.wellmeet.restaurant.dto.NearbyRestaurantResponse;
 import com.wellmeet.restaurant.dto.RestaurantResponse;
 import java.util.List;
@@ -31,5 +32,12 @@ public class RestaurantController {
             @PathVariable String id
     ) {
         return restaurantService.getRestaurant(id, memberId);
+    }
+
+    @GetMapping("/available/{id}")
+    public List<AvailableDateResponse> isRestaurantAvailable(
+            @PathVariable String id
+    ) {
+        return restaurantService.getRestaurantAvailableDate(id);
     }
 }
