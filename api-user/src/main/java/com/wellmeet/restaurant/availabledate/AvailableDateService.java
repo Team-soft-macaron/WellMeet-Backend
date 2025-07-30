@@ -1,7 +1,7 @@
 package com.wellmeet.restaurant.availabledate;
 
-import com.wellmeet.restaurant.availabledate.domain.AvailableDate;
-import com.wellmeet.restaurant.availabledate.repository.AvailableDateRepository;
+import com.wellmeet.domain.restaurant.availabledate.domain.AvailableDate;
+import com.wellmeet.domain.restaurant.availabledate.repository.AvailableDateRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

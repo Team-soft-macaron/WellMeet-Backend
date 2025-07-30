@@ -1,9 +1,9 @@
 package com.wellmeet.member.service;
 
+import com.wellmeet.domain.member.domain.Member;
+import com.wellmeet.domain.member.repository.MemberRepository;
 import com.wellmeet.exception.ErrorCode;
 import com.wellmeet.exception.WellMeetException;
-import com.wellmeet.member.domain.Member;
-import com.wellmeet.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

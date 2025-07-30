@@ -1,7 +1,7 @@
 package com.wellmeet.restaurant.menu;
 
+import com.wellmeet.domain.restaurant.menu.repository.MenuRepository;
 import com.wellmeet.restaurant.dto.RepresentativeMenuResponse;
-import com.wellmeet.restaurant.menu.repository.MenuRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

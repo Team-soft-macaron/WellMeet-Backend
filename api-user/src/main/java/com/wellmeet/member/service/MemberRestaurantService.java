@@ -1,11 +1,11 @@
 package com.wellmeet.member.service;
 
+import com.wellmeet.domain.member.domain.Member;
+import com.wellmeet.domain.member.domain.MemberRestaurant;
+import com.wellmeet.domain.member.repository.MemberRestaurantRepository;
+import com.wellmeet.domain.restaurant.domain.Restaurant;
 import com.wellmeet.exception.ErrorCode;
 import com.wellmeet.exception.WellMeetException;
-import com.wellmeet.member.domain.Member;
-import com.wellmeet.member.domain.MemberRestaurant;
-import com.wellmeet.member.repository.MemberRestaurantRepository;
-import com.wellmeet.restaurant.domain.Restaurant;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

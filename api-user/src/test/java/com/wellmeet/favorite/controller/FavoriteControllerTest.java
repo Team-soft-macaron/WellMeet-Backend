@@ -3,10 +3,10 @@ package com.wellmeet.favorite.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.wellmeet.BaseControllerTest;
+import com.wellmeet.domain.member.domain.Member;
+import com.wellmeet.domain.member.domain.MemberRestaurant;
+import com.wellmeet.domain.restaurant.domain.Restaurant;
 import com.wellmeet.favorite.dto.FavoriteRestaurantResponse;
-import com.wellmeet.member.domain.Member;
-import com.wellmeet.member.domain.MemberRestaurant;
-import com.wellmeet.restaurant.domain.Restaurant;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

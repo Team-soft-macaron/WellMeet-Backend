@@ -1,12 +1,12 @@
 package com.wellmeet.favorite;
 
+import com.wellmeet.domain.member.domain.Member;
+import com.wellmeet.domain.member.domain.MemberRestaurant;
+import com.wellmeet.domain.restaurant.domain.Restaurant;
 import com.wellmeet.favorite.dto.FavoriteRestaurantResponse;
-import com.wellmeet.member.domain.Member;
-import com.wellmeet.member.domain.MemberRestaurant;
 import com.wellmeet.member.service.MemberRestaurantService;
 import com.wellmeet.member.service.MemberService;
 import com.wellmeet.restaurant.RestaurantService;
-import com.wellmeet.restaurant.domain.Restaurant;
 import com.wellmeet.restaurant.review.ReviewService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

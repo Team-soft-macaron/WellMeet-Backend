@@ -1,7 +1,7 @@
 package com.wellmeet.reservation.dto;
 
-import com.wellmeet.reservation.domain.Reservation;
-import com.wellmeet.reservation.domain.ReservationStatus;
+import com.wellmeet.domain.reservation.domain.Reservation;
+import com.wellmeet.domain.reservation.domain.ReservationStatus;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -3,13 +3,13 @@ package com.wellmeet.restaurant;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.wellmeet.BaseControllerTest;
-import com.wellmeet.member.domain.Member;
-import com.wellmeet.restaurant.domain.Restaurant;
+import com.wellmeet.domain.member.domain.Member;
+import com.wellmeet.domain.restaurant.domain.Restaurant;
+import com.wellmeet.domain.restaurant.menu.domain.Menu;
+import com.wellmeet.domain.restaurant.review.domain.Review;
+import com.wellmeet.domain.restaurant.review.domain.Situation;
 import com.wellmeet.restaurant.dto.NearbyRestaurantResponse;
 import com.wellmeet.restaurant.dto.RestaurantResponse;
-import com.wellmeet.restaurant.menu.domain.Menu;
-import com.wellmeet.restaurant.review.domain.Review;
-import com.wellmeet.restaurant.review.domain.Situation;
 import io.restassured.http.ContentType;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;

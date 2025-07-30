@@ -1,6 +1,6 @@
 package com.wellmeet.restaurant.dto;
 
-import com.wellmeet.restaurant.domain.Restaurant;
+import com.wellmeet.domain.restaurant.domain.Restaurant;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

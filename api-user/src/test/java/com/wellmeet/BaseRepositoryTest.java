@@ -1,6 +1,6 @@
 package com.wellmeet;
 
-import com.wellmeet.config.JpaAuditingConfig;
+import com.wellmeet.domain.config.JpaAuditingConfig;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;

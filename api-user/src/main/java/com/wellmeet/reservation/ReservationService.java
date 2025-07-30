@@ -1,18 +1,18 @@
 package com.wellmeet.reservation;
 
+import com.wellmeet.domain.reservation.domain.Reservation;
+import com.wellmeet.domain.reservation.domain.SelectedPremiumOption;
+import com.wellmeet.domain.reservation.repository.ReservationRepository;
+import com.wellmeet.domain.reservation.repository.SelectedPremiumOptionRepository;
+import com.wellmeet.domain.restaurant.domain.PremiumOption;
+import com.wellmeet.domain.restaurant.domain.Restaurant;
 import com.wellmeet.exception.ErrorCode;
 import com.wellmeet.exception.WellMeetException;
-import com.wellmeet.reservation.domain.Reservation;
-import com.wellmeet.reservation.domain.SelectedPremiumOption;
 import com.wellmeet.reservation.dto.CreateReservationRequest;
 import com.wellmeet.reservation.dto.CreateReservationResponse;
 import com.wellmeet.reservation.dto.ReservationResponse;
 import com.wellmeet.reservation.dto.SummaryReservationResponse;
-import com.wellmeet.reservation.repository.ReservationRepository;
-import com.wellmeet.reservation.repository.SelectedPremiumOptionRepository;
 import com.wellmeet.restaurant.RestaurantService;
-import com.wellmeet.restaurant.domain.PremiumOption;
-import com.wellmeet.restaurant.domain.Restaurant;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

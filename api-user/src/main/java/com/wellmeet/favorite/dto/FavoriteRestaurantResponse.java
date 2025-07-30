@@ -1,6 +1,6 @@
 package com.wellmeet.favorite.dto;
 
-import com.wellmeet.restaurant.domain.Restaurant;
+import com.wellmeet.domain.restaurant.domain.Restaurant;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
