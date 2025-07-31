@@ -60,14 +60,6 @@ public class UserReservationService {
         return new ReservationResponse(reservation, rating, selectedOptions);
     }
 
-    @Transactional(readOnly = true)
-    public List<ReservationResponse> getReservationsByRestaurant(String restaurantId, Long memberId) {
-        return reservationDomainService.findAllByRestaurantId(restaurantId)
-                .stream()
-                .map(reservation -> getReservation(reservation.getId(), memberId))
-                .toList();
-    }
-
     @Transactional
     public CreateReservationResponse updateReservation(
             Long reservationId,
