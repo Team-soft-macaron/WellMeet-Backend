@@ -26,18 +26,18 @@ public class RestaurantController {
         return restaurantService.findWithNearbyRestaurant(latitude, longitude);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{restaurantId}")
     public RestaurantResponse getRestaurant(
             @RequestParam(value = "memberId") Long memberId,
-            @PathVariable String id
+            @PathVariable String restaurantId
     ) {
-        return restaurantService.getRestaurant(id, memberId);
+        return restaurantService.getRestaurant(restaurantId, memberId);
     }
 
-    @GetMapping("/available/{id}")
-    public List<AvailableDateResponse> isRestaurantAvailable(
-            @PathVariable String id
+    @GetMapping("/available/{restaurantId}")
+    public List<AvailableDateResponse> getRestaurantAvailableDates(
+            @PathVariable String restaurantId
     ) {
-        return restaurantService.getRestaurantAvailableDate(id);
+        return restaurantService.getRestaurantAvailableDates(restaurantId);
     }
 }

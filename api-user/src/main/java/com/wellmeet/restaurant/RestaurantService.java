@@ -57,7 +57,7 @@ public class RestaurantService {
     }
 
     @Transactional(readOnly = true)
-    public List<AvailableDateResponse> getRestaurantAvailableDate(String restaurantId) {
+    public List<AvailableDateResponse> getRestaurantAvailableDates(String restaurantId) {
         List<AvailableDate> availableDates = restaurantDomainService.getRestaurantAvailableDates(restaurantId);
         return availableDates
                 .stream()

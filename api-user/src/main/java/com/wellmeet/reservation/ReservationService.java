@@ -62,7 +62,7 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public List<ReservationResponse> getReservationsByRestaurant(String restaurantId, Long memberId) {
-        return reservationDomainService.getAllByRestaurantId(restaurantId)
+        return reservationDomainService.findAllByRestaurantId(restaurantId)
                 .stream()
                 .map(reservation -> getReservation(reservation.getId(), memberId))
                 .toList();

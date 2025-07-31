@@ -45,7 +45,7 @@ public class ReservationDomainService {
         return selectedPremiumOptionRepository.findAllByReservationId(reservationId);
     }
 
-    public List<Reservation> getAllByRestaurantId(String restaurantId) {
+    public List<Reservation> findAllByRestaurantId(String restaurantId) {
         return reservationRepository.findAllByRestaurantId(restaurantId);
     }
 
