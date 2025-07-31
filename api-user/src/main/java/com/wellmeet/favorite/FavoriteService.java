@@ -11,6 +11,7 @@ import com.wellmeet.favorite.dto.FavoriteRestaurantResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +22,7 @@ public class FavoriteService {
     private final MemberDomainService memberDomainService;
     private final RestaurantDomainService restaurantDomainService;
 
+    @Transactional(readOnly = true)
     public List<FavoriteRestaurantResponse> getFavoriteRestaurants(Long memberId) {
         return favoriteRestaurantDomainService.findAllByMemberId(memberId)
                 .stream()
@@ -33,6 +35,7 @@ public class FavoriteService {
         return new FavoriteRestaurantResponse(restaurant, rating);
     }
 
+    @Transactional
     public FavoriteRestaurantResponse addFavoriteRestaurant(Long memberId, String restaurantId) {
         Member member = memberDomainService.getById(memberId);
         Restaurant restaurant = restaurantDomainService.getById(restaurantId);
@@ -41,6 +44,7 @@ public class FavoriteService {
         return getFavoriteRestaurantResponse(restaurant);
     }
 
+    @Transactional
     public void removeFavoriteRestaurant(Long memberId, String restaurantId) {
         FavoriteRestaurant favoriteRestaurant = favoriteRestaurantDomainService.getByMemberIdAndRestaurantId(memberId,
                 restaurantId);
