@@ -1,7 +1,7 @@
 package com.wellmeet.domain.restaurant.repository;
 
-import com.wellmeet.domain.restaurant.domain.PremiumOption;
-import com.wellmeet.domain.restaurant.domain.Restaurant;
+import com.wellmeet.domain.restaurant.entity.PremiumOption;
+import com.wellmeet.domain.restaurant.entity.Restaurant;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 

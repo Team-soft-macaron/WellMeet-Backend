@@ -3,9 +3,9 @@ package com.wellmeet.favorite.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.wellmeet.BaseControllerTest;
-import com.wellmeet.domain.member.domain.Member;
-import com.wellmeet.domain.member.domain.MemberRestaurant;
-import com.wellmeet.domain.restaurant.domain.Restaurant;
+import com.wellmeet.domain.member.entity.FavoriteRestaurant;
+import com.wellmeet.domain.member.entity.Member;
+import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.favorite.dto.FavoriteRestaurantResponse;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
@@ -28,10 +28,10 @@ class FavoriteControllerTest extends BaseControllerTest {
         Restaurant restaurant3 = restaurantRepository.save(
                 new Restaurant(UUID.randomUUID().toString(), "Restaurant 3", "Address 3", 38.5, 128.2,
                         "https://example.com/restaurant3.jpg"));
-        memberRestaurantRepository.save(new MemberRestaurant(testUser, restaurant1));
-        memberRestaurantRepository.save(new MemberRestaurant(testUser, restaurant2));
-        memberRestaurantRepository.save(new MemberRestaurant(anotherUser, restaurant2));
-        memberRestaurantRepository.save(new MemberRestaurant(anotherUser, restaurant3));
+        favoriteRestaurantRepository.save(new FavoriteRestaurant(testUser, restaurant1));
+        favoriteRestaurantRepository.save(new FavoriteRestaurant(testUser, restaurant2));
+        favoriteRestaurantRepository.save(new FavoriteRestaurant(anotherUser, restaurant2));
+        favoriteRestaurantRepository.save(new FavoriteRestaurant(anotherUser, restaurant3));
 
         FavoriteRestaurantResponse[] responses = given()
                 .contentType("application/json")

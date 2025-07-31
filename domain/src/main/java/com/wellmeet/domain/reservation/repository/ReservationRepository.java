@@ -1,6 +1,6 @@
 package com.wellmeet.domain.reservation.repository;
 
-import com.wellmeet.domain.reservation.domain.Reservation;
+import com.wellmeet.domain.reservation.entity.Reservation;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

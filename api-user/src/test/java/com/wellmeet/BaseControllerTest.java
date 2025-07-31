@@ -1,7 +1,7 @@
 package com.wellmeet;
 
+import com.wellmeet.domain.member.repository.FavoriteRestaurantRepository;
 import com.wellmeet.domain.member.repository.MemberRepository;
-import com.wellmeet.domain.member.repository.MemberRestaurantRepository;
 import com.wellmeet.domain.restaurant.menu.repository.MenuRepository;
 import com.wellmeet.domain.restaurant.repository.RestaurantRepository;
 import com.wellmeet.domain.restaurant.review.repository.ReviewRepository;
@@ -33,7 +33,7 @@ public abstract class BaseControllerTest {
     protected MemberRepository memberRepository;
 
     @Autowired
-    protected MemberRestaurantRepository memberRestaurantRepository;
+    protected FavoriteRestaurantRepository favoriteRestaurantRepository;
 
     @LocalServerPort
     private int port;

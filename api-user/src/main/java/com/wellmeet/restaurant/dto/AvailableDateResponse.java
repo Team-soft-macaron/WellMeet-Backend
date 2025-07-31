@@ -1,6 +1,6 @@
 package com.wellmeet.restaurant.dto;
 
-import com.wellmeet.domain.restaurant.availabledate.domain.AvailableDate;
+import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import lombok.Getter;

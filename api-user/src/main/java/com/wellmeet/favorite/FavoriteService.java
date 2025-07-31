@@ -1,13 +1,13 @@
 package com.wellmeet.favorite;
 
-import com.wellmeet.domain.member.domain.Member;
-import com.wellmeet.domain.member.domain.MemberRestaurant;
-import com.wellmeet.domain.restaurant.domain.Restaurant;
+import com.wellmeet.domain.member.FavoriteRestaurantDomainService;
+import com.wellmeet.domain.member.MemberDomainService;
+import com.wellmeet.domain.member.entity.FavoriteRestaurant;
+import com.wellmeet.domain.member.entity.Member;
+import com.wellmeet.domain.restaurant.RestaurantDomainService;
+import com.wellmeet.domain.restaurant.entity.Restaurant;
+import com.wellmeet.domain.restaurant.review.ReviewDomainService;
 import com.wellmeet.favorite.dto.FavoriteRestaurantResponse;
-import com.wellmeet.member.service.MemberRestaurantService;
-import com.wellmeet.member.service.MemberService;
-import com.wellmeet.restaurant.RestaurantService;
-import com.wellmeet.restaurant.review.ReviewService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,35 +16,34 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class FavoriteService {
 
-    private final MemberService memberService;
-    private final MemberRestaurantService memberRestaurantService;
-    private final RestaurantService restaurantService;
-    private final ReviewService reviewService;
+    private final FavoriteRestaurantDomainService favoriteRestaurantDomainService;
+    private final ReviewDomainService reviewDomainService;
+    private final MemberDomainService memberDomainService;
+    private final RestaurantDomainService restaurantDomainService;
 
     public List<FavoriteRestaurantResponse> getFavoriteRestaurants(Long memberId) {
-        return memberRestaurantService.findByMemberId(memberId)
+        return favoriteRestaurantDomainService.findAllByMemberId(memberId)
                 .stream()
-                .map(memberRestaurant -> getFavoriteRestaurantResponse(memberRestaurant.getRestaurant()))
+                .map(favoriteRestaurant -> getFavoriteRestaurantResponse(favoriteRestaurant.getRestaurant()))
                 .toList();
     }
 
     private FavoriteRestaurantResponse getFavoriteRestaurantResponse(Restaurant restaurant) {
-        double rating = reviewService.getAverageRating(restaurant.getId());
+        double rating = reviewDomainService.getAverageRating(restaurant.getId());
         return new FavoriteRestaurantResponse(restaurant, rating);
     }
 
     public FavoriteRestaurantResponse addFavoriteRestaurant(Long memberId, String restaurantId) {
-        Member member = memberService.getById(memberId);
-        Restaurant restaurant = restaurantService.getById(restaurantId);
-        MemberRestaurant memberRestaurant = new MemberRestaurant(member, restaurant);
-        memberRestaurantService.save(memberRestaurant);
+        Member member = memberDomainService.getById(memberId);
+        Restaurant restaurant = restaurantDomainService.getById(restaurantId);
+        FavoriteRestaurant favoriteRestaurant = new FavoriteRestaurant(member, restaurant);
+        favoriteRestaurantDomainService.save(favoriteRestaurant);
         return getFavoriteRestaurantResponse(restaurant);
     }
 
     public void removeFavoriteRestaurant(Long memberId, String restaurantId) {
-        Member member = memberService.getById(memberId);
-        Restaurant restaurant = restaurantService.getById(restaurantId);
-        MemberRestaurant memberRestaurant = memberRestaurantService.getByMemberAndRestaurant(member, restaurant);
-        memberRestaurantService.delete(memberRestaurant);
+        FavoriteRestaurant favoriteRestaurant = favoriteRestaurantDomainService.getByMemberIdAndRestaurantId(memberId,
+                restaurantId);
+        favoriteRestaurantDomainService.delete(favoriteRestaurant);
     }
 }

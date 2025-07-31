@@ -1,18 +1,14 @@
 package com.wellmeet.reservation;
 
-import com.wellmeet.domain.reservation.domain.Reservation;
-import com.wellmeet.domain.reservation.domain.SelectedPremiumOption;
-import com.wellmeet.domain.reservation.repository.ReservationRepository;
-import com.wellmeet.domain.reservation.repository.SelectedPremiumOptionRepository;
-import com.wellmeet.domain.restaurant.domain.PremiumOption;
-import com.wellmeet.domain.restaurant.domain.Restaurant;
-import com.wellmeet.exception.ErrorCode;
-import com.wellmeet.exception.WellMeetException;
+import com.wellmeet.domain.reservation.ReservationDomainService;
+import com.wellmeet.domain.reservation.entity.Reservation;
+import com.wellmeet.domain.reservation.entity.SelectedPremiumOption;
+import com.wellmeet.domain.restaurant.RestaurantDomainService;
+import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.reservation.dto.CreateReservationRequest;
 import com.wellmeet.reservation.dto.CreateReservationResponse;
 import com.wellmeet.reservation.dto.ReservationResponse;
 import com.wellmeet.reservation.dto.SummaryReservationResponse;
-import com.wellmeet.restaurant.RestaurantService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,13 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ReservationService {
 
-    private final ReservationRepository reservationRepository;
-    private final SelectedPremiumOptionRepository selectedPremiumOptionRepository;
-    private final RestaurantService restaurantService;
+    private final ReservationDomainService reservationDomainService;
+    private final RestaurantDomainService restaurantDomainService;
 
     @Transactional
     public CreateReservationResponse reserve(Long memberId, CreateReservationRequest request) {
-        Restaurant restaurant = restaurantService.getById(request.getRestaurantId());
+        Restaurant restaurant = restaurantDomainService.getById(request.getRestaurantId());
         Reservation reservation = new Reservation(
                 request.getDateTime(),
                 request.getPurpose(),
@@ -37,25 +32,18 @@ public class ReservationService {
                 request.getPartySize(),
                 request.getSpecialRequest()
         );
-        Reservation savedReservation = reservationRepository.save(reservation);
+        Reservation savedReservation = reservationDomainService.save(reservation);
         List<String> optionNames = request.getSelectedPremiumOptionIds()
                 .stream()
-                .map(id -> saveSelectedPremiumOption(savedReservation, restaurant, id))
+                .map(id -> reservationDomainService.saveSelectedPremiumOption(savedReservation, restaurant, id))
                 .map(SelectedPremiumOption::getName)
                 .toList();
         return new CreateReservationResponse(savedReservation, optionNames);
     }
 
-    private SelectedPremiumOption saveSelectedPremiumOption(Reservation reservation, Restaurant restaurant,
-                                                            Long optionId) {
-        PremiumOption option = restaurantService.getOptionByRestaurantAndOptionId(restaurant, optionId);
-        SelectedPremiumOption selectedOption = new SelectedPremiumOption(reservation, option);
-        return selectedPremiumOptionRepository.save(selectedOption);
-    }
-
     @Transactional(readOnly = true)
     public List<SummaryReservationResponse> getReservations(Long memberId) {
-        return reservationRepository.findAllByMemberId(memberId)
+        return reservationDomainService.findAllByMemberId(memberId)
                 .stream()
                 .map(SummaryReservationResponse::new)
                 .toList();
@@ -63,10 +51,9 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public ReservationResponse getReservation(Long reservationId, Long memberId) {
-        Reservation reservation = reservationRepository.findByIdAndMemberId(reservationId, memberId)
-                .orElseThrow(() -> new WellMeetException(ErrorCode.UNAUTHORIZED_RESERVATION_ACCESS));
-        double rating = restaurantService.getAverageRating(reservation.getRestaurant().getId());
-        List<String> selectedOptions = selectedPremiumOptionRepository.findAllByReservationId(reservationId)
+        Reservation reservation = reservationDomainService.getByIdAndMemberId(reservationId, memberId);
+        double rating = restaurantDomainService.getAverageRating(reservation.getRestaurant().getId());
+        List<String> selectedOptions = reservationDomainService.findAllSelectedOptionByReservationId(reservationId)
                 .stream()
                 .map(SelectedPremiumOption::getName)
                 .toList();
@@ -75,7 +62,7 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public List<ReservationResponse> getReservationsByRestaurant(String restaurantId, Long memberId) {
-        return reservationRepository.findAllByRestaurantId(restaurantId)
+        return reservationDomainService.getAllByRestaurantId(restaurantId)
                 .stream()
                 .map(reservation -> getReservation(reservation.getId(), memberId))
                 .toList();
@@ -87,19 +74,18 @@ public class ReservationService {
             Long memberId,
             CreateReservationRequest request
     ) {
-        Restaurant restaurant = restaurantService.getById(request.getRestaurantId());
-        Reservation reservation = reservationRepository.findByIdAndMemberId(reservationId, memberId)
-                .orElseThrow(() -> new WellMeetException(ErrorCode.UNAUTHORIZED_RESERVATION_ACCESS));
+        Restaurant restaurant = restaurantDomainService.getById(request.getRestaurantId());
+        Reservation reservation = reservationDomainService.getByIdAndMemberId(reservationId, memberId);
         reservation.update(
                 request.getDateTime(),
                 request.getPurpose(),
                 request.getPartySize(),
                 request.getSpecialRequest()
         );
-        selectedPremiumOptionRepository.deleteAllByReservationId(reservationId);
+        reservationDomainService.deleteAllByReservationId(reservationId);
         List<String> optionNames = request.getSelectedPremiumOptionIds()
                 .stream()
-                .map(id -> saveSelectedPremiumOption(reservation, restaurant, id))
+                .map(id -> reservationDomainService.saveSelectedPremiumOption(reservation, restaurant, id))
                 .map(SelectedPremiumOption::getName)
                 .toList();
         return new CreateReservationResponse(reservation, optionNames);
@@ -107,9 +93,8 @@ public class ReservationService {
 
     @Transactional
     public void cancel(Long reservationId, Long memberId) {
-        Reservation reservation = reservationRepository.findByIdAndMemberId(reservationId, memberId)
-                .orElseThrow(() -> new WellMeetException(ErrorCode.UNAUTHORIZED_RESERVATION_ACCESS));
+        Reservation reservation = reservationDomainService.getByIdAndMemberId(reservationId, memberId);
         reservation.cancel();
-        reservationRepository.save(reservation);
+        reservationDomainService.save(reservation);
     }
 }

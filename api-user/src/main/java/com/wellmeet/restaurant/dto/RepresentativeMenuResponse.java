@@ -1,6 +1,6 @@
 package com.wellmeet.restaurant.dto;
 
-import com.wellmeet.domain.restaurant.menu.domain.Menu;
+import com.wellmeet.domain.restaurant.menu.entity.Menu;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
