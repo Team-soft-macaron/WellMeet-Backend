@@ -39,7 +39,7 @@ class RestaurantControllerTest extends BaseControllerTest {
 
         NearbyRestaurantResponse[] responses = given()
                 .contentType(ContentType.JSON)
-                .when().get("/api/restaurant/nearby?latitude=" + LATITUDE + "&longitude=" + LONGITUDE)
+                .when().get("/user/restaurant/nearby?latitude=" + LATITUDE + "&longitude=" + LONGITUDE)
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().as(NearbyRestaurantResponse[].class);
 
@@ -67,7 +67,7 @@ class RestaurantControllerTest extends BaseControllerTest {
         RestaurantResponse restaurantResponse = given()
                 .contentType(ContentType.JSON)
                 .queryParam("memberId", member.getId())
-                .when().get("/api/restaurant/{id}", restaurant.getId())
+                .when().get("/user/restaurant/{id}", restaurant.getId())
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().as(RestaurantResponse.class);
 

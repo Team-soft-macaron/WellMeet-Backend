@@ -50,7 +50,7 @@ public class ReservationController {
         return reservationService.getReservation(reservationId, memberId);
     }
 
-    @GetMapping("{restaurantId}")
+    @GetMapping("/{restaurantId}")
     public List<ReservationResponse> getReservationsByRestaurant(
             @RequestParam(value = "memberId") Long memberId, // TODO : 로그인 구현 후 ArgumentResolver를 활용하도록 변경
             @PathVariable String restaurantId

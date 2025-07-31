@@ -36,7 +36,7 @@ class FavoriteControllerTest extends BaseControllerTest {
         FavoriteRestaurantResponse[] responses = given()
                 .contentType("application/json")
                 .queryParam("memberId", testUser.getId())
-                .when().get("/api/favorite/restaurant/list")
+                .when().get("/user/favorite/restaurant/list")
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().as(FavoriteRestaurantResponse[].class);
 
@@ -56,7 +56,7 @@ class FavoriteControllerTest extends BaseControllerTest {
         FavoriteRestaurantResponse response = given()
                 .contentType("application/json")
                 .queryParam("memberId", testUser.getId())
-                .when().post("/api/favorite/restaurant/{restaurantId}", restaurant.getId())
+                .when().post("/user/favorite/restaurant/{restaurantId}", restaurant.getId())
                 .then().statusCode(HttpStatus.CREATED.value())
                 .extract().as(FavoriteRestaurantResponse.class);
 
