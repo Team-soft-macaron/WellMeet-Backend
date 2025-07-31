@@ -1,0 +1,92 @@
+name: dev-owner-cd
+
+on:
+  push:
+    branches:
+      - "develop"
+    paths:
+      - 'api-owner/**'
+      - 'domain/**'
+      - 'common/**'
+      - 'build.gradle'
+      - 'settings.gradle'
+      - '.github/workflows/Dev_Owner_CD.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ""
+          MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+          MYSQL_DATABASE: test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setting dev-secret.yml
+        run: |
+          echo "${{ secrets.DEV_SECRET_YML }}" > ./api-owner/src/main/resources/dev-secret.yml
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Clean And Test With Gradle
+        run: ./gradlew clean test
+
+      - name: bootJar with Gradle
+        run: ./gradlew :api-owner:bootJar --info
+
+      - name: Change artifact file name
+        run: mv api-owner/build/libs/*.jar api-owner/build/libs/app.jar
+
+      - name: Upload artifact file
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-artifact
+          path: ./api-owner/build/libs/app.jar
+          if-no-files-found: error
+
+      - name: Upload deploy scripts
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-scripts
+          path: ./scripts/dev/
+          if-no-files-found: error
+
+  deploy:
+    needs: build
+    runs-on: dev-owner
+
+    steps:
+      - name: Download artifact file
+        uses: actions/download-artifact@v4
+        with:
+          name: app-artifact
+          path: ~/app
+
+      - name: Download deploy scripts
+        uses: actions/download-artifact@v4
+        with:
+          name: deploy-scripts
+          path: ~/app/scripts
+
+      - name: Replace application to latest
+        run: sudo sh ~/app/scripts/replace-new-version.sh
