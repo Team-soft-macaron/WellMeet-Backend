@@ -1,10 +1,9 @@
-package com.wellmeet.ownermanage.restaurant;
+package com.wellmeet.reservation;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class RestaurantService {
-
+public class ReservationService {
 }
