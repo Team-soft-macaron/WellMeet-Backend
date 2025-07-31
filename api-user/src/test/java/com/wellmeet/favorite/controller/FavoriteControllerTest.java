@@ -17,8 +17,8 @@ class FavoriteControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("즐겨찾기 레스토랑 조회")
     void getFavoriteRestaurants() {
-        Member testUser = memberRepository.save(new Member("testUser"));
-        Member anotherUser = memberRepository.save(new Member("anotherUser"));
+        Member testUser = memberRepository.save(new Member("testUser", "test", "email@email.com"));
+        Member anotherUser = memberRepository.save(new Member("otherUser", "test", "email@email.com"));
         Restaurant restaurant1 = restaurantRepository.save(
                 new Restaurant(UUID.randomUUID().toString(), "Restaurant 1", "Address 1", 38.5, 128.2,
                         "https://example.com/restaurant1.jpg"));
@@ -48,7 +48,7 @@ class FavoriteControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("즐겨찾기 레스토랑 추가")
     void addFavoriteRestaurant() {
-        Member testUser = memberRepository.save(new Member("testUser"));
+        Member testUser = memberRepository.save(new Member("nickname", "test", "email@email.com"));
         Restaurant restaurant = restaurantRepository.save(
                 new Restaurant(UUID.randomUUID().toString(), "Restaurant 1", "Address 1", 38.5, 128.2,
                         "https://example.com/restaurant1.jpg"));

@@ -57,7 +57,7 @@ class RestaurantControllerTest extends BaseControllerTest {
         menuRepository.save(menu1);
         Menu menu2 = new Menu("menu2", "description2", 15000, restaurant);
         menuRepository.save(menu2);
-        Member member = new Member("nickname");
+        Member member = new Member("nickname", "test", "email@email.com");
         memberRepository.save(member);
         Review review1 = new Review("review1", 5, Situation.DATE, restaurant, member);
         reviewRepository.save(review1);
