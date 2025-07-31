@@ -22,7 +22,7 @@ public class FavoriteController {
 
     @GetMapping("/restaurant/list")
     public List<FavoriteRestaurantResponse> getFavoriteRestaurants(
-            @RequestParam("memberId") Long memberId // TODO : 로그인 구현 후 ArgumentResolver를 활용하도록 변경
+            @RequestParam("memberId") Long memberId
     ) {
         return favoriteService.getFavoriteRestaurants(memberId);
     }

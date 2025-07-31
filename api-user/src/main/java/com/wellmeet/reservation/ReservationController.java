@@ -29,7 +29,7 @@ public class ReservationController {
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
     public CreateReservationResponse reserve(
-            @RequestParam(value = "memberId") Long memberId, // TODO : 로그인 구현 후 ArgumentResolver를 활용하도록 변경
+            @RequestParam(value = "memberId") Long memberId,
             @Valid @RequestBody CreateReservationRequest request
     ) {
         return reservationService.reserve(memberId, request);
@@ -37,14 +37,14 @@ public class ReservationController {
 
     @GetMapping
     public List<SummaryReservationResponse> getReservations(
-            @RequestParam(value = "memberId") Long memberId // TODO : 로그인 구현 후 ArgumentResolver를 활용하도록 변경
+            @RequestParam(value = "memberId") Long memberId
     ) {
         return reservationService.getReservations(memberId);
     }
 
     @GetMapping("/{reservationId}")
     public ReservationResponse getReservation(
-            @RequestParam(value = "memberId") Long memberId, // TODO : 로그인 구현 후 ArgumentResolver를 활용하도록 변경
+            @RequestParam(value = "memberId") Long memberId,
             @PathVariable Long reservationId
     ) {
         return reservationService.getReservation(reservationId, memberId);
@@ -52,7 +52,7 @@ public class ReservationController {
 
     @GetMapping("/{restaurantId}")
     public List<ReservationResponse> getReservationsByRestaurant(
-            @RequestParam(value = "memberId") Long memberId, // TODO : 로그인 구현 후 ArgumentResolver를 활용하도록 변경
+            @RequestParam(value = "memberId") Long memberId,
             @PathVariable String restaurantId
     ) {
         return reservationService.getReservationsByRestaurant(restaurantId, memberId);
@@ -60,7 +60,7 @@ public class ReservationController {
 
     @PutMapping("/{reservationId}")
     public CreateReservationResponse updateReservation(
-            @RequestParam(value = "memberId") Long memberId, // TODO : 로그인 구현 후 ArgumentResolver를 활용하도록 변경
+            @RequestParam(value = "memberId") Long memberId,
             @PathVariable Long reservationId,
             @Valid @RequestBody CreateReservationRequest request
     ) {
@@ -70,7 +70,7 @@ public class ReservationController {
     @DeleteMapping("/{reservationId}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void cancelReservation(
-            @RequestParam(value = "memberId") Long memberId, // TODO : 로그인 구현 후 ArgumentResolver를 활용하도록 변경
+            @RequestParam(value = "memberId") Long memberId,
             @PathVariable Long reservationId
     ) {
         reservationService.cancel(reservationId, memberId);
