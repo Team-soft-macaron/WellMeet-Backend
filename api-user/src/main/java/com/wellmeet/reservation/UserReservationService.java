@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class ReservationService {
+public class UserReservationService {
 
     private final ReservationDomainService reservationDomainService;
     private final RestaurantDomainService restaurantDomainService;

@@ -22,9 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/user/reservation")
 @RestController
 @RequiredArgsConstructor
-public class ReservationController {
+public class UserReservationController {
 
-    private final ReservationService reservationService;
+    private final UserReservationService userReservationService;
 
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
@@ -32,14 +32,14 @@ public class ReservationController {
             @RequestParam(value = "memberId") Long memberId,
             @Valid @RequestBody CreateReservationRequest request
     ) {
-        return reservationService.reserve(memberId, request);
+        return userReservationService.reserve(memberId, request);
     }
 
     @GetMapping
     public List<SummaryReservationResponse> getReservations(
             @RequestParam(value = "memberId") Long memberId
     ) {
-        return reservationService.getReservations(memberId);
+        return userReservationService.getReservations(memberId);
     }
 
     @GetMapping("/{reservationId}")
@@ -47,7 +47,7 @@ public class ReservationController {
             @RequestParam(value = "memberId") Long memberId,
             @PathVariable Long reservationId
     ) {
-        return reservationService.getReservation(reservationId, memberId);
+        return userReservationService.getReservation(reservationId, memberId);
     }
 
     @GetMapping("/{restaurantId}")
@@ -55,7 +55,7 @@ public class ReservationController {
             @RequestParam(value = "memberId") Long memberId,
             @PathVariable String restaurantId
     ) {
-        return reservationService.getReservationsByRestaurant(restaurantId, memberId);
+        return userReservationService.getReservationsByRestaurant(restaurantId, memberId);
     }
 
     @PutMapping("/{reservationId}")
@@ -64,7 +64,7 @@ public class ReservationController {
             @PathVariable Long reservationId,
             @Valid @RequestBody CreateReservationRequest request
     ) {
-        return reservationService.updateReservation(reservationId, memberId, request);
+        return userReservationService.updateReservation(reservationId, memberId, request);
     }
 
     @DeleteMapping("/{reservationId}")
@@ -73,6 +73,6 @@ public class ReservationController {
             @RequestParam(value = "memberId") Long memberId,
             @PathVariable Long reservationId
     ) {
-        reservationService.cancel(reservationId, memberId);
+        userReservationService.cancel(reservationId, memberId);
     }
 }

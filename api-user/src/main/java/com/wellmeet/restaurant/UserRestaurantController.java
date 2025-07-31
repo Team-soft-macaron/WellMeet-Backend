@@ -14,16 +14,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/user/restaurant")
 @RestController
 @RequiredArgsConstructor
-public class RestaurantController {
+public class UserRestaurantController {
 
-    private final RestaurantService restaurantService;
+    private final UserRestaurantService userRestaurantService;
 
     @GetMapping("/nearby")
     public List<NearbyRestaurantResponse> getNearbyRestaurants(
             @RequestParam(value = "latitude") double latitude,
             @RequestParam(value = "longitude") double longitude
     ) {
-        return restaurantService.findWithNearbyRestaurant(latitude, longitude);
+        return userRestaurantService.findWithNearbyRestaurant(latitude, longitude);
     }
 
     @GetMapping("/{restaurantId}")
@@ -31,13 +31,13 @@ public class RestaurantController {
             @RequestParam(value = "memberId") Long memberId,
             @PathVariable String restaurantId
     ) {
-        return restaurantService.getRestaurant(restaurantId, memberId);
+        return userRestaurantService.getRestaurant(restaurantId, memberId);
     }
 
     @GetMapping("/available/{restaurantId}")
     public List<AvailableDateResponse> getRestaurantAvailableDates(
             @PathVariable String restaurantId
     ) {
-        return restaurantService.getRestaurantAvailableDates(restaurantId);
+        return userRestaurantService.getRestaurantAvailableDates(restaurantId);
     }
 }

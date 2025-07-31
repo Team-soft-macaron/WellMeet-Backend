@@ -12,7 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-class FavoriteControllerTest extends BaseControllerTest {
+class UserFavoriteControllerTest extends BaseControllerTest {
 
     @Test
     @DisplayName("즐겨찾기 레스토랑 조회")

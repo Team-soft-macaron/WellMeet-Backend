@@ -16,15 +16,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/user/favorite")
 @RestController
 @RequiredArgsConstructor
-public class FavoriteController {
+public class UserFavoriteController {
 
-    private final FavoriteService favoriteService;
+    private final UserFavoriteService userFavoriteService;
 
     @GetMapping("/restaurant/list")
     public List<FavoriteRestaurantResponse> getFavoriteRestaurants(
             @RequestParam("memberId") Long memberId
     ) {
-        return favoriteService.getFavoriteRestaurants(memberId);
+        return userFavoriteService.getFavoriteRestaurants(memberId);
     }
 
     @PostMapping("/restaurant/{restaurantId}")
@@ -33,7 +33,7 @@ public class FavoriteController {
             @RequestParam("memberId") Long memberId,
             @PathVariable("restaurantId") String restaurantId
     ) {
-        return favoriteService.addFavoriteRestaurant(memberId, restaurantId);
+        return userFavoriteService.addFavoriteRestaurant(memberId, restaurantId);
     }
 
     @DeleteMapping("/restaurant/{restaurantId}")
@@ -42,6 +42,6 @@ public class FavoriteController {
             @RequestParam("memberId") Long memberId,
             @PathVariable("restaurantId") String restaurantId
     ) {
-        favoriteService.removeFavoriteRestaurant(memberId, restaurantId);
+        userFavoriteService.removeFavoriteRestaurant(memberId, restaurantId);
     }
 }
