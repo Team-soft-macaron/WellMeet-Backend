@@ -35,10 +35,7 @@ public class BusinessHour extends BaseEntity {
     @NotNull
     private LocalTime closeTime;
 
-    @NotNull
     private LocalTime breakStartTime;
-
-    @NotNull
     private LocalTime breakEndTime;
 
     @ManyToOne
