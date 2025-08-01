@@ -29,6 +29,8 @@ public class Owner extends BaseEntity {
     @NotBlank
     private String email;
 
+    private String password;
+
     private boolean reservationEnabled;
     private boolean reviewEnabled;
 
@@ -42,5 +44,18 @@ public class Owner extends BaseEntity {
         this.reservationEnabled = true;
         this.reviewEnabled = true;
         this.restaurant = restaurant;
+    }
+
+    public Owner(String name, String email, String password, Restaurant restaurant) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.reservationEnabled = true;
+        this.reviewEnabled = true;
+        this.restaurant = restaurant;
+    }
+
+    public void changePassword(String encodedPassword) {
+        this.password = encodedPassword;
     }
 }
