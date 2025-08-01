@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: WellMeet-Backend
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/wellmeet
+    username: root
+    password:
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      platform: mysql
+      encoding: UTF-8
+
+cors:
+  origin: http://localhost:5173
