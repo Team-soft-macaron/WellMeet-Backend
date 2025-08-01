@@ -1,6 +1,5 @@
 plugins {
     id 'org.springframework.boot'
-    id 'jacoco'
 }
 
 dependencies {
@@ -14,24 +13,6 @@ dependencies {
     testImplementation 'io.rest-assured:rest-assured'
 }
 
-jacoco {
-    toolVersion = "0.8.11"
-}
-
 tasks.named('test') {
     useJUnitPlatform()
-    finalizedBy jacocoTestReport
-}
-
-jacocoTestReport {
-    dependsOn test
-    reports {
-        xml.required.set(true)
-        csv.required.set(false)
-        html.required.set(false)
-    }
-
-    onlyIf {
-        return System.getenv('TEST_REPORT') == 'true'
-    }
 }
