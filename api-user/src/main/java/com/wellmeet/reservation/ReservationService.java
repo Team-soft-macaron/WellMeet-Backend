@@ -74,6 +74,5 @@ public class ReservationService {
     public void cancel(Long reservationId, Long memberId) {
         Reservation reservation = reservationDomainService.getByIdAndMemberId(reservationId, memberId);
         reservation.cancel();
-        reservationDomainService.save(reservation);
     }
 }
