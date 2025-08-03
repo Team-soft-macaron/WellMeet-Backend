@@ -1,4 +1,4 @@
-package com.wellmeet.domain.restaurant.entity;
+package com.wellmeet.domain.restaurant.model;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

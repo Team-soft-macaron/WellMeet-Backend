@@ -1,4 +1,4 @@
-package com.wellmeet.domain.restaurant.entity;
+package com.wellmeet.domain.restaurant.model;
 
 import com.wellmeet.domain.exception.DomainErrorCode;
 import com.wellmeet.domain.exception.WellMeetDomainException;

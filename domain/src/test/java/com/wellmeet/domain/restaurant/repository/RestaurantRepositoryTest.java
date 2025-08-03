@@ -3,8 +3,8 @@ package com.wellmeet.domain.restaurant.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.wellmeet.BaseRepositoryTest;
-import com.wellmeet.domain.restaurant.entity.BoundingBox;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
+import com.wellmeet.domain.restaurant.model.BoundingBox;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
