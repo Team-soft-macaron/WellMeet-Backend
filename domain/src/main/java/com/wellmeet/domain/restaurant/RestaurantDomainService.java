@@ -29,7 +29,8 @@ public class RestaurantDomainService {
                 .orElseThrow(() -> new WellMeetDomainException(DomainErrorCode.RESTAURANT_NOT_FOUND));
     }
 
-    public List<Restaurant> findWithBoundBox(BoundingBox boundingBox) {
+    public List<Restaurant> findWithBoundBox(double latitude, double longitude) {
+        BoundingBox boundingBox = new BoundingBox(latitude, longitude);
         return restaurantRepository.findWithBoundBox(boundingBox);
     }
 

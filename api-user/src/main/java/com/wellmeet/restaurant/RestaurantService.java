@@ -5,7 +5,6 @@ import com.wellmeet.domain.member.FavoriteRestaurantDomainService;
 import com.wellmeet.domain.restaurant.RestaurantDomainService;
 import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
-import com.wellmeet.domain.restaurant.model.BoundingBox;
 import com.wellmeet.restaurant.dto.AvailableDateResponse;
 import com.wellmeet.restaurant.dto.NearbyRestaurantResponse;
 import com.wellmeet.restaurant.dto.RepresentativeMenuResponse;
@@ -25,8 +24,7 @@ public class RestaurantService {
 
     @Transactional(readOnly = true)
     public List<NearbyRestaurantResponse> findWithNearbyRestaurant(double latitude, double longitude) {
-        BoundingBox boundingBox = new BoundingBox(latitude, longitude);
-        return restaurantDomainService.findWithBoundBox(boundingBox)
+        return restaurantDomainService.findWithBoundBox(latitude, longitude)
                 .stream()
                 .map(restaurant -> getNearbyRestaurantResponse(restaurant, latitude, longitude))
                 .toList();
