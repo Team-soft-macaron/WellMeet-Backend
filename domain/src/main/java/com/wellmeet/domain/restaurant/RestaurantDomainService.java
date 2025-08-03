@@ -57,4 +57,8 @@ public class RestaurantDomainService {
                 .findByRestaurantAndId(restaurant, optionId)
                 .orElseThrow(() -> new WellMeetDomainException(DomainErrorCode.PREMIUM_OPTION_NOT_FOUND));
     }
+
+    public AvailableDate getAvailableDate(Long availableDateId, Restaurant restaurant) {
+        return availableDateDomainService.getByIdAndRestaurant(availableDateId, restaurant);
+    }
 }

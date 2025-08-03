@@ -1,9 +1,12 @@
 package com.wellmeet.reservation;
 
+import com.wellmeet.domain.member.MemberDomainService;
+import com.wellmeet.domain.member.entity.Member;
 import com.wellmeet.domain.reservation.ReservationDomainService;
 import com.wellmeet.domain.reservation.entity.Reservation;
 import com.wellmeet.domain.reservation.entity.SelectedPremiumOption;
 import com.wellmeet.domain.restaurant.RestaurantDomainService;
+import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.reservation.dto.CreateReservationRequest;
 import com.wellmeet.reservation.dto.CreateReservationResponse;
@@ -20,18 +23,16 @@ public class ReservationService {
 
     private final ReservationDomainService reservationDomainService;
     private final RestaurantDomainService restaurantDomainService;
+    private final MemberDomainService memberDomainService;
 
     @Transactional
     public CreateReservationResponse reserve(Long memberId, CreateReservationRequest request) {
         Restaurant restaurant = restaurantDomainService.getById(request.getRestaurantId());
-        Reservation reservation = new Reservation(
-                request.getDateTime(),
-                request.getPurpose(),
-                restaurant,
-                memberId,
-                request.getPartySize(),
-                request.getSpecialRequest()
-        );
+        AvailableDate availableDate = restaurantDomainService.getAvailableDate(request.getAvailableDateId(),
+                restaurant);
+        Member member = memberDomainService.getById(memberId);
+        Reservation reservation = request.toDomain(restaurant, availableDate, member);
+
         Reservation savedReservation = reservationDomainService.save(reservation);
         List<String> optionNames = request.getSelectedPremiumOptionIds()
                 .stream()
@@ -60,14 +61,6 @@ public class ReservationService {
         return new ReservationResponse(reservation, rating, selectedOptions);
     }
 
-    @Transactional(readOnly = true)
-    public List<ReservationResponse> getReservationsByRestaurant(String restaurantId, Long memberId) {
-        return reservationDomainService.findAllByRestaurantId(restaurantId)
-                .stream()
-                .map(reservation -> getReservation(reservation.getId(), memberId))
-                .toList();
-    }
-
     @Transactional
     public CreateReservationResponse updateReservation(
             Long reservationId,
@@ -75,9 +68,11 @@ public class ReservationService {
             CreateReservationRequest request
     ) {
         Restaurant restaurant = restaurantDomainService.getById(request.getRestaurantId());
+        AvailableDate availableDate = restaurantDomainService.getAvailableDate(request.getAvailableDateId(),
+                restaurant);
         Reservation reservation = reservationDomainService.getByIdAndMemberId(reservationId, memberId);
         reservation.update(
-                request.getDateTime(),
+                availableDate,
                 request.getPurpose(),
                 request.getPartySize(),
                 request.getSpecialRequest()

@@ -28,16 +28,22 @@ public class Member extends BaseEntity {
     @NotBlank
     private String email;
 
+    @NotBlank
+    private String phone;
+
     private boolean reservationEnabled;
     private boolean remindEnabled;
     private boolean reviewEnabled;
+    private boolean isVip;
 
-    public Member(String name, String nickname, String email) {
+    public Member(String name, String nickname, String email, String phone) {
         this.name = name;
         this.nickname = nickname;
         this.email = email;
+        this.phone = phone;
         this.reservationEnabled = true;
         this.remindEnabled = true;
         this.reviewEnabled = true;
+        this.isVip = false;
     }
 }

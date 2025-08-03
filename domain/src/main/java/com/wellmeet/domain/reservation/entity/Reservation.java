@@ -1,6 +1,8 @@
 package com.wellmeet.domain.reservation.entity;
 
 import com.wellmeet.domain.common.BaseEntity;
+import com.wellmeet.domain.member.entity.Member;
+import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,7 +13,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,9 +27,6 @@ public class Reservation extends BaseEntity {
     private Long id;
 
     @NotNull
-    private LocalDateTime reservationDateTime;
-
-    @NotNull
     private ReservationStatus status;
 
     @NotBlank
@@ -40,18 +38,25 @@ public class Reservation extends BaseEntity {
     private Restaurant restaurant;
 
     @NotNull
-    private Long memberId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "available_date_id")
+    private AvailableDate availableDate;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     private int partySize;
     private String specialRequest;
 
-    public Reservation(LocalDateTime reservationDateTime, String purpose,
-                       Restaurant restaurant, Long memberId, int partySize, String specialRequest) {
-        this.reservationDateTime = reservationDateTime;
+    public Reservation(String purpose, Restaurant restaurant, AvailableDate availableDate,
+                       Member member, int partySize, String specialRequest) {
         this.status = ReservationStatus.PENDING;
         this.purpose = purpose;
         this.restaurant = restaurant;
-        this.memberId = memberId;
+        this.availableDate = availableDate;
+        this.member = member;
         this.partySize = partySize;
         this.specialRequest = specialRequest;
     }
@@ -61,12 +66,12 @@ public class Reservation extends BaseEntity {
     }
 
     public void update(
-            LocalDateTime dateTime,
+            AvailableDate availableDate,
             String purpose,
             int partySize,
             String specialRequest
     ) {
-        this.reservationDateTime = dateTime;
+        this.availableDate = availableDate;
         this.purpose = purpose;
         this.partySize = partySize;
         this.specialRequest = specialRequest;
