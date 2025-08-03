@@ -1,14 +1,10 @@
 package com.wellmeet.domain.owner.entity;
 
 import com.wellmeet.domain.common.BaseEntity;
-import com.wellmeet.domain.restaurant.entity.Restaurant;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -32,15 +28,10 @@ public class Owner extends BaseEntity {
     private boolean reservationEnabled;
     private boolean reviewEnabled;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "restaurant_id")
-    private Restaurant restaurant;
-
-    public Owner(String name, String email, Restaurant restaurant) {
+    public Owner(String name, String email) {
         this.name = name;
         this.email = email;
         this.reservationEnabled = true;
         this.reviewEnabled = true;
-        this.restaurant = restaurant;
     }
 }
