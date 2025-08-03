@@ -30,6 +30,7 @@ public class ReservationService {
         AvailableDate availableDate = restaurantDomainService.getAvailableDate(request.getAvailableDateId(),
                 restaurant);
         Member member = memberDomainService.getById(memberId);
+        availableDate.reserveParty(request.getPartySize());
         Reservation reservation = request.toDomain(restaurant, availableDate, member);
 
         Reservation savedReservation = reservationDomainService.save(reservation);
@@ -61,6 +62,8 @@ public class ReservationService {
         AvailableDate availableDate = restaurantDomainService.getAvailableDate(request.getAvailableDateId(),
                 restaurant);
         Reservation reservation = reservationDomainService.getByIdAndMemberId(reservationId, memberId);
+        availableDate.reserveParty(request.getPartySize());
+        availableDate.cancelParty(reservation.getPartySize());
         reservation.update(
                 availableDate,
                 request.getPurpose(),
@@ -73,6 +76,8 @@ public class ReservationService {
     @Transactional
     public void cancel(Long reservationId, Long memberId) {
         Reservation reservation = reservationDomainService.getByIdAndMemberId(reservationId, memberId);
+        AvailableDate availableDate = reservation.getAvailableDate();
+        availableDate.cancelParty(reservation.getPartySize());
         reservation.cancel();
     }
 }

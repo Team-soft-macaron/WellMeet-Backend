@@ -13,6 +13,7 @@ public enum DomainErrorCode {
     MEMBER_NOT_FOUND(404, "해당 유저를 찾을 수 없습니다."),
     MEMBER_RESTAURANT_NOT_FOUND(404, "즐겨찾기 하지 않은 레스토랑입니다."),
     AVAILABLE_DATE_NOT_FOUND(404, "해당 예약 가능한 날짜를 찾을 수 없습니다."),
+    NOT_ENOUGH_CAPACITY(400, "예약 가능한 인원이 부족합니다."),
     ;
 
     private final int statusCode;
