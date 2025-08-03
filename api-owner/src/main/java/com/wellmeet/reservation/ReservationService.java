@@ -14,7 +14,7 @@ public class ReservationService {
     private final ReservationDomainService reservationDomainService;
 
     @Transactional(readOnly = true)
-    public List<ReservationResponse> getReservationsByRestaurant(String restaurantId) {
+    public List<ReservationResponse> getReservations(String restaurantId) {
         return reservationDomainService.findAllByRestaurantId(restaurantId)
                 .stream()
                 .map(ReservationResponse::new)

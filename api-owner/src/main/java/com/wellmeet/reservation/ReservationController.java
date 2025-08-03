@@ -17,10 +17,10 @@ public class ReservationController {
     private final ReservationService reservationService;
 
     @GetMapping("/{restaurantId}")
-    public List<ReservationResponse> getReservationsByRestaurant(
+    public List<ReservationResponse> getReservations(
             @RequestParam(value = "ownerId") Long ownerId,
             @PathVariable String restaurantId
     ) {
-        return reservationService.getReservationsByRestaurant(restaurantId);
+        return reservationService.getReservations(restaurantId);
     }
 }
