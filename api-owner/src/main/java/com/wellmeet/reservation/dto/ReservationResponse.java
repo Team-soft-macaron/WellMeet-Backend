@@ -39,4 +39,22 @@ public class ReservationResponse {
         this.createdAt = reservation.getCreatedAt();
         this.updatedAt = reservation.getUpdatedAt();
     }
+
+    @Getter
+    @NoArgsConstructor
+    public static class CustomerSummaryResponse {
+        private Long id;
+        private String name;
+        private String phone;
+        private String email;
+        private boolean isVip;
+
+        public CustomerSummaryResponse(Member member) {
+            this.id = member.getId();
+            this.name = member.getName();
+            this.phone = member.getPhone();
+            this.email = member.getEmail();
+            this.isVip = member.isVip();
+        }
+    }
 }
