@@ -6,7 +6,6 @@ import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -22,9 +21,6 @@ public class CreateReservationRequest {
 
     @NotBlank
     String purpose;
-
-    @NotNull
-    List<Long> selectedPremiumOptionIds;
 
     int partySize;
     String specialRequest;

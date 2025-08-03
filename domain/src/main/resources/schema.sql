@@ -79,17 +79,6 @@ CREATE TABLE IF NOT EXISTS member_restaurant
     INDEX idx_member_restaurant_restaurant (restaurant_id)
 );
 
-CREATE TABLE IF NOT EXISTS premium_option
-(
-    id            BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name          VARCHAR(200) NOT NULL,
-    description   TEXT,
-    price         INT NOT NULL,
-    restaurant_id VARCHAR(255) NOT NULL,
-    FOREIGN KEY (restaurant_id) REFERENCES restaurant (id),
-    INDEX idx_premium_option_restaurant (restaurant_id)
-);
-
 CREATE TABLE IF NOT EXISTS reservation
 (
     id                     BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -106,14 +95,4 @@ CREATE TABLE IF NOT EXISTS reservation
     INDEX idx_reservation_restaurant (restaurant_id),
     INDEX idx_reservation_member (member_id),
     INDEX idx_reservation_datetime (reservation_date_time)
-);
-
-CREATE TABLE IF NOT EXISTS selected_premium_option
-(
-    id                BIGINT AUTO_INCREMENT PRIMARY KEY,
-    reservation_id    BIGINT NOT NULL,
-    premium_option_id BIGINT NOT NULL,
-    FOREIGN KEY (reservation_id) REFERENCES reservation (id),
-    FOREIGN KEY (premium_option_id) REFERENCES premium_option (id),
-    UNIQUE KEY unique_reservation_premium_option (reservation_id, premium_option_id)
 );

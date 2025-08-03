@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -79,5 +80,9 @@ public class Reservation extends BaseEntity {
 
     public String getRestaurantName() {
         return restaurant.getName();
+    }
+
+    public LocalDateTime getDateTime() {
+        return LocalDateTime.of(availableDate.getDate(), availableDate.getTime());
     }
 }

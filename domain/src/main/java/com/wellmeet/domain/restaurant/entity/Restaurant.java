@@ -36,12 +36,14 @@ public class Restaurant extends BaseEntity {
     @JoinColumn(name = "owner_id")
     private Owner owner;
 
-    public Restaurant(String id, String name, String address, double latitude, double longitude, String thumbnail) {
+    public Restaurant(String id, String name, String address, double latitude, double longitude, String thumbnail,
+                      Owner owner) {
         this.id = id;
         this.name = name;
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
         this.thumbnail = thumbnail;
+        this.owner = owner;
     }
 }
