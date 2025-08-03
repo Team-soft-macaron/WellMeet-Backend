@@ -1,5 +1,6 @@
 package com.wellmeet.exception;
 
+import com.wellmeet.domain.exception.WellMeetDomainException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -8,7 +9,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(WellMeetException.class)
-    public ResponseEntity<ErrorResponse> handleOAuthClientException(WellMeetException exception) {
+    public ResponseEntity<ErrorResponse> handleWellMeetException(WellMeetException exception) {
+        return toResponse(exception.getStatusCode(), exception.getMessage());
+    }
+
+    @ExceptionHandler(WellMeetDomainException.class)
+    public ResponseEntity<ErrorResponse> handleWellMeetDomainException(WellMeetDomainException exception) {
         return toResponse(exception.getStatusCode(), exception.getMessage());
     }
 
