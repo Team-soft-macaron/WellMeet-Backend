@@ -88,7 +88,7 @@ public class Reservation extends BaseEntity {
     }
 
     private void validateRequest(String specialRequest) {
-        if (specialRequest.length() > MAX_REQUEST_LENGTH) {
+        if (specialRequest != null && specialRequest.length() > MAX_REQUEST_LENGTH) {
             throw new ReservationException(ReservationErrorCode.REQUEST_INVALID);
         }
     }
