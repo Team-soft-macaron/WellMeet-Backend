@@ -1,14 +1,12 @@
 package com.wellmeet.domain.owner.exception;
 
+import com.wellmeet.domain.common.WellMeetDomainException;
 import lombok.Getter;
 
 @Getter
-public class OwnerException extends RuntimeException {
-
-    private final int statusCode;
+public class OwnerException extends WellMeetDomainException {
 
     public OwnerException(OwnerErrorCode errorCode) {
-        super(errorCode.getMessage());
-        this.statusCode = errorCode.getStatusCode();
+        super(errorCode.getMessage(), errorCode.getStatusCode());
     }
 }

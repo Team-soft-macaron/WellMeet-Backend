@@ -5,9 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.wellmeet.BaseControllerTest;
 import com.wellmeet.domain.member.entity.FavoriteRestaurant;
 import com.wellmeet.domain.member.entity.Member;
+import com.wellmeet.domain.owner.entity.Owner;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.favorite.dto.FavoriteRestaurantResponse;
-import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -17,17 +17,14 @@ class FavoriteControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("즐겨찾기 레스토랑 조회")
     void getFavoriteRestaurants() {
-        Member testUser = memberRepository.save(new Member("testUser", "test", "email@email.com"));
-        Member anotherUser = memberRepository.save(new Member("otherUser", "test", "email@email.com"));
-        Restaurant restaurant1 = restaurantRepository.save(
-                new Restaurant(UUID.randomUUID().toString(), "Restaurant 1", "Address 1", 38.5, 128.2,
-                        "https://example.com/restaurant1.jpg"));
-        Restaurant restaurant2 = restaurantRepository.save(
-                new Restaurant(UUID.randomUUID().toString(), "Restaurant 2", "Address 2", 38.5, 128.2,
-                        "https://example.com/restaurant2.jpg"));
-        Restaurant restaurant3 = restaurantRepository.save(
-                new Restaurant(UUID.randomUUID().toString(), "Restaurant 3", "Address 3", 38.5, 128.2,
-                        "https://example.com/restaurant3.jpg"));
+        Member testUser = memberGenerator.generate("test");
+        Member anotherUser = memberGenerator.generate("another");
+        Owner owner1 = ownerGenerator.generate("Owner1");
+        Owner owner2 = ownerGenerator.generate("Owner2");
+        Owner owner3 = ownerGenerator.generate("Owner3");
+        Restaurant restaurant1 = restaurantGenerator.generate("Restaurant 1", owner1);
+        Restaurant restaurant2 = restaurantGenerator.generate("Restaurant 2", owner2);
+        Restaurant restaurant3 = restaurantGenerator.generate("Restaurant 3", owner3);
         favoriteRestaurantRepository.save(new FavoriteRestaurant(testUser, restaurant1));
         favoriteRestaurantRepository.save(new FavoriteRestaurant(testUser, restaurant2));
         favoriteRestaurantRepository.save(new FavoriteRestaurant(anotherUser, restaurant2));
@@ -48,10 +45,9 @@ class FavoriteControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("즐겨찾기 레스토랑 추가")
     void addFavoriteRestaurant() {
-        Member testUser = memberRepository.save(new Member("nickname", "test", "email@email.com"));
-        Restaurant restaurant = restaurantRepository.save(
-                new Restaurant(UUID.randomUUID().toString(), "Restaurant 1", "Address 1", 38.5, 128.2,
-                        "https://example.com/restaurant1.jpg"));
+        Member testUser = memberGenerator.generate("testUser");
+        Owner owner = ownerGenerator.generate("Test Owner");
+        Restaurant restaurant = restaurantGenerator.generate("Test Restaurant", owner);
 
         FavoriteRestaurantResponse response = given()
                 .contentType("application/json")

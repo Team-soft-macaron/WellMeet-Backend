@@ -14,7 +14,6 @@ public class SummaryReservationResponse {
     private String restaurantName;
     private LocalDateTime dateTime;
     private int partySize;
-    private String purpose;
     private ReservationStatus status;
 
     public SummaryReservationResponse(Reservation reservation) {
@@ -22,7 +21,6 @@ public class SummaryReservationResponse {
         this.restaurantName = reservation.getRestaurantName();
         this.dateTime = reservation.getDateTime();
         this.partySize = reservation.getPartySize();
-        this.purpose = reservation.getPurpose();
         this.status = reservation.getStatus();
     }
 }

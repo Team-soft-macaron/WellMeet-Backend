@@ -18,7 +18,6 @@ public class ReservationResponse {
     private double longitude;
     private LocalDateTime dateTime;
     private int partySize;
-    private String purpose;
     private String specialRequest;
     private ReservationStatus status;
 
@@ -31,7 +30,6 @@ public class ReservationResponse {
         this.longitude = reservation.getRestaurant().getLongitude();
         this.dateTime = reservation.getDateTime();
         this.partySize = reservation.getPartySize();
-        this.purpose = reservation.getPurpose();
         this.specialRequest = reservation.getSpecialRequest();
         this.status = reservation.getStatus();
     }

@@ -1,10 +1,13 @@
 package com.wellmeet;
 
 import com.wellmeet.domain.member.repository.FavoriteRestaurantRepository;
-import com.wellmeet.domain.member.repository.MemberRepository;
-import com.wellmeet.domain.restaurant.menu.repository.MenuRepository;
-import com.wellmeet.domain.restaurant.repository.RestaurantRepository;
-import com.wellmeet.domain.restaurant.review.repository.ReviewRepository;
+import com.wellmeet.fixture.AvailableDateGenerator;
+import com.wellmeet.fixture.MemberGenerator;
+import com.wellmeet.fixture.MenuGenerator;
+import com.wellmeet.fixture.OwnerGenerator;
+import com.wellmeet.fixture.ReservationGenerator;
+import com.wellmeet.fixture.RestaurantGenerator;
+import com.wellmeet.fixture.ReviewGenerator;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.RequestLoggingFilter;
@@ -21,16 +24,25 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 public abstract class BaseControllerTest {
 
     @Autowired
-    protected RestaurantRepository restaurantRepository;
+    protected AvailableDateGenerator availableDateGenerator;
 
     @Autowired
-    protected MenuRepository menuRepository;
+    protected ReservationGenerator reservationGenerator;
 
     @Autowired
-    protected ReviewRepository reviewRepository;
+    protected MemberGenerator memberGenerator;
 
     @Autowired
-    protected MemberRepository memberRepository;
+    protected OwnerGenerator ownerGenerator;
+
+    @Autowired
+    protected RestaurantGenerator restaurantGenerator;
+
+    @Autowired
+    protected MenuGenerator menuGenerator;
+
+    @Autowired
+    protected ReviewGenerator reviewGenerator;
 
     @Autowired
     protected FavoriteRestaurantRepository favoriteRestaurantRepository;

@@ -1,6 +1,6 @@
 package com.wellmeet.exception;
 
-import com.wellmeet.domain.exception.WellMeetDomainException;
+import com.wellmeet.domain.common.WellMeetDomainException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

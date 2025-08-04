@@ -14,7 +14,6 @@ public class CreateReservationResponse {
     private ReservationStatus status;
     private LocalDateTime dateTime;
     private int partySize;
-    private String purpose;
     private String specialRequest;
 
     public CreateReservationResponse(Reservation reservation) {
@@ -22,7 +21,6 @@ public class CreateReservationResponse {
         this.status = reservation.getStatus();
         this.dateTime = reservation.getDateTime();
         this.partySize = reservation.getPartySize();
-        this.purpose = reservation.getPurpose();
         this.specialRequest = reservation.getSpecialRequest();
     }
 }

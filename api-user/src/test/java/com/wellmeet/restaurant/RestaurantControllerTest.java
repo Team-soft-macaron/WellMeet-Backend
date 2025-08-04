@@ -4,14 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.wellmeet.BaseControllerTest;
 import com.wellmeet.domain.member.entity.Member;
+import com.wellmeet.domain.owner.entity.Owner;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
-import com.wellmeet.domain.restaurant.menu.entity.Menu;
-import com.wellmeet.domain.restaurant.review.entity.Review;
-import com.wellmeet.domain.restaurant.review.entity.Situation;
 import com.wellmeet.restaurant.dto.NearbyRestaurantResponse;
 import com.wellmeet.restaurant.dto.RestaurantResponse;
 import io.restassured.http.ContentType;
-import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -20,22 +17,14 @@ class RestaurantControllerTest extends BaseControllerTest {
 
     private static final double LATITUDE = 38.5;
     private static final double LONGITUDE = 128.2;
-    private static final String THUMBNAIL = "https://example.com/restaurant.jpg";
 
     @Test
     @DisplayName("주변 레스토랑 조회")
     void getNearbyRestaurants() {
-        Restaurant restaurant1 = new Restaurant(UUID.randomUUID().toString(), "restaurant1", "address1", LATITUDE,
-                LONGITUDE,
-                THUMBNAIL);
-        restaurantRepository.save(restaurant1);
-        Restaurant restaurant2 = new Restaurant(UUID.randomUUID().toString(), "restaurant2", "address2", LATITUDE,
-                LONGITUDE,
-                THUMBNAIL);
-        restaurantRepository.save(restaurant2);
-        Restaurant restaurant3 = new Restaurant(UUID.randomUUID().toString(), "restaurant3", "address3", LATITUDE - 3,
-                LONGITUDE + 3, THUMBNAIL);
-        restaurantRepository.save(restaurant3);
+        Owner owner = ownerGenerator.generate("owner1");
+        restaurantGenerator.generate("restaurant1", LATITUDE, LONGITUDE, owner);
+        restaurantGenerator.generate("restaurant2", LATITUDE, LONGITUDE, owner);
+        restaurantGenerator.generate("restaurant3", LATITUDE + 5, LONGITUDE - 5, owner);
 
         NearbyRestaurantResponse[] responses = given()
                 .contentType(ContentType.JSON)
@@ -49,20 +38,13 @@ class RestaurantControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("레스토랑 상세 조회")
     void getRestaurant() {
-        Restaurant restaurant = new Restaurant(UUID.randomUUID().toString(), "restaurant1", "address1", LATITUDE,
-                LONGITUDE,
-                THUMBNAIL);
-        restaurantRepository.save(restaurant);
-        Menu menu1 = new Menu("menu1", "description1", 10000, restaurant);
-        menuRepository.save(menu1);
-        Menu menu2 = new Menu("menu2", "description2", 15000, restaurant);
-        menuRepository.save(menu2);
-        Member member = new Member("nickname", "test", "email@email.com");
-        memberRepository.save(member);
-        Review review1 = new Review("review1", 5, Situation.DATE, restaurant, member);
-        reviewRepository.save(review1);
-        Review review2 = new Review("review2", 4, Situation.BUSINESS, restaurant, member);
-        reviewRepository.save(review2);
+        Owner owner = ownerGenerator.generate("owner1");
+        Restaurant restaurant = restaurantGenerator.generate("restaurant1", owner);
+        menuGenerator.generate("menu1", 10000, restaurant);
+        menuGenerator.generate("menu2", 15000, restaurant);
+        Member member = memberGenerator.generate("testMember");
+        reviewGenerator.generate(5, restaurant, member);
+        reviewGenerator.generate(4, restaurant, member);
 
         RestaurantResponse restaurantResponse = given()
                 .contentType(ContentType.JSON)

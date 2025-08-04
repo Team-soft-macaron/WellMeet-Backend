@@ -16,7 +16,12 @@ public class RestaurantGenerator {
     }
 
     public Restaurant generate(String name, Owner owner) {
-        Restaurant restaurant = new Restaurant(UUID.randomUUID().toString(), name, "address", 32.1, 37.1, "thumbnail",
+        return generate(name, 32.1, 37.1, owner);
+    }
+
+    public Restaurant generate(String name, double latitude, double longitude, Owner owner) {
+        Restaurant restaurant = new Restaurant(UUID.randomUUID().toString(), name, "address", latitude, longitude,
+                "thumbnail",
                 owner);
         return restaurantRepository.save(restaurant);
     }
