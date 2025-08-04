@@ -1,7 +1,7 @@
 package com.wellmeet.domain.restaurant.repository;
 
-import com.wellmeet.domain.restaurant.entity.BoundingBox;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
+import com.wellmeet.domain.restaurant.model.BoundingBox;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

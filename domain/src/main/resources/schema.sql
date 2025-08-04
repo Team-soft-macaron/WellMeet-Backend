@@ -49,22 +49,12 @@ CREATE TABLE IF NOT EXISTS menu
     INDEX idx_menu_price (price)
 );
 
-CREATE TABLE IF NOT EXISTS tag
-(
-    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name       VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY unique_tag_name (name)
-);
-
 CREATE TABLE IF NOT EXISTS review_tag
 (
     id        BIGINT AUTO_INCREMENT PRIMARY KEY,
     review_id BIGINT NOT NULL,
-    tag_id    BIGINT NOT NULL,
-    FOREIGN KEY (review_id) REFERENCES review (id),
-    FOREIGN KEY (tag_id) REFERENCES tag (id),
-    UNIQUE KEY unique_review_tag (review_id, tag_id)
+    name    VARCHAR(255) NOT NULL,
+    FOREIGN KEY (review_id) REFERENCES review (id)
 );
 
 CREATE TABLE IF NOT EXISTS member_restaurant
@@ -77,17 +67,6 @@ CREATE TABLE IF NOT EXISTS member_restaurant
     UNIQUE KEY unique_member_restaurant (member_id, restaurant_id),
     INDEX idx_member_restaurant_member (member_id),
     INDEX idx_member_restaurant_restaurant (restaurant_id)
-);
-
-CREATE TABLE IF NOT EXISTS premium_option
-(
-    id            BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name          VARCHAR(200) NOT NULL,
-    description   TEXT,
-    price         INT NOT NULL,
-    restaurant_id VARCHAR(255) NOT NULL,
-    FOREIGN KEY (restaurant_id) REFERENCES restaurant (id),
-    INDEX idx_premium_option_restaurant (restaurant_id)
 );
 
 CREATE TABLE IF NOT EXISTS reservation
@@ -106,14 +85,4 @@ CREATE TABLE IF NOT EXISTS reservation
     INDEX idx_reservation_restaurant (restaurant_id),
     INDEX idx_reservation_member (member_id),
     INDEX idx_reservation_datetime (reservation_date_time)
-);
-
-CREATE TABLE IF NOT EXISTS selected_premium_option
-(
-    id                BIGINT AUTO_INCREMENT PRIMARY KEY,
-    reservation_id    BIGINT NOT NULL,
-    premium_option_id BIGINT NOT NULL,
-    FOREIGN KEY (reservation_id) REFERENCES reservation (id),
-    FOREIGN KEY (premium_option_id) REFERENCES premium_option (id),
-    UNIQUE KEY unique_reservation_premium_option (reservation_id, premium_option_id)
 );

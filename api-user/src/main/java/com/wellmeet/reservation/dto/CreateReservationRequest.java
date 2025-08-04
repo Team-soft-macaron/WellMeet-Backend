@@ -1,9 +1,10 @@
 package com.wellmeet.reservation.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import com.wellmeet.domain.member.entity.Member;
+import com.wellmeet.domain.reservation.entity.Reservation;
+import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
+import com.wellmeet.domain.restaurant.entity.Restaurant;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
-import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,14 +16,25 @@ public class CreateReservationRequest {
     String restaurantId;
 
     @NotNull
-    LocalDateTime dateTime;
-
-    @NotBlank
-    String purpose;
-
-    @NotNull
-    List<Long> selectedPremiumOptionIds;
+    Long availableDateId;
 
     int partySize;
     String specialRequest;
+
+    public CreateReservationRequest(String restaurantId, Long availableDateId, int partySize, String specialRequest) {
+        this.restaurantId = restaurantId;
+        this.availableDateId = availableDateId;
+        this.partySize = partySize;
+        this.specialRequest = specialRequest;
+    }
+
+    public Reservation toDomain(Restaurant restaurant, AvailableDate availableDate, Member member) {
+        return new Reservation(
+                restaurant,
+                availableDate,
+                member,
+                partySize,
+                specialRequest
+        );
+    }
 }

@@ -3,8 +3,6 @@ package com.wellmeet.restaurant;
 import com.wellmeet.common.util.DistanceCalculator;
 import com.wellmeet.domain.member.FavoriteRestaurantDomainService;
 import com.wellmeet.domain.restaurant.RestaurantDomainService;
-import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
-import com.wellmeet.domain.restaurant.entity.BoundingBox;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.restaurant.dto.AvailableDateResponse;
 import com.wellmeet.restaurant.dto.NearbyRestaurantResponse;
@@ -25,8 +23,7 @@ public class RestaurantService {
 
     @Transactional(readOnly = true)
     public List<NearbyRestaurantResponse> findWithNearbyRestaurant(double latitude, double longitude) {
-        BoundingBox boundingBox = new BoundingBox(latitude, longitude);
-        return restaurantDomainService.findWithBoundBox(boundingBox)
+        return restaurantDomainService.findWithBoundBox(latitude, longitude)
                 .stream()
                 .map(restaurant -> getNearbyRestaurantResponse(restaurant, latitude, longitude))
                 .toList();
@@ -58,8 +55,7 @@ public class RestaurantService {
 
     @Transactional(readOnly = true)
     public List<AvailableDateResponse> getRestaurantAvailableDates(String restaurantId) {
-        List<AvailableDate> availableDates = restaurantDomainService.getRestaurantAvailableDates(restaurantId);
-        return availableDates
+        return restaurantDomainService.getRestaurantAvailableDates(restaurantId)
                 .stream()
                 .map(AvailableDateResponse::new)
                 .toList();

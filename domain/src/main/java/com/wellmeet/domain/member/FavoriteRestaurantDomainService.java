@@ -1,8 +1,8 @@
 package com.wellmeet.domain.member;
 
-import com.wellmeet.domain.exception.DomainErrorCode;
-import com.wellmeet.domain.exception.WellMeetDomainException;
 import com.wellmeet.domain.member.entity.FavoriteRestaurant;
+import com.wellmeet.domain.member.exception.MemberErrorCode;
+import com.wellmeet.domain.member.exception.MemberException;
 import com.wellmeet.domain.member.repository.FavoriteRestaurantRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class FavoriteRestaurantDomainService {
 
     public FavoriteRestaurant getByMemberIdAndRestaurantId(Long memberId, String restaurantId) {
         return favoriteRestaurantRepository.findByMemberIdAndRestaurantId(memberId, restaurantId)
-                .orElseThrow(() -> new WellMeetDomainException(DomainErrorCode.MEMBER_RESTAURANT_NOT_FOUND));
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_RESTAURANT_NOT_FOUND));
     }
 
     public void delete(FavoriteRestaurant favoriteRestaurant) {

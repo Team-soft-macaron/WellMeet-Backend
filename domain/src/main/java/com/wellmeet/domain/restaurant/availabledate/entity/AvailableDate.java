@@ -2,6 +2,8 @@ package com.wellmeet.domain.restaurant.availabledate.entity;
 
 import com.wellmeet.domain.common.BaseEntity;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
+import com.wellmeet.domain.restaurant.exception.RestaurantErrorCode;
+import com.wellmeet.domain.restaurant.exception.RestaurantException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -47,5 +49,20 @@ public class AvailableDate extends BaseEntity {
         this.maxCapacity = maxCapacity;
         this.isAvailable = true;
         this.restaurant = restaurant;
+    }
+
+    public void reserveParty(int partySize) {
+        if (maxCapacity < partySize) {
+            throw new RestaurantException(RestaurantErrorCode.NOT_ENOUGH_CAPACITY);
+        }
+        maxCapacity -= partySize;
+        if (maxCapacity == 0) {
+            isAvailable = false;
+        }
+    }
+
+    public void cancelParty(int partySize) {
+        maxCapacity += partySize;
+        isAvailable = true;
     }
 }

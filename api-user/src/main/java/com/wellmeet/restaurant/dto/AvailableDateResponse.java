@@ -12,11 +12,11 @@ public class AvailableDateResponse {
 
     private LocalDate date;
     private LocalTime time;
-    private boolean isAvailable;
+    private boolean available;
 
     public AvailableDateResponse(AvailableDate availableDate) {
         this.date = availableDate.getDate();
         this.time = availableDate.getTime();
-        this.isAvailable = availableDate.isAvailable();
+        this.available = availableDate.isAvailable();
     }
 }

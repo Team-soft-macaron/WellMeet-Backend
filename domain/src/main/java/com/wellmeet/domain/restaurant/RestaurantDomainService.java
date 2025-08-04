@@ -1,15 +1,13 @@
 package com.wellmeet.domain.restaurant;
 
-import com.wellmeet.domain.exception.DomainErrorCode;
-import com.wellmeet.domain.exception.WellMeetDomainException;
 import com.wellmeet.domain.restaurant.availabledate.AvailableDateDomainService;
 import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
-import com.wellmeet.domain.restaurant.entity.BoundingBox;
-import com.wellmeet.domain.restaurant.entity.PremiumOption;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
+import com.wellmeet.domain.restaurant.exception.RestaurantErrorCode;
+import com.wellmeet.domain.restaurant.exception.RestaurantException;
 import com.wellmeet.domain.restaurant.menu.MenuDomainService;
 import com.wellmeet.domain.restaurant.menu.entity.Menu;
-import com.wellmeet.domain.restaurant.repository.PremiumOptionRepository;
+import com.wellmeet.domain.restaurant.model.BoundingBox;
 import com.wellmeet.domain.restaurant.repository.RestaurantRepository;
 import com.wellmeet.domain.restaurant.review.ReviewDomainService;
 import com.wellmeet.domain.restaurant.review.entity.Review;
@@ -22,17 +20,17 @@ import org.springframework.stereotype.Service;
 public class RestaurantDomainService {
 
     private final RestaurantRepository restaurantRepository;
-    private final PremiumOptionRepository premiumOptionRepository;
     private final ReviewDomainService reviewDomainService;
     private final AvailableDateDomainService availableDateDomainService;
     private final MenuDomainService menuDomainService;
 
     public Restaurant getById(String id) {
         return restaurantRepository.findById(id)
-                .orElseThrow(() -> new WellMeetDomainException(DomainErrorCode.RESTAURANT_NOT_FOUND));
+                .orElseThrow(() -> new RestaurantException(RestaurantErrorCode.RESTAURANT_NOT_FOUND));
     }
 
-    public List<Restaurant> findWithBoundBox(BoundingBox boundingBox) {
+    public List<Restaurant> findWithBoundBox(double latitude, double longitude) {
+        BoundingBox boundingBox = new BoundingBox(latitude, longitude);
         return restaurantRepository.findWithBoundBox(boundingBox);
     }
 
@@ -52,9 +50,7 @@ public class RestaurantDomainService {
         return menuDomainService.getByRestaurantId(restaurantId);
     }
 
-    public PremiumOption getOptionByRestaurantAndOptionId(Restaurant restaurant, Long optionId) {
-        return premiumOptionRepository
-                .findByRestaurantAndId(restaurant, optionId)
-                .orElseThrow(() -> new WellMeetDomainException(DomainErrorCode.PREMIUM_OPTION_NOT_FOUND));
+    public AvailableDate getAvailableDate(Long availableDateId, Restaurant restaurant) {
+        return availableDateDomainService.getByIdAndRestaurant(availableDateId, restaurant);
     }
 }

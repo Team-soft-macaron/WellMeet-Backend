@@ -1,14 +1,12 @@
 package com.wellmeet.domain.owner.entity;
 
 import com.wellmeet.domain.common.BaseEntity;
-import com.wellmeet.domain.restaurant.entity.Restaurant;
+import com.wellmeet.domain.owner.exception.OwnerErrorCode;
+import com.wellmeet.domain.owner.exception.OwnerException;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -18,6 +16,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Owner extends BaseEntity {
+
+    protected static final int MAX_NAME_LENGTH = 10;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,15 +32,18 @@ public class Owner extends BaseEntity {
     private boolean reservationEnabled;
     private boolean reviewEnabled;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "restaurant_id")
-    private Restaurant restaurant;
+    public Owner(String name, String email) {
+        validateName(name);
 
-    public Owner(String name, String email, Restaurant restaurant) {
         this.name = name;
         this.email = email;
         this.reservationEnabled = true;
         this.reviewEnabled = true;
-        this.restaurant = restaurant;
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.isBlank() || name.length() > MAX_NAME_LENGTH) {
+            throw new OwnerException(OwnerErrorCode.OWNER_NAME_INVALID);
+        }
     }
 }

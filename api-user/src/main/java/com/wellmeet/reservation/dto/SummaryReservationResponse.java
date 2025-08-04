@@ -14,15 +14,13 @@ public class SummaryReservationResponse {
     private String restaurantName;
     private LocalDateTime dateTime;
     private int partySize;
-    private String purpose;
     private ReservationStatus status;
 
     public SummaryReservationResponse(Reservation reservation) {
         this.id = reservation.getId();
         this.restaurantName = reservation.getRestaurantName();
-        this.dateTime = reservation.getReservationDateTime();
+        this.dateTime = reservation.getDateTime();
         this.partySize = reservation.getPartySize();
-        this.purpose = reservation.getPurpose();
         this.status = reservation.getStatus();
     }
 }

@@ -1,9 +1,11 @@
 package com.wellmeet.reservation;
 
+import com.wellmeet.domain.member.MemberDomainService;
+import com.wellmeet.domain.member.entity.Member;
 import com.wellmeet.domain.reservation.ReservationDomainService;
 import com.wellmeet.domain.reservation.entity.Reservation;
-import com.wellmeet.domain.reservation.entity.SelectedPremiumOption;
 import com.wellmeet.domain.restaurant.RestaurantDomainService;
+import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.reservation.dto.CreateReservationRequest;
 import com.wellmeet.reservation.dto.CreateReservationResponse;
@@ -20,25 +22,19 @@ public class ReservationService {
 
     private final ReservationDomainService reservationDomainService;
     private final RestaurantDomainService restaurantDomainService;
+    private final MemberDomainService memberDomainService;
 
     @Transactional
     public CreateReservationResponse reserve(Long memberId, CreateReservationRequest request) {
         Restaurant restaurant = restaurantDomainService.getById(request.getRestaurantId());
-        Reservation reservation = new Reservation(
-                request.getDateTime(),
-                request.getPurpose(),
-                restaurant,
-                memberId,
-                request.getPartySize(),
-                request.getSpecialRequest()
-        );
+        AvailableDate availableDate = restaurantDomainService.getAvailableDate(request.getAvailableDateId(),
+                restaurant);
+        Member member = memberDomainService.getById(memberId);
+        availableDate.reserveParty(request.getPartySize());
+        Reservation reservation = request.toDomain(restaurant, availableDate, member);
+
         Reservation savedReservation = reservationDomainService.save(reservation);
-        List<String> optionNames = request.getSelectedPremiumOptionIds()
-                .stream()
-                .map(id -> reservationDomainService.saveSelectedPremiumOption(savedReservation, restaurant, id))
-                .map(SelectedPremiumOption::getName)
-                .toList();
-        return new CreateReservationResponse(savedReservation, optionNames);
+        return new CreateReservationResponse(savedReservation);
     }
 
     @Transactional(readOnly = true)
@@ -53,19 +49,7 @@ public class ReservationService {
     public ReservationResponse getReservation(Long reservationId, Long memberId) {
         Reservation reservation = reservationDomainService.getByIdAndMemberId(reservationId, memberId);
         double rating = restaurantDomainService.getAverageRating(reservation.getRestaurant().getId());
-        List<String> selectedOptions = reservationDomainService.findAllSelectedOptionByReservationId(reservationId)
-                .stream()
-                .map(SelectedPremiumOption::getName)
-                .toList();
-        return new ReservationResponse(reservation, rating, selectedOptions);
-    }
-
-    @Transactional(readOnly = true)
-    public List<ReservationResponse> getReservationsByRestaurant(String restaurantId, Long memberId) {
-        return reservationDomainService.findAllByRestaurantId(restaurantId)
-                .stream()
-                .map(reservation -> getReservation(reservation.getId(), memberId))
-                .toList();
+        return new ReservationResponse(reservation, rating);
     }
 
     @Transactional
@@ -75,26 +59,24 @@ public class ReservationService {
             CreateReservationRequest request
     ) {
         Restaurant restaurant = restaurantDomainService.getById(request.getRestaurantId());
+        AvailableDate availableDate = restaurantDomainService.getAvailableDate(request.getAvailableDateId(),
+                restaurant);
         Reservation reservation = reservationDomainService.getByIdAndMemberId(reservationId, memberId);
+        availableDate.cancelParty(reservation.getPartySize());
+        availableDate.reserveParty(request.getPartySize());
         reservation.update(
-                request.getDateTime(),
-                request.getPurpose(),
+                availableDate,
                 request.getPartySize(),
                 request.getSpecialRequest()
         );
-        reservationDomainService.deleteAllByReservationId(reservationId);
-        List<String> optionNames = request.getSelectedPremiumOptionIds()
-                .stream()
-                .map(id -> reservationDomainService.saveSelectedPremiumOption(reservation, restaurant, id))
-                .map(SelectedPremiumOption::getName)
-                .toList();
-        return new CreateReservationResponse(reservation, optionNames);
+        return new CreateReservationResponse(reservation);
     }
 
     @Transactional
     public void cancel(Long reservationId, Long memberId) {
         Reservation reservation = reservationDomainService.getByIdAndMemberId(reservationId, memberId);
+        AvailableDate availableDate = reservation.getAvailableDate();
+        availableDate.cancelParty(reservation.getPartySize());
         reservation.cancel();
-        reservationDomainService.save(reservation);
     }
 }
