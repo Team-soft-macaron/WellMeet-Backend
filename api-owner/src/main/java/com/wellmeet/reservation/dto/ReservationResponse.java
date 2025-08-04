@@ -19,7 +19,6 @@ public class ReservationResponse {
     private LocalTime time;
     private int party;
     private ReservationStatus status;
-    private Integer tableNumber;
     private String note;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -34,7 +33,6 @@ public class ReservationResponse {
         this.time = reservation.getAvailableDate().getTime();
         this.party = reservation.getPartySize();
         this.status = reservation.getStatus();
-        this.tableNumber = null;
         this.note = reservation.getSpecialRequest();
         this.createdAt = reservation.getCreatedAt();
         this.updatedAt = reservation.getUpdatedAt();
