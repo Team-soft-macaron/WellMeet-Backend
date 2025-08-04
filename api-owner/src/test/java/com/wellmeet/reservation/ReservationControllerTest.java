@@ -25,8 +25,8 @@ class ReservationControllerTest extends BaseControllerTest {
             AvailableDate availableDate1 = availableDateGenerator.generate(LocalDateTime.now(), 10, restaurant1);
             AvailableDate availableDate2 = availableDateGenerator.generate(LocalDateTime.now().plusDays(1), 10,
                     restaurant2);
-            Member member1 = memberGenerator.generate("member1");
-            Member member2 = memberGenerator.generate("member2");
+            Member member1 = memberGenerator.generate("mem1");
+            Member member2 = memberGenerator.generate("mem2");
             reservationGenerator.generate(restaurant1, availableDate1, member1, 2);
             reservationGenerator.generate(restaurant1, availableDate1, member2, 4);
             reservationGenerator.generate(restaurant1, availableDate2, member1, 3);

@@ -35,8 +35,8 @@ class ReservationServiceTest {
         void 식당_아이디에_해당하는_예약목록을_불러온다() {
             Restaurant restaurant = createRestaurant("Test Restaurant");
             AvailableDate availableDate = createAvailableDate(LocalDateTime.now(), 10, restaurant);
-            Member member1 = createMember("Test Member");
-            Member member2 = createMember("Test Member 2");
+            Member member1 = createMember("Test");
+            Member member2 = createMember("Test2");
             Reservation reservation1 = createReservation(restaurant, availableDate, member1, 4);
             Reservation reservation2 = createReservation(restaurant, availableDate, member2, 2);
             List<Reservation> reservations = List.of(reservation1, reservation2);
@@ -63,6 +63,6 @@ class ReservationServiceTest {
 
     private Reservation createReservation(Restaurant restaurant, AvailableDate availableDate, Member member,
                                           int partySize) {
-        return new Reservation("purpose", restaurant, availableDate, member, partySize, "request");
+        return new Reservation(restaurant, availableDate, member, partySize, "request");
     }
 }

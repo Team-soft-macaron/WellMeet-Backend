@@ -4,7 +4,6 @@ import com.wellmeet.domain.member.entity.Member;
 import com.wellmeet.domain.reservation.entity.Reservation;
 import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,15 +18,11 @@ public class CreateReservationRequest {
     @NotNull
     Long availableDateId;
 
-    @NotBlank
-    String purpose;
-
     int partySize;
     String specialRequest;
 
     public Reservation toDomain(Restaurant restaurant, AvailableDate availableDate, Member member) {
         return new Reservation(
-                purpose,
                 restaurant,
                 availableDate,
                 member,

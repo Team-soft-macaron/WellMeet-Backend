@@ -1,7 +1,7 @@
 package com.wellmeet.domain.restaurant.model;
 
-import com.wellmeet.domain.exception.DomainErrorCode;
-import com.wellmeet.domain.exception.WellMeetDomainException;
+import com.wellmeet.domain.restaurant.exception.RestaurantErrorCode;
+import com.wellmeet.domain.restaurant.exception.RestaurantException;
 import lombok.Getter;
 
 @Getter
@@ -20,12 +20,7 @@ public class BoundingBox {
     private final double maxLongitude;
 
     public BoundingBox(double latitude, double longitude) {
-        if (latitude < MINIMUM_LATITUDE || latitude > MAXIMUM_LATITUDE) {
-            throw new WellMeetDomainException(DomainErrorCode.INVALID_LATITUDE);
-        }
-        if (longitude < MINIMUM_LONGITUDE || longitude > MAXIMUM_LONGITUDE) {
-            throw new WellMeetDomainException(DomainErrorCode.INVALID_LONGITUDE);
-        }
+        validatePosition(latitude, longitude);
 
         double latitudeDelta = RADIUS / DEGREES_TO_KM;
         double longitudeDelta = RADIUS / (DEGREES_TO_KM * Math.cos(Math.toRadians(latitude)));
@@ -34,5 +29,14 @@ public class BoundingBox {
         this.maxLatitude = latitude + latitudeDelta;
         this.minLongitude = longitude - longitudeDelta;
         this.maxLongitude = longitude + longitudeDelta;
+    }
+
+    private void validatePosition(double latitude, double longitude) {
+        if (latitude < MINIMUM_LATITUDE || latitude > MAXIMUM_LATITUDE) {
+            throw new RestaurantException(RestaurantErrorCode.INVALID_LATITUDE);
+        }
+        if (longitude < MINIMUM_LONGITUDE || longitude > MAXIMUM_LONGITUDE) {
+            throw new RestaurantException(RestaurantErrorCode.INVALID_LONGITUDE);
+        }
     }
 }

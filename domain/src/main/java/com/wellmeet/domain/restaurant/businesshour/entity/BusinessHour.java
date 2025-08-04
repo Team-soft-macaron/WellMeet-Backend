@@ -2,6 +2,8 @@ package com.wellmeet.domain.restaurant.businesshour.entity;
 
 import com.wellmeet.domain.common.BaseEntity;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
+import com.wellmeet.domain.restaurant.exception.RestaurantErrorCode;
+import com.wellmeet.domain.restaurant.exception.RestaurantException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -44,11 +46,28 @@ public class BusinessHour extends BaseEntity {
 
     public BusinessHour(DayOfWeek dayOfWeek, LocalTime openTime, LocalTime closeTime,
                         LocalTime breakStartTime, LocalTime breakEndTime, Restaurant restaurant) {
+        validateTime(openTime, closeTime);
+        validateTime(breakStartTime, breakEndTime);
+        validateBreakTime(openTime, closeTime, breakStartTime, breakEndTime);
+
         this.dayOfWeek = dayOfWeek;
         this.openTime = openTime;
         this.closeTime = closeTime;
         this.breakStartTime = breakStartTime;
         this.breakEndTime = breakEndTime;
         this.restaurant = restaurant;
+    }
+
+    private void validateTime(LocalTime beforeTime, LocalTime afterTime) {
+        if (beforeTime.isAfter(afterTime)) {
+            throw new RestaurantException(RestaurantErrorCode.TIME_SEQUENCE_INVALID);
+        }
+    }
+
+    private void validateBreakTime(LocalTime openTime, LocalTime closeTime, LocalTime breakStartTime,
+                                   LocalTime breakEndTime) {
+        if (breakStartTime.isBefore(openTime) || breakEndTime.isAfter(closeTime)) {
+            throw new RestaurantException(RestaurantErrorCode.TIME_SEQUENCE_INVALID);
+        }
     }
 }

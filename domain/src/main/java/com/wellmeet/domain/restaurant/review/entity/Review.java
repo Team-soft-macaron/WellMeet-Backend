@@ -1,10 +1,10 @@
 package com.wellmeet.domain.restaurant.review.entity;
 
 import com.wellmeet.domain.common.BaseEntity;
-import com.wellmeet.domain.exception.DomainErrorCode;
-import com.wellmeet.domain.exception.WellMeetDomainException;
 import com.wellmeet.domain.member.entity.Member;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
+import com.wellmeet.domain.restaurant.exception.RestaurantErrorCode;
+import com.wellmeet.domain.restaurant.exception.RestaurantException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -27,6 +27,7 @@ public class Review extends BaseEntity {
 
     protected static final double MINIMUM_RATING = 0.0;
     protected static final double MAXIMUM_RATING = 5.0;
+    protected static final int MAX_CONTENT_LENGTH = 500;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,14 +53,25 @@ public class Review extends BaseEntity {
     private double rating;
 
     public Review(String content, double rating, Situation situation, Restaurant restaurant, Member member) {
-        if (rating < MINIMUM_RATING || rating > MAXIMUM_RATING) {
-            throw new WellMeetDomainException(DomainErrorCode.INVALID_RATING);
-        }
+        validateContent(content);
+        validateRating(rating);
 
         this.content = content;
         this.rating = rating;
         this.situation = situation;
         this.restaurant = restaurant;
         this.member = member;
+    }
+
+    private void validateContent(String content) {
+        if (content == null || content.isBlank() || content.length() > MAX_CONTENT_LENGTH) {
+            throw new RestaurantException(RestaurantErrorCode.INVALID_REVIEW_CONTENT);
+        }
+    }
+
+    private void validateRating(double rating) {
+        if (rating < MINIMUM_RATING || rating > MAXIMUM_RATING) {
+            throw new RestaurantException(RestaurantErrorCode.INVALID_RATING);
+        }
     }
 }

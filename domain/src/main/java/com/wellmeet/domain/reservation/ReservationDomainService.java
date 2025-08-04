@@ -1,8 +1,8 @@
 package com.wellmeet.domain.reservation;
 
-import com.wellmeet.domain.exception.DomainErrorCode;
-import com.wellmeet.domain.exception.WellMeetDomainException;
 import com.wellmeet.domain.reservation.entity.Reservation;
+import com.wellmeet.domain.reservation.exception.ReservationErrorCode;
+import com.wellmeet.domain.reservation.exception.ReservationException;
 import com.wellmeet.domain.reservation.repository.ReservationRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class ReservationDomainService {
 
     public Reservation getByIdAndMemberId(Long reservationId, Long memberId) {
         return reservationRepository.findByIdAndMemberId(reservationId, memberId)
-                .orElseThrow(() -> new WellMeetDomainException(DomainErrorCode.UNAUTHORIZED_RESERVATION_ACCESS));
+                .orElseThrow(() -> new ReservationException(ReservationErrorCode.UNAUTHORIZED_RESERVATION_ACCESS));
     }
 
     public List<Reservation> findAllByMemberId(Long memberId) {

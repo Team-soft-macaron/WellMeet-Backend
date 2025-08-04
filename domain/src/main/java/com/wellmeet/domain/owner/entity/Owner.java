@@ -1,6 +1,8 @@
 package com.wellmeet.domain.owner.entity;
 
 import com.wellmeet.domain.common.BaseEntity;
+import com.wellmeet.domain.owner.exception.OwnerErrorCode;
+import com.wellmeet.domain.owner.exception.OwnerException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,6 +16,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Owner extends BaseEntity {
+
+    protected static final int MAX_NAME_LENGTH = 6;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,9 +33,17 @@ public class Owner extends BaseEntity {
     private boolean reviewEnabled;
 
     public Owner(String name, String email) {
+        validateName(name);
+
         this.name = name;
         this.email = email;
         this.reservationEnabled = true;
         this.reviewEnabled = true;
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.isBlank() || name.length() > MAX_NAME_LENGTH) {
+            throw new OwnerException(OwnerErrorCode.OWNER_NAME_INVALID);
+        }
     }
 }

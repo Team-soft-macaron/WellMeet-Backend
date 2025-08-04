@@ -2,6 +2,8 @@ package com.wellmeet.domain.restaurant.menu.entity;
 
 import com.wellmeet.domain.common.BaseEntity;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
+import com.wellmeet.domain.restaurant.exception.RestaurantErrorCode;
+import com.wellmeet.domain.restaurant.exception.RestaurantException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -36,9 +38,17 @@ public class Menu extends BaseEntity {
     private int price;
 
     public Menu(String name, String description, int price, Restaurant restaurant) {
+        validatePrice(price);
+
         this.name = name;
         this.description = description;
         this.price = price;
         this.restaurant = restaurant;
+    }
+
+    private void validatePrice(int price) {
+        if (price < 0) {
+            throw new RestaurantException(RestaurantErrorCode.INVALID_MENU_PRICE);
+        }
     }
 }

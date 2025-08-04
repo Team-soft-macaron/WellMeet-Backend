@@ -1,10 +1,10 @@
 package com.wellmeet.domain.restaurant;
 
-import com.wellmeet.domain.exception.DomainErrorCode;
-import com.wellmeet.domain.exception.WellMeetDomainException;
 import com.wellmeet.domain.restaurant.availabledate.AvailableDateDomainService;
 import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
+import com.wellmeet.domain.restaurant.exception.RestaurantErrorCode;
+import com.wellmeet.domain.restaurant.exception.RestaurantException;
 import com.wellmeet.domain.restaurant.menu.MenuDomainService;
 import com.wellmeet.domain.restaurant.menu.entity.Menu;
 import com.wellmeet.domain.restaurant.model.BoundingBox;
@@ -26,7 +26,7 @@ public class RestaurantDomainService {
 
     public Restaurant getById(String id) {
         return restaurantRepository.findById(id)
-                .orElseThrow(() -> new WellMeetDomainException(DomainErrorCode.RESTAURANT_NOT_FOUND));
+                .orElseThrow(() -> new RestaurantException(RestaurantErrorCode.RESTAURANT_NOT_FOUND));
     }
 
     public List<Restaurant> findWithBoundBox(double latitude, double longitude) {

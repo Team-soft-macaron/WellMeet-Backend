@@ -1,9 +1,9 @@
 package com.wellmeet.domain.restaurant.availabledate.entity;
 
 import com.wellmeet.domain.common.BaseEntity;
-import com.wellmeet.domain.exception.DomainErrorCode;
-import com.wellmeet.domain.exception.WellMeetDomainException;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
+import com.wellmeet.domain.restaurant.exception.RestaurantErrorCode;
+import com.wellmeet.domain.restaurant.exception.RestaurantException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -53,7 +53,7 @@ public class AvailableDate extends BaseEntity {
 
     public void reserveParty(int partySize) {
         if (maxCapacity < partySize) {
-            throw new WellMeetDomainException(DomainErrorCode.NOT_ENOUGH_CAPACITY);
+            throw new RestaurantException(RestaurantErrorCode.NOT_ENOUGH_CAPACITY);
         }
         maxCapacity -= partySize;
         if (maxCapacity == 0) {

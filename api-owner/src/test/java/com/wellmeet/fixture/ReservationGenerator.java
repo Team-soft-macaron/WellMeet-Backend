@@ -17,7 +17,7 @@ public class ReservationGenerator {
     }
 
     public Reservation generate(Restaurant restaurant, AvailableDate availableDate, Member member, int partySize) {
-        Reservation reservation = new Reservation("purpose", restaurant, availableDate, member, partySize, "request");
+        Reservation reservation = new Reservation(restaurant, availableDate, member, partySize, "request");
         return reservationRepository.save(reservation);
     }
 }

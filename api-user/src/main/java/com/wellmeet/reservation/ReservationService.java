@@ -66,7 +66,6 @@ public class ReservationService {
         availableDate.cancelParty(reservation.getPartySize());
         reservation.update(
                 availableDate,
-                request.getPurpose(),
                 request.getPartySize(),
                 request.getSpecialRequest()
         );

@@ -49,22 +49,12 @@ CREATE TABLE IF NOT EXISTS menu
     INDEX idx_menu_price (price)
 );
 
-CREATE TABLE IF NOT EXISTS tag
-(
-    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name       VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY unique_tag_name (name)
-);
-
 CREATE TABLE IF NOT EXISTS review_tag
 (
     id        BIGINT AUTO_INCREMENT PRIMARY KEY,
     review_id BIGINT NOT NULL,
-    tag_id    BIGINT NOT NULL,
-    FOREIGN KEY (review_id) REFERENCES review (id),
-    FOREIGN KEY (tag_id) REFERENCES tag (id),
-    UNIQUE KEY unique_review_tag (review_id, tag_id)
+    name    VARCHAR(255) NOT NULL,
+    FOREIGN KEY (review_id) REFERENCES review (id)
 );
 
 CREATE TABLE IF NOT EXISTS member_restaurant
