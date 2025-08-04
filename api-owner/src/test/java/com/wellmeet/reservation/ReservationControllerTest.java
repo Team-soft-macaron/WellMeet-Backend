@@ -29,7 +29,7 @@ class ReservationControllerTest extends BaseControllerTest {
             Member member2 = memberGenerator.generate("mem2");
             reservationGenerator.generate(restaurant1, availableDate1, member1, 2);
             reservationGenerator.generate(restaurant1, availableDate1, member2, 4);
-            reservationGenerator.generate(restaurant1, availableDate2, member1, 3);
+            reservationGenerator.generate(restaurant2, availableDate2, member1, 3);
 
             ReservationResponse[] reservationResponses = given()
                     .pathParam("restaurantId", restaurant1.getId())
@@ -38,7 +38,7 @@ class ReservationControllerTest extends BaseControllerTest {
                     .then().statusCode(200)
                     .extract().as(ReservationResponse[].class);
 
-            assertThat(reservationResponses).hasSize(3);
+            assertThat(reservationResponses).hasSize(2);
         }
     }
 }
