@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ReservationResponse {
 
+    private Long id;
     private String restaurantId;
     private String restaurantName;
     private String restaurantAddress;
@@ -22,6 +23,7 @@ public class ReservationResponse {
     private ReservationStatus status;
 
     public ReservationResponse(Reservation reservation, double rating) {
+        this.id = reservation.getId();
         this.restaurantId = reservation.getRestaurant().getId();
         this.restaurantName = reservation.getRestaurant().getName();
         this.restaurantAddress = reservation.getRestaurant().getAddress();

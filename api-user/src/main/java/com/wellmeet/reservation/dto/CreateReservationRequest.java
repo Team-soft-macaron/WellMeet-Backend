@@ -21,6 +21,13 @@ public class CreateReservationRequest {
     int partySize;
     String specialRequest;
 
+    public CreateReservationRequest(String restaurantId, Long availableDateId, int partySize, String specialRequest) {
+        this.restaurantId = restaurantId;
+        this.availableDateId = availableDateId;
+        this.partySize = partySize;
+        this.specialRequest = specialRequest;
+    }
+
     public Reservation toDomain(Restaurant restaurant, AvailableDate availableDate, Member member) {
         return new Reservation(
                 restaurant,

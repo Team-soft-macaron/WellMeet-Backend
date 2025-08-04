@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CreateReservationResponse {
 
+    private Long id;
     private String restaurantName;
     private ReservationStatus status;
     private LocalDateTime dateTime;
@@ -17,6 +18,7 @@ public class CreateReservationResponse {
     private String specialRequest;
 
     public CreateReservationResponse(Reservation reservation) {
+        this.id = reservation.getId();
         this.restaurantName = reservation.getRestaurant().getName();
         this.status = reservation.getStatus();
         this.dateTime = reservation.getDateTime();
