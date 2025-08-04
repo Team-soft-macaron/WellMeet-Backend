@@ -20,9 +20,10 @@ public class RestaurantGenerator {
                 owner);
         return restaurantRepository.save(restaurant);
     }
-    
+
     public Restaurant generate(String name, double latitude, double longitude, Owner owner) {
-        Restaurant restaurant = new Restaurant(UUID.randomUUID().toString(), name, "address", latitude, longitude, "thumbnail",
+        Restaurant restaurant = new Restaurant(UUID.randomUUID().toString(), name, "address", latitude, longitude,
+                "thumbnail",
                 owner);
         return restaurantRepository.save(restaurant);
     }
