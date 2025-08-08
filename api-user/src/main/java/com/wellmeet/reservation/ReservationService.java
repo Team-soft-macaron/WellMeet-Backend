@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReservationService {
 
     private final ReservationDomainService reservationDomainService;
+    private final ReservationRedisService reservationRedisService;
     private final RestaurantDomainService restaurantDomainService;
     private final MemberDomainService memberDomainService;
 
@@ -28,6 +29,7 @@ public class ReservationService {
         AvailableDate availableDate = restaurantDomainService.getAvailableDate(request.getAvailableDateId(),
                 request.getRestaurantId());
         reservationDomainService.alreadyReserved(memberId, request.getRestaurantId(), request.getAvailableDateId());
+        reservationRedisService.isReserving(memberId, request.getRestaurantId(), request.getAvailableDateId());
         Member member = memberDomainService.getById(memberId);
         restaurantDomainService.decreaseAvailableDateCapacity(availableDate, request.getPartySize());
         Reservation reservation = request.toDomain(availableDate.getRestaurant(), availableDate, member);
@@ -60,6 +62,7 @@ public class ReservationService {
         AvailableDate availableDate = restaurantDomainService.getAvailableDate(request.getAvailableDateId(),
                 request.getRestaurantId());
         Reservation reservation = reservationDomainService.getByIdAndMemberId(reservationId, memberId);
+        reservationRedisService.isUpdating(memberId, reservationId);
         restaurantDomainService.increaseAvailableDateCapacity(reservation.getAvailableDate(),
                 reservation.getPartySize());
         restaurantDomainService.decreaseAvailableDateCapacity(availableDate, request.getPartySize());

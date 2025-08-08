@@ -19,6 +19,10 @@ spring:
     init:
       mode: always
       schema-locations: classpath:schema.sql
+  data:
+    redis:
+      host: ${secret.redis.host}
+      port: ${secret.redis.port}
 
 cors:
   origin: ${secret.cors.origin}

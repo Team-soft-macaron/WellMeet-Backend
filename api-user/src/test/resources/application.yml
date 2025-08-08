@@ -22,6 +22,10 @@ spring:
     hibernate:
       ddl-auto: create
     defer-datasource-initialization: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 cors:
   origin: http://localhost:5173
