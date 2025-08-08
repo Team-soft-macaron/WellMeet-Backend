@@ -2,7 +2,6 @@ package com.wellmeet.domain.restaurant.availabledate;
 
 import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
 import com.wellmeet.domain.restaurant.availabledate.repository.AvailableDateRepository;
-import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.domain.restaurant.exception.RestaurantErrorCode;
 import com.wellmeet.domain.restaurant.exception.RestaurantException;
 import java.util.List;
@@ -19,8 +18,8 @@ public class AvailableDateDomainService {
         return availableDateRepository.findAllByRestaurantId(restaurantId);
     }
 
-    public AvailableDate getByIdAndRestaurant(Long id, Restaurant restaurant) {
-        return availableDateRepository.findByIdAndRestaurant(id, restaurant)
+    public AvailableDate getByIdAndRestaurantId(Long id, String restaurantId) {
+        return availableDateRepository.findByIdAndRestaurantId(id, restaurantId)
                 .orElseThrow(() -> new RestaurantException(RestaurantErrorCode.AVAILABLE_DATE_NOT_FOUND));
     }
 }

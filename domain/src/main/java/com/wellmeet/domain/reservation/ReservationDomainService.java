@@ -30,4 +30,11 @@ public class ReservationDomainService {
     public List<Reservation> findAllByRestaurantId(String restaurantId) {
         return reservationRepository.findAllByRestaurantId(restaurantId);
     }
+
+    public void alreadyReserved(Long memberId, String restaurantId, Long availableDateId) {
+        if (reservationRepository.existsByMemberIdAndRestaurantIdAndAvailableDateId(
+                memberId, restaurantId, availableDateId)) {
+            throw new ReservationException(ReservationErrorCode.ALREADY_RESERVED);
+        }
+    }
 }
