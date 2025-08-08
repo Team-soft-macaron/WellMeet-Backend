@@ -52,9 +52,4 @@ public class AvailableDate extends BaseEntity {
     public boolean canNotReserve(int partySize) {
         return !isAvailable || maxCapacity < partySize;
     }
-
-    public void increaseCapacity(int partySize) {
-        maxCapacity += partySize;
-        isAvailable = true;
-    }
 }

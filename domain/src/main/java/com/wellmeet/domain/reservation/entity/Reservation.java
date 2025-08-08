@@ -13,12 +13,21 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Table(
+        name = "reservation",
+        uniqueConstraints = @UniqueConstraint(
+                name = "unique_member_restaurant_available_date",
+                columnNames = {"member_id", "restaurant_id", "available_date_id"}
+        )
+)
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

@@ -1,11 +1,13 @@
 package com.wellmeet.domain.reservation;
 
+import com.wellmeet.domain.common.RepositoryErrorDecoder;
 import com.wellmeet.domain.reservation.entity.Reservation;
 import com.wellmeet.domain.reservation.exception.ReservationErrorCode;
 import com.wellmeet.domain.reservation.exception.ReservationException;
 import com.wellmeet.domain.reservation.repository.ReservationRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,7 +17,14 @@ public class ReservationDomainService {
     private final ReservationRepository reservationRepository;
 
     public Reservation save(Reservation reservation) {
-        return reservationRepository.save(reservation);
+        try {
+            return reservationRepository.save(reservation);
+        } catch (DataIntegrityViolationException exception) {
+            if (RepositoryErrorDecoder.isUniqueConstraintViolation(exception)) {
+                throw new ReservationException(ReservationErrorCode.ALREADY_RESERVED);
+            }
+            throw exception;
+        }
     }
 
     public Reservation getByIdAndMemberId(Long reservationId, Long memberId) {
