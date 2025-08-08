@@ -78,6 +78,7 @@ CREATE TABLE IF NOT EXISTS reservation
     FOREIGN KEY (restaurant_id) REFERENCES restaurant (id),
     FOREIGN KEY (available_date_id) REFERENCES available_date (id),
     FOREIGN KEY (member_id) REFERENCES member (id),
+    UNIQUE KEY unique_member_restaurant_available_date (member_id, restaurant_id, available_date_id),
     CHECK (status IN ('PENDING', 'CONFIRMED', 'CANCELED')),
     INDEX idx_reservation_restaurant (restaurant_id),
     INDEX idx_reservation_member (member_id),
