@@ -29,7 +29,7 @@ public class ReservationService {
                 request.getRestaurantId());
         reservationDomainService.alreadyReserved(memberId, request.getRestaurantId(), request.getAvailableDateId());
         Member member = memberDomainService.getById(memberId);
-        availableDate.reduceCapacity(request.getPartySize());
+        restaurantDomainService.decreaseAvailableDateCapacity(availableDate, request.getPartySize());
         Reservation reservation = request.toDomain(availableDate.getRestaurant(), availableDate, member);
 
         Reservation savedReservation = reservationDomainService.save(reservation);
@@ -60,8 +60,9 @@ public class ReservationService {
         AvailableDate availableDate = restaurantDomainService.getAvailableDate(request.getAvailableDateId(),
                 request.getRestaurantId());
         Reservation reservation = reservationDomainService.getByIdAndMemberId(reservationId, memberId);
-        availableDate.increaseCapacity(reservation.getPartySize());
-        availableDate.reduceCapacity(request.getPartySize());
+        restaurantDomainService.increaseAvailableDateCapacity(reservation.getAvailableDate(),
+                reservation.getPartySize());
+        restaurantDomainService.decreaseAvailableDateCapacity(availableDate, request.getPartySize());
         reservation.update(
                 availableDate,
                 request.getPartySize(),
