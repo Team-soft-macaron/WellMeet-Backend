@@ -15,7 +15,7 @@ public enum RestaurantErrorCode {
     RESTAURANT_NOT_FOUND(404, "해당 레스토랑을 찾을 수 없습니다."),
 
     AVAILABLE_DATE_NOT_FOUND(404, "해당 예약 가능한 날짜를 찾을 수 없습니다."),
-    NOT_ENOUGH_CAPACITY(400, "예약 가능한 인원이 부족합니다."),
+    NOT_ENOUGH_CAPACITY(400, "해당 시간에 예약이 불가능합니다."),
     TIME_SEQUENCE_INVALID(400, "시간 순서가 잘못되었습니다."),
     INVALID_MENU_PRICE(400, "유효하지 않은 메뉴 가격입니다."),
     ;

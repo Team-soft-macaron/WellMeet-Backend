@@ -22,4 +22,11 @@ public class AvailableDateDomainService {
         return availableDateRepository.findByIdAndRestaurantId(id, restaurantId)
                 .orElseThrow(() -> new RestaurantException(RestaurantErrorCode.AVAILABLE_DATE_NOT_FOUND));
     }
+
+    public void decreaseCapacity(AvailableDate availableDate, int partySize) {
+        availableDateRepository.decreaseCapacity(availableDate.getId(), partySize);
+        if (availableDate.getMaxCapacity() - partySize == 0) {
+            availableDateRepository.changeIsNotAvailable(availableDate.getId());
+        }
+    }
 }

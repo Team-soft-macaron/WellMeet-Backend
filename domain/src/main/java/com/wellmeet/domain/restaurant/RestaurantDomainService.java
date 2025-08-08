@@ -53,4 +53,11 @@ public class RestaurantDomainService {
     public AvailableDate getAvailableDate(Long availableDateId, String restaurantId) {
         return availableDateDomainService.getByIdAndRestaurantId(availableDateId, restaurantId);
     }
+
+    public void decreaseAvailableDateCapacity(AvailableDate availableDate, int partySize) {
+        if (availableDate.canNotReserve(partySize)) {
+            throw new RestaurantException(RestaurantErrorCode.NOT_ENOUGH_CAPACITY);
+        }
+        availableDateDomainService.decreaseCapacity(availableDate, partySize);
+    }
 }
