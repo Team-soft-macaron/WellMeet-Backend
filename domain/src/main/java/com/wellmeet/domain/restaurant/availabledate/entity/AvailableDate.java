@@ -51,7 +51,7 @@ public class AvailableDate extends BaseEntity {
         this.restaurant = restaurant;
     }
 
-    public void reserveParty(int partySize) {
+    public void reduceCapacity(int partySize) {
         if (maxCapacity < partySize) {
             throw new RestaurantException(RestaurantErrorCode.NOT_ENOUGH_CAPACITY);
         }
@@ -61,7 +61,7 @@ public class AvailableDate extends BaseEntity {
         }
     }
 
-    public void cancelParty(int partySize) {
+    public void increaseCapacity(int partySize) {
         maxCapacity += partySize;
         isAvailable = true;
     }

@@ -26,7 +26,7 @@ class AvailableDateTest {
                     null
             );
             int partySize = 5;
-            availableDate.reserveParty(partySize);
+            availableDate.reduceCapacity(partySize);
 
             assertAll(
                     () -> assertThat(availableDate.getMaxCapacity()).isEqualTo(maxCapacity - partySize),
@@ -44,7 +44,7 @@ class AvailableDateTest {
                     null
             );
             int partySize = 10;
-            availableDate.reserveParty(partySize);
+            availableDate.reduceCapacity(partySize);
 
             assertAll(
                     () -> assertThat(availableDate.getMaxCapacity()).isEqualTo(maxCapacity - partySize),
@@ -62,7 +62,7 @@ class AvailableDateTest {
                     null
             );
 
-            assertThatThrownBy(() -> availableDate.reserveParty(maxCapacity + 1))
+            assertThatThrownBy(() -> availableDate.reduceCapacity(maxCapacity + 1))
                     .isInstanceOf(RestaurantException.class)
                     .hasMessage(RestaurantErrorCode.NOT_ENOUGH_CAPACITY.getMessage());
         }
