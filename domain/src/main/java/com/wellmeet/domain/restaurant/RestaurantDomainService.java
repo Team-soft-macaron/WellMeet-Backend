@@ -50,7 +50,7 @@ public class RestaurantDomainService {
         return menuDomainService.getByRestaurantId(restaurantId);
     }
 
-    public AvailableDate getAvailableDate(Long availableDateId, Restaurant restaurant) {
-        return availableDateDomainService.getByIdAndRestaurant(availableDateId, restaurant);
+    public AvailableDate getAvailableDate(Long availableDateId, String restaurantId) {
+        return availableDateDomainService.getByIdAndRestaurantId(availableDateId, restaurantId);
     }
 }

@@ -1,7 +1,6 @@
 package com.wellmeet.domain.restaurant.availabledate.repository;
 
 import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
-import com.wellmeet.domain.restaurant.entity.Restaurant;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,5 +11,5 @@ public interface AvailableDateRepository extends JpaRepository<AvailableDate, Lo
 
     List<AvailableDate> findAllByRestaurantId(String restaurantId);
 
-    Optional<AvailableDate> findByIdAndRestaurant(Long id, Restaurant restaurant);
+    Optional<AvailableDate> findByIdAndRestaurantId(Long id, String restaurantId);
 }

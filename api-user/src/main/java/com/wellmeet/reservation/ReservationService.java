@@ -6,7 +6,6 @@ import com.wellmeet.domain.reservation.ReservationDomainService;
 import com.wellmeet.domain.reservation.entity.Reservation;
 import com.wellmeet.domain.restaurant.RestaurantDomainService;
 import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
-import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.reservation.dto.CreateReservationRequest;
 import com.wellmeet.reservation.dto.CreateReservationResponse;
 import com.wellmeet.reservation.dto.ReservationResponse;
@@ -26,12 +25,12 @@ public class ReservationService {
 
     @Transactional
     public CreateReservationResponse reserve(Long memberId, CreateReservationRequest request) {
-        Restaurant restaurant = restaurantDomainService.getById(request.getRestaurantId());
         AvailableDate availableDate = restaurantDomainService.getAvailableDate(request.getAvailableDateId(),
-                restaurant);
+                request.getRestaurantId());
+        reservationDomainService.alreadyReserved(memberId, request.getRestaurantId(), request.getAvailableDateId());
         Member member = memberDomainService.getById(memberId);
-        availableDate.reserveParty(request.getPartySize());
-        Reservation reservation = request.toDomain(restaurant, availableDate, member);
+        availableDate.reduceCapacity(request.getPartySize());
+        Reservation reservation = request.toDomain(availableDate.getRestaurant(), availableDate, member);
 
         Reservation savedReservation = reservationDomainService.save(reservation);
         return new CreateReservationResponse(savedReservation);
@@ -58,12 +57,11 @@ public class ReservationService {
             Long memberId,
             CreateReservationRequest request
     ) {
-        Restaurant restaurant = restaurantDomainService.getById(request.getRestaurantId());
         AvailableDate availableDate = restaurantDomainService.getAvailableDate(request.getAvailableDateId(),
-                restaurant);
+                request.getRestaurantId());
         Reservation reservation = reservationDomainService.getByIdAndMemberId(reservationId, memberId);
-        availableDate.cancelParty(reservation.getPartySize());
-        availableDate.reserveParty(request.getPartySize());
+        availableDate.increaseCapacity(reservation.getPartySize());
+        availableDate.reduceCapacity(request.getPartySize());
         reservation.update(
                 availableDate,
                 request.getPartySize(),
@@ -76,7 +74,7 @@ public class ReservationService {
     public void cancel(Long reservationId, Long memberId) {
         Reservation reservation = reservationDomainService.getByIdAndMemberId(reservationId, memberId);
         AvailableDate availableDate = reservation.getAvailableDate();
-        availableDate.cancelParty(reservation.getPartySize());
+        availableDate.increaseCapacity(reservation.getPartySize());
         reservation.cancel();
     }
 }
