@@ -75,7 +75,7 @@ public class ReservationService {
     public void cancel(Long reservationId, Long memberId) {
         Reservation reservation = reservationDomainService.getByIdAndMemberId(reservationId, memberId);
         AvailableDate availableDate = reservation.getAvailableDate();
-        availableDate.increaseCapacity(reservation.getPartySize());
+        restaurantDomainService.increaseAvailableDateCapacity(availableDate, reservation.getPartySize());
         reservation.cancel();
     }
 }
