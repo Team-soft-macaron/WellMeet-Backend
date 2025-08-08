@@ -24,9 +24,13 @@ public class AvailableDateDomainService {
     }
 
     public void decreaseCapacity(AvailableDate availableDate, int partySize) {
-        availableDateRepository.decreaseCapacity(availableDate.getId(), partySize);
-        if (availableDate.getMaxCapacity() - partySize == 0) {
-            availableDateRepository.changeIsNotAvailable(availableDate.getId());
+        int row = availableDateRepository.decreaseCapacity(availableDate.getId(), partySize);
+        if (row == 0) {
+            throw new RestaurantException(RestaurantErrorCode.NOT_ENOUGH_CAPACITY);
         }
+    }
+
+    public void increaseCapacity(AvailableDate availableDate, int partySize) {
+        availableDateRepository.increaseCapacity(availableDate.getId(), partySize);
     }
 }

@@ -60,4 +60,8 @@ public class RestaurantDomainService {
         }
         availableDateDomainService.decreaseCapacity(availableDate, partySize);
     }
+
+    public void increaseAvailableDateCapacity(AvailableDate availableDate, int partySize) {
+        availableDateDomainService.increaseCapacity(availableDate, partySize);
+    }
 }

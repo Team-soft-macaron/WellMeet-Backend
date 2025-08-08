@@ -17,10 +17,13 @@ public interface AvailableDateRepository extends JpaRepository<AvailableDate, Lo
     Optional<AvailableDate> findByIdAndRestaurantId(Long id, String restaurantId);
 
     @Modifying
-    @Query("update AvailableDate a set a.maxCapacity = a.maxCapacity - :partySize where a.id = :id")
-    void decreaseCapacity(@Param("id") Long id, @Param("partySize") int partySize);
+    @Query("update AvailableDate a "
+            + "set a.maxCapacity = a.maxCapacity - :partySize, "
+            + "a.isAvailable = case when (a.maxCapacity - :partySize) = 0 then false else a.isAvailable end "
+            + "where a.id = :id and a.maxCapacity >= :partySize")
+    int decreaseCapacity(@Param("id") Long id, @Param("partySize") int partySize);
 
     @Modifying
-    @Query("update AvailableDate a set a.isAvailable = false where a.id = :id")
-    void changeIsNotAvailable(@Param("id") Long id);
+    @Query("update AvailableDate a set a.maxCapacity = a.maxCapacity + :partySize, a.isAvailable = true where a.id = :id")
+    void increaseCapacity(@Param("id") Long id, @Param("partySize") int partySize);
 }

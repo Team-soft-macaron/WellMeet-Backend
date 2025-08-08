@@ -60,7 +60,8 @@ public class ReservationService {
         AvailableDate availableDate = restaurantDomainService.getAvailableDate(request.getAvailableDateId(),
                 request.getRestaurantId());
         Reservation reservation = reservationDomainService.getByIdAndMemberId(reservationId, memberId);
-        availableDate.increaseCapacity(reservation.getPartySize());
+        restaurantDomainService.increaseAvailableDateCapacity(reservation.getAvailableDate(),
+                reservation.getPartySize());
         restaurantDomainService.decreaseAvailableDateCapacity(availableDate, request.getPartySize());
         reservation.update(
                 availableDate,
