@@ -138,7 +138,7 @@ class ReservationServiceTest extends BaseServiceTest {
             AvailableDate foundAvailableDate2 = availableDateRepository.findById(availableDate2.getId()).get();
 
             assertAll(
-                    () -> assertThat(reservations).hasSize(2),
+                    () -> assertThat(reservations).hasSize(1),
                     () -> assertThat(foundAvailableDate1.getMaxCapacity()).isEqualTo(capacity),
                     () -> assertThat(foundAvailableDate2.getMaxCapacity()).isEqualTo(capacity - changePartySize)
             );
