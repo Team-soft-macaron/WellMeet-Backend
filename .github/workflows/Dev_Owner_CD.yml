@@ -14,6 +14,12 @@ on:
       - 'settings.gradle'
       - '.github/workflows/Dev_Owner_CD.yml'
 
+permissions:
+  contents: read
+  checks: write
+  actions: read
+  pull-requests: write
+
 jobs:
   test:
     uses: ./.github/workflows/Dev_CI.yml
