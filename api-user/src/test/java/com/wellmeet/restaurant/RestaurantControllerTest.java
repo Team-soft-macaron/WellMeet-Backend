@@ -78,7 +78,7 @@ class RestaurantControllerTest extends BaseControllerTest {
 
             AvailableDateResponse[] responses = given()
                     .contentType(ContentType.JSON)
-                    .when().get("/user/restaurant/available/{id}", restaurant.getId())
+                    .when().get("/user/restaurant/{id}/available", restaurant.getId())
                     .then().statusCode(HttpStatus.OK.value())
                     .extract().as(AvailableDateResponse[].class);
 

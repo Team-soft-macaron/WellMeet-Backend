@@ -34,7 +34,7 @@ public class RestaurantController {
         return restaurantService.getRestaurant(restaurantId, memberId);
     }
 
-    @GetMapping("/available/{restaurantId}")
+    @GetMapping("/{restaurantId}/available")
     public List<AvailableDateResponse> getRestaurantAvailableDates(
             @PathVariable String restaurantId
     ) {

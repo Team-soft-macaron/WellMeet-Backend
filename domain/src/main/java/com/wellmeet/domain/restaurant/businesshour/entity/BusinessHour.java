@@ -31,12 +31,9 @@ public class BusinessHour extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private DayOfWeek dayOfWeek;
 
-    @NotNull
+    private boolean isOpen;
     private LocalTime openTime;
-
-    @NotNull
     private LocalTime closeTime;
-
     private LocalTime breakStartTime;
     private LocalTime breakEndTime;
 
@@ -44,13 +41,16 @@ public class BusinessHour extends BaseEntity {
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
-    public BusinessHour(DayOfWeek dayOfWeek, LocalTime openTime, LocalTime closeTime,
+    public BusinessHour(DayOfWeek dayOfWeek, boolean isOpen, LocalTime openTime, LocalTime closeTime,
                         LocalTime breakStartTime, LocalTime breakEndTime, Restaurant restaurant) {
-        validateTime(openTime, closeTime);
-        validateTime(breakStartTime, breakEndTime);
-        validateBreakTime(openTime, closeTime, breakStartTime, breakEndTime);
+        if (isOpen) {
+            validateTime(openTime, closeTime);
+            validateTime(breakStartTime, breakEndTime);
+            validateBreakTime(openTime, closeTime, breakStartTime, breakEndTime);
+        }
 
         this.dayOfWeek = dayOfWeek;
+        this.isOpen = isOpen;
         this.openTime = openTime;
         this.closeTime = closeTime;
         this.breakStartTime = breakStartTime;
@@ -69,5 +69,25 @@ public class BusinessHour extends BaseEntity {
         if (breakStartTime.isBefore(openTime) || breakEndTime.isAfter(closeTime)) {
             throw new RestaurantException(RestaurantErrorCode.TIME_SEQUENCE_INVALID);
         }
+    }
+
+    public void updateHour(
+            boolean isOpen,
+            LocalTime openTime,
+            LocalTime closeTime,
+            LocalTime breakStartTime,
+            LocalTime breakEndTime
+    ) {
+        if (isOpen) {
+            validateTime(openTime, closeTime);
+            validateTime(breakStartTime, breakEndTime);
+            validateBreakTime(openTime, closeTime, breakStartTime, breakEndTime);
+        }
+
+        this.isOpen = isOpen;
+        this.openTime = openTime;
+        this.closeTime = closeTime;
+        this.breakStartTime = breakStartTime;
+        this.breakEndTime = breakEndTime;
     }
 }

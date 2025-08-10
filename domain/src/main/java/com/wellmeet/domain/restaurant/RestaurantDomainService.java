@@ -2,6 +2,8 @@ package com.wellmeet.domain.restaurant;
 
 import com.wellmeet.domain.restaurant.availabledate.AvailableDateDomainService;
 import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
+import com.wellmeet.domain.restaurant.businesshour.BusinessHourDomainService;
+import com.wellmeet.domain.restaurant.businesshour.entity.BusinessHours;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.domain.restaurant.exception.RestaurantErrorCode;
 import com.wellmeet.domain.restaurant.exception.RestaurantException;
@@ -23,6 +25,7 @@ public class RestaurantDomainService {
     private final ReviewDomainService reviewDomainService;
     private final AvailableDateDomainService availableDateDomainService;
     private final MenuDomainService menuDomainService;
+    private final BusinessHourDomainService businessHourDomainService;
 
     public Restaurant getById(String id) {
         return restaurantRepository.findById(id)
@@ -63,5 +66,9 @@ public class RestaurantDomainService {
 
     public void increaseAvailableDateCapacity(AvailableDate availableDate, int partySize) {
         availableDateDomainService.increaseCapacity(availableDate, partySize);
+    }
+
+    public BusinessHours getOperatingHours(String restaurantId) {
+        return businessHourDomainService.getOperatingHours(restaurantId);
     }
 }
