@@ -1,6 +1,7 @@
 package com.wellmeet;
 
 import com.wellmeet.fixture.AvailableDateGenerator;
+import com.wellmeet.fixture.BusinessHourGenerator;
 import com.wellmeet.fixture.MemberGenerator;
 import com.wellmeet.fixture.OwnerGenerator;
 import com.wellmeet.fixture.ReservationGenerator;
@@ -34,6 +35,9 @@ public abstract class BaseControllerTest {
 
     @Autowired
     protected AvailableDateGenerator availableDateGenerator;
+
+    @Autowired
+    protected BusinessHourGenerator businessHourGenerator;
 
     @LocalServerPort
     private int port;
