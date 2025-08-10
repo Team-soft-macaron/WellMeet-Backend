@@ -1,6 +1,9 @@
 package com.wellmeet.restaurant.dto;
 
+import com.wellmeet.domain.restaurant.businesshour.entity.BusinessHour;
+import com.wellmeet.domain.restaurant.businesshour.entity.DayOfWeek;
 import java.time.LocalTime;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -8,48 +11,44 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OperatingHoursResponse {
 
-    private OperatingHours operatingHours;
+    private List<DayHours> operatingHours;
 
-    @Getter
-    @NoArgsConstructor
-    public static class OperatingHours {
-        private DayHours monday;
-        private DayHours tuesday;
-        private DayHours wednesday;
-        private DayHours thursday;
-        private DayHours friday;
-        private DayHours saturday;
-        private DayHours sunday;
-        private HolidayHours holidays;
+    public OperatingHoursResponse(List<BusinessHour> operatingHours) {
+        this.operatingHours = operatingHours
+                .stream()
+                .map(DayHours::new)
+                .toList();
     }
 
     @Getter
     @NoArgsConstructor
     public static class DayHours {
+
+        private DayOfWeek dayOfWeek;
         private LocalTime open;
         private LocalTime close;
-        private boolean isClosed;
+        private boolean operating;
         private BreakTime breakTime;
+
+        public DayHours(BusinessHour businessHour) {
+            this.dayOfWeek = businessHour.getDayOfWeek();
+            this.open = businessHour.getOpenTime();
+            this.close = businessHour.getCloseTime();
+            this.operating = businessHour.isOpen();
+            this.breakTime = new BreakTime(businessHour);
+        }
     }
 
     @Getter
     @NoArgsConstructor
     public static class BreakTime {
+
         private LocalTime start;
         private LocalTime end;
-    }
 
-    @Getter
-    @NoArgsConstructor
-    public static class HolidayHours {
-        private boolean isOpen;
-        private HolidayTime hours;
-    }
-
-    @Getter
-    @NoArgsConstructor
-    public static class HolidayTime {
-        private LocalTime open;
-        private LocalTime close;
+        public BreakTime(BusinessHour businessHour) {
+            this.start = businessHour.getBreakStartTime();
+            this.end = businessHour.getBreakEndTime();
+        }
     }
 }
