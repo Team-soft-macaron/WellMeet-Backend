@@ -1,27 +1,10 @@
 spring:
+  config:
+    import:
+      - classpath:application-domain-local.yml
+      - classpath:application-domain-redis-local.yml
   application:
     name: WellMeet-Backend
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/wellmeet
-    username: root
-    password:
-  jpa:
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.MySQLDialect
-  sql:
-    init:
-      mode: always
-      schema-locations: classpath:schema.sql
-      platform: mysql
-      encoding: UTF-8
-  data:
-    redis:
-      host: redis://localhost
-      port: 6379
 
 cors:
   origin: http://localhost:5173
