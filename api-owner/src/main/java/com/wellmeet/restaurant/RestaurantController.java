@@ -16,8 +16,9 @@ public class RestaurantController {
 
     @GetMapping("/operating-hours")
     public OperatingHoursResponse getOperatingHours(
-            @RequestParam(value = "ownerId") Long ownerId
+            @RequestParam(value = "ownerId") Long ownerId,
+            @RequestParam(value = "restaurantId") String restaurantId
     ) {
-        return restaurantService.getOperatingHours();
+        return restaurantService.getOperatingHours(restaurantId);
     }
 }
