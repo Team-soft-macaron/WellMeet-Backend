@@ -1,0 +1,5 @@
+spring:
+  data:
+    redis:
+      host: ${secret.redis.host}
+      port: ${secret.redis.port}
