@@ -105,15 +105,16 @@ CREATE TABLE IF NOT EXISTS business_hour
 (
     id                BIGINT AUTO_INCREMENT PRIMARY KEY,
     day_of_week       VARCHAR(255) NOT NULL,
-    open_time         TIME NOT NULL,
-    close_time        TIME NOT NULL,
+    is_open           BOOLEAN NOT NULL,
+    open_time         TIME,
+    close_time        TIME,
     break_start_time  TIME,
     break_end_time    TIME,
     restaurant_id     VARCHAR(255) NOT NULL,
     created_at        DATETIME(6) NOT NULL,
     updated_at        DATETIME(6) NOT NULL,
     FOREIGN KEY (restaurant_id) REFERENCES restaurant (id),
-    CHECK (day_of_week IN ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY')),
+    CHECK (day_of_week IN ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY', 'HOLIDAY')),
     INDEX idx_business_hour_restaurant (restaurant_id)
 );
 

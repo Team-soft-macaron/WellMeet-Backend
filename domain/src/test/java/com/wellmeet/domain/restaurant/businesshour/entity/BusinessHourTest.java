@@ -19,7 +19,7 @@ class BusinessHourTest {
             LocalTime openingTime = LocalTime.of(10, 0);
             LocalTime closingTime = LocalTime.of(9, 0);
 
-            assertThatThrownBy(() -> new BusinessHour(DayOfWeek.MONDAY, openingTime, closingTime, LocalTime.now(),
+            assertThatThrownBy(() -> new BusinessHour(DayOfWeek.MONDAY, true, openingTime, closingTime, LocalTime.now(),
                     LocalTime.now().plusHours(1), null))
                     .isInstanceOf(RestaurantException.class)
                     .hasMessage(RestaurantErrorCode.TIME_SEQUENCE_INVALID.getMessage());
@@ -31,7 +31,8 @@ class BusinessHourTest {
             LocalTime breakEndTime = LocalTime.of(13, 0);
 
             assertThatThrownBy(
-                    () -> new BusinessHour(DayOfWeek.MONDAY, LocalTime.of(10, 0), LocalTime.of(20, 0), breakStartTime,
+                    () -> new BusinessHour(DayOfWeek.MONDAY, true, LocalTime.of(10, 0), LocalTime.of(20, 0),
+                            breakStartTime,
                             breakEndTime, null))
                     .isInstanceOf(RestaurantException.class)
                     .hasMessage(RestaurantErrorCode.TIME_SEQUENCE_INVALID.getMessage());
@@ -48,13 +49,13 @@ class BusinessHourTest {
 
             assertAll(
                     () -> assertThatThrownBy(() -> new BusinessHour(
-                            DayOfWeek.MONDAY, openingTime, closingTime, openingTime.minusHours(1),
+                            DayOfWeek.MONDAY, true, openingTime, closingTime, openingTime.minusHours(1),
                             closingTime.minusHours(1), null
                     )).isInstanceOf(RestaurantException.class)
                             .hasMessage(RestaurantErrorCode.TIME_SEQUENCE_INVALID.getMessage()),
 
                     () -> assertThatThrownBy(() -> new BusinessHour(
-                            DayOfWeek.MONDAY, openingTime, closingTime, openingTime.plusHours(1),
+                            DayOfWeek.MONDAY, true, openingTime, closingTime, openingTime.plusHours(1),
                             closingTime.plusHours(1), null
                     )).isInstanceOf(RestaurantException.class)
                             .hasMessage(RestaurantErrorCode.TIME_SEQUENCE_INVALID.getMessage())
