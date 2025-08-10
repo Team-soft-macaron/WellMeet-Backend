@@ -1,6 +1,7 @@
 package com.wellmeet.restaurant.dto;
 
 import com.wellmeet.domain.restaurant.businesshour.entity.BusinessHour;
+import com.wellmeet.domain.restaurant.businesshour.entity.BusinessHours;
 import com.wellmeet.domain.restaurant.businesshour.entity.DayOfWeek;
 import java.time.LocalTime;
 import java.util.List;
@@ -13,8 +14,8 @@ public class OperatingHoursResponse {
 
     private List<DayHours> operatingHours;
 
-    public OperatingHoursResponse(List<BusinessHour> operatingHours) {
-        this.operatingHours = operatingHours
+    public OperatingHoursResponse(BusinessHours operatingHours) {
+        this.operatingHours = operatingHours.getValue()
                 .stream()
                 .map(DayHours::new)
                 .toList();

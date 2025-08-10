@@ -43,9 +43,11 @@ public class BusinessHour extends BaseEntity {
 
     public BusinessHour(DayOfWeek dayOfWeek, boolean isOpen, LocalTime openTime, LocalTime closeTime,
                         LocalTime breakStartTime, LocalTime breakEndTime, Restaurant restaurant) {
-        validateTime(openTime, closeTime);
-        validateTime(breakStartTime, breakEndTime);
-        validateBreakTime(openTime, closeTime, breakStartTime, breakEndTime);
+        if (isOpen) {
+            validateTime(openTime, closeTime);
+            validateTime(breakStartTime, breakEndTime);
+            validateBreakTime(openTime, closeTime, breakStartTime, breakEndTime);
+        }
 
         this.dayOfWeek = dayOfWeek;
         this.isOpen = isOpen;
@@ -76,9 +78,11 @@ public class BusinessHour extends BaseEntity {
             LocalTime breakStartTime,
             LocalTime breakEndTime
     ) {
-        validateTime(openTime, closeTime);
-        validateTime(breakStartTime, breakEndTime);
-        validateBreakTime(openTime, closeTime, breakStartTime, breakEndTime);
+        if (isOpen) {
+            validateTime(openTime, closeTime);
+            validateTime(breakStartTime, breakEndTime);
+            validateBreakTime(openTime, closeTime, breakStartTime, breakEndTime);
+        }
 
         this.isOpen = isOpen;
         this.openTime = openTime;

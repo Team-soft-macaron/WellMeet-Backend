@@ -2,11 +2,11 @@ package com.wellmeet.restaurant;
 
 import com.wellmeet.domain.restaurant.RestaurantDomainService;
 import com.wellmeet.domain.restaurant.businesshour.entity.BusinessHour;
+import com.wellmeet.domain.restaurant.businesshour.entity.BusinessHours;
 import com.wellmeet.domain.restaurant.businesshour.entity.DayOfWeek;
 import com.wellmeet.restaurant.dto.OperatingHoursResponse;
 import com.wellmeet.restaurant.dto.UpdateOperatingHoursRequest;
 import com.wellmeet.restaurant.dto.UpdateOperatingHoursRequest.DayHours;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class RestaurantService {
 
     @Transactional(readOnly = true)
     public OperatingHoursResponse getOperatingHours(String restaurantId) {
-        List<BusinessHour> operatingHours = restaurantDomainService.getOperatingHours(restaurantId);
+        BusinessHours operatingHours = restaurantDomainService.getOperatingHours(restaurantId);
         return new OperatingHoursResponse(operatingHours);
     }
 
@@ -33,9 +33,9 @@ public class RestaurantService {
         Map<DayOfWeek, UpdateOperatingHoursRequest.DayHours> dayHours = request.getOperatingHours()
                 .stream()
                 .collect(Collectors.toMap(DayHours::getDayOfWeek, dayHour -> dayHour));
-        List<BusinessHour> operatingHours = restaurantDomainService.getOperatingHours(restaurantId);
-        operatingHours.forEach(hour -> updateOperatingHour(hour, dayHours.get(hour.getDayOfWeek())));
-
+        BusinessHours operatingHours = restaurantDomainService.getOperatingHours(restaurantId);
+        operatingHours.getValue()
+                .forEach(hour -> updateOperatingHour(hour, dayHours.get(hour.getDayOfWeek())));
         return new OperatingHoursResponse(operatingHours);
     }
 
@@ -44,8 +44,8 @@ public class RestaurantService {
                 dayHours.isOperating(),
                 dayHours.getOpen(),
                 dayHours.getClose(),
-                dayHours.getBreakTime().getStart(),
-                dayHours.getBreakTime().getEnd()
+                dayHours.getBreakStart(),
+                dayHours.getBreakEnd()
         );
     }
 }
