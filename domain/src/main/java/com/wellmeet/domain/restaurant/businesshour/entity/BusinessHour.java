@@ -68,4 +68,22 @@ public class BusinessHour extends BaseEntity {
             throw new RestaurantException(RestaurantErrorCode.TIME_SEQUENCE_INVALID);
         }
     }
+
+    public void updateHour(
+            boolean isOpen,
+            LocalTime openTime,
+            LocalTime closeTime,
+            LocalTime breakStartTime,
+            LocalTime breakEndTime
+    ) {
+        validateTime(openTime, closeTime);
+        validateTime(breakStartTime, breakEndTime);
+        validateBreakTime(openTime, closeTime, breakStartTime, breakEndTime);
+
+        this.isOpen = isOpen;
+        this.openTime = openTime;
+        this.closeTime = closeTime;
+        this.breakStartTime = breakStartTime;
+        this.breakEndTime = breakEndTime;
+    }
 }
