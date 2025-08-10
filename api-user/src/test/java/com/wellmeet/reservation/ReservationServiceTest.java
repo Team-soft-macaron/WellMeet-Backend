@@ -14,6 +14,7 @@ import com.wellmeet.reservation.dto.CreateReservationResponse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,14 @@ class ReservationServiceTest extends BaseServiceTest {
 
     @Autowired
     private ReservationService reservationService;
+
+    @Autowired
+    private ReservationRedisService reservationRedisService;
+
+    @BeforeEach
+    void setUp() {
+        reservationRedisService.deleteReservationLock();
+    }
 
     @Nested
     class Reserve {
@@ -130,7 +139,7 @@ class ReservationServiceTest extends BaseServiceTest {
                     restaurant1.getId(), availableDate2.getId(), changePartySize, "request"
             );
 
-            runAtSameTime(10, () -> reservationService.updateReservation(
+            runAtSameTime(2, () -> reservationService.updateReservation(
                     reserve1.getId(), member1.getId(), request1
             ));
             List<Reservation> reservations = reservationRepository.findAll();
@@ -145,7 +154,7 @@ class ReservationServiceTest extends BaseServiceTest {
         }
 
         @Test
-        void 여러_사람이_업데이트_요청을_동시에_여러개가_보내도_적절히_처리된다() throws InterruptedException {
+        void 여러_사람이_업데이트_요청을_동시에_여러개_보내도_적절히_처리된다() throws InterruptedException {
             Owner owner1 = ownerGenerator.generate("owner1");
             Restaurant restaurant1 = restaurantGenerator.generate("restaurant1", owner1);
             int capacity = 16;

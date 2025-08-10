@@ -18,6 +18,10 @@ spring:
       schema-locations: classpath:schema.sql
       platform: mysql
       encoding: UTF-8
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 cors:
   origin: http://localhost:5173

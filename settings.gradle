@@ -5,3 +5,5 @@ include 'common-test'
 include 'domain'
 include 'api-owner'
 include 'api-user'
+include 'domain-redis'
+
