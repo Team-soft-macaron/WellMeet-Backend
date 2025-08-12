@@ -1,7 +1,7 @@
 -- Owner 테이블
 CREATE TABLE IF NOT EXISTS owner
 (
-    id                   BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id                   VARCHAR(255) PRIMARY KEY,
     name                 VARCHAR(255) NOT NULL,
     email                VARCHAR(255) NOT NULL,
     reservation_enabled  BOOLEAN NOT NULL DEFAULT TRUE,
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS restaurant
     latitude   DOUBLE NOT NULL,
     longitude  DOUBLE NOT NULL,
     thumbnail  VARCHAR(255),
-    owner_id   BIGINT NOT NULL,
+    owner_id   VARCHAR(255) NOT NULL,
     created_at DATETIME(6) NOT NULL,
     updated_at DATETIME(6) NOT NULL,
     FOREIGN KEY (owner_id) REFERENCES owner (id),

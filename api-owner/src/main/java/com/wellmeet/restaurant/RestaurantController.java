@@ -21,7 +21,7 @@ public class RestaurantController {
 
     @GetMapping("/{restaurantId}/operating-hours")
     public OperatingHoursResponse getOperatingHours(
-            @RequestParam(value = "ownerId") Long ownerId,
+            @RequestParam(value = "ownerId") String ownerId,
             @PathVariable String restaurantId
     ) {
         return restaurantService.getOperatingHours(restaurantId);
@@ -29,7 +29,7 @@ public class RestaurantController {
 
     @PutMapping("/{restaurantId}/operating-hours")
     public OperatingHoursResponse updateOperatingHours(
-            @RequestParam Long ownerId,
+            @RequestParam String ownerId,
             @PathVariable String restaurantId,
             @Valid @RequestBody UpdateOperatingHoursRequest request
     ) {

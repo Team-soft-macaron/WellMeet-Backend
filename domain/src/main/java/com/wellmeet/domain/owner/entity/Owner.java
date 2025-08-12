@@ -4,10 +4,9 @@ import com.wellmeet.domain.common.BaseEntity;
 import com.wellmeet.domain.owner.exception.OwnerErrorCode;
 import com.wellmeet.domain.owner.exception.OwnerException;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,8 +19,7 @@ public class Owner extends BaseEntity {
     protected static final int MAX_NAME_LENGTH = 10;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @NotBlank
     private String name;
@@ -35,6 +33,7 @@ public class Owner extends BaseEntity {
     public Owner(String name, String email) {
         validateName(name);
 
+        this.id = UUID.randomUUID().toString();
         this.name = name;
         this.email = email;
         this.reservationEnabled = true;
