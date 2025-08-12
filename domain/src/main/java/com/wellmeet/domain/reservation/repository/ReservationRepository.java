@@ -9,11 +9,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
-    Optional<Reservation> findByIdAndMemberId(Long id, Long memberId);
+    Optional<Reservation> findByIdAndMemberId(Long id, String memberId);
 
-    List<Reservation> findAllByMemberId(Long memberId);
+    List<Reservation> findAllByMemberId(String memberId);
 
     List<Reservation> findAllByRestaurantId(String restaurantId);
 
-    boolean existsByMemberIdAndRestaurantIdAndAvailableDateId(Long memberId, String restaurantId, Long availableDateId);
+    boolean existsByMemberIdAndRestaurantIdAndAvailableDateId(String memberId, String restaurantId,
+                                                              Long availableDateId);
 }

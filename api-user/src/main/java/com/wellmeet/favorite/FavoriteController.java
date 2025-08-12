@@ -22,7 +22,7 @@ public class FavoriteController {
 
     @GetMapping("/restaurant/list")
     public List<FavoriteRestaurantResponse> getFavoriteRestaurants(
-            @RequestParam("memberId") Long memberId
+            @RequestParam("memberId") String memberId
     ) {
         return favoriteService.getFavoriteRestaurants(memberId);
     }
@@ -30,7 +30,7 @@ public class FavoriteController {
     @PostMapping("/restaurant/{restaurantId}")
     @ResponseStatus(HttpStatus.CREATED)
     public FavoriteRestaurantResponse addFavoriteRestaurant(
-            @RequestParam("memberId") Long memberId,
+            @RequestParam("memberId") String memberId,
             @PathVariable("restaurantId") String restaurantId
     ) {
         return favoriteService.addFavoriteRestaurant(memberId, restaurantId);
@@ -39,7 +39,7 @@ public class FavoriteController {
     @DeleteMapping("/restaurant/{restaurantId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeFavoriteRestaurant(
-            @RequestParam("memberId") Long memberId,
+            @RequestParam("memberId") String memberId,
             @PathVariable("restaurantId") String restaurantId
     ) {
         favoriteService.removeFavoriteRestaurant(memberId, restaurantId);

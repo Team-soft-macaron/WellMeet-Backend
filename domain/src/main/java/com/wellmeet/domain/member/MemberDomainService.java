@@ -13,7 +13,7 @@ public class MemberDomainService {
 
     private final MemberRepository memberRepository;
 
-    public Member getById(Long memberId) {
+    public Member getById(String memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
     }

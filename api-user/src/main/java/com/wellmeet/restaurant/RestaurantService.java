@@ -38,7 +38,7 @@ public class RestaurantService {
     }
 
     @Transactional(readOnly = true)
-    public RestaurantResponse getRestaurant(String restaurantId, Long memberId) {
+    public RestaurantResponse getRestaurant(String restaurantId, String memberId) {
         boolean isFavorite = favoriteRestaurantDomainService.isFavorite(memberId, restaurantId);
         Restaurant restaurant = restaurantDomainService.getById(restaurantId);
         List<RepresentativeReviewResponse> reviews = restaurantDomainService.getReviewByRestaurantId(restaurant.getId())

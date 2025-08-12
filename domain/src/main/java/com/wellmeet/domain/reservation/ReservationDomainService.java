@@ -27,12 +27,12 @@ public class ReservationDomainService {
         }
     }
 
-    public Reservation getByIdAndMemberId(Long reservationId, Long memberId) {
+    public Reservation getByIdAndMemberId(Long reservationId, String memberId) {
         return reservationRepository.findByIdAndMemberId(reservationId, memberId)
                 .orElseThrow(() -> new ReservationException(ReservationErrorCode.UNAUTHORIZED_RESERVATION_ACCESS));
     }
 
-    public List<Reservation> findAllByMemberId(Long memberId) {
+    public List<Reservation> findAllByMemberId(String memberId) {
         return reservationRepository.findAllByMemberId(memberId);
     }
 
@@ -40,7 +40,7 @@ public class ReservationDomainService {
         return reservationRepository.findAllByRestaurantId(restaurantId);
     }
 
-    public void alreadyReserved(Long memberId, String restaurantId, Long availableDateId) {
+    public void alreadyReserved(String memberId, String restaurantId, Long availableDateId) {
         if (reservationRepository.existsByMemberIdAndRestaurantIdAndAvailableDateId(
                 memberId, restaurantId, availableDateId)) {
             throw new ReservationException(ReservationErrorCode.ALREADY_RESERVED);
