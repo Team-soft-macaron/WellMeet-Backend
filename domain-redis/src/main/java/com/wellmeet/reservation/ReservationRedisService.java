@@ -14,7 +14,7 @@ public class ReservationRedisService {
 
     private final RedissonClient redissonClient;
 
-    public void isReserving(Long memberId, String restaurantId, Long availableDateId) {
+    public void isReserving(String memberId, String restaurantId, Long availableDateId) {
         String key = String.format("reservation:%s:%s:%s", memberId, restaurantId, availableDateId);
         RBucket<String> bucket = redissonClient.getBucket(key);
         if (!bucket.setIfAbsent("1", Duration.ofSeconds(10))) {
@@ -22,7 +22,7 @@ public class ReservationRedisService {
         }
     }
 
-    public void isUpdating(Long memberId, Long reservationId) {
+    public void isUpdating(String memberId, Long reservationId) {
         String key = String.format("reservation:update:%s:%s", memberId, reservationId);
         RBucket<String> bucket = redissonClient.getBucket(key);
         if (!bucket.setIfAbsent("1", Duration.ofSeconds(10))) {

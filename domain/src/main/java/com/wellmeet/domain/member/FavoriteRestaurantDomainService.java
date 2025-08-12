@@ -14,11 +14,11 @@ public class FavoriteRestaurantDomainService {
 
     private final FavoriteRestaurantRepository favoriteRestaurantRepository;
 
-    public boolean isFavorite(Long memberId, String restaurantId) {
+    public boolean isFavorite(String memberId, String restaurantId) {
         return favoriteRestaurantRepository.existsByMemberIdAndRestaurantId(memberId, restaurantId);
     }
 
-    public List<FavoriteRestaurant> findAllByMemberId(Long memberId) {
+    public List<FavoriteRestaurant> findAllByMemberId(String memberId) {
         return favoriteRestaurantRepository.findByMemberId(memberId);
     }
 
@@ -26,7 +26,7 @@ public class FavoriteRestaurantDomainService {
         favoriteRestaurantRepository.save(favoriteRestaurant);
     }
 
-    public FavoriteRestaurant getByMemberIdAndRestaurantId(Long memberId, String restaurantId) {
+    public FavoriteRestaurant getByMemberIdAndRestaurantId(String memberId, String restaurantId) {
         return favoriteRestaurantRepository.findByMemberIdAndRestaurantId(memberId, restaurantId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_RESTAURANT_NOT_FOUND));
     }

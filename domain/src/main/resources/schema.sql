@@ -1,7 +1,7 @@
 -- Owner 테이블
 CREATE TABLE IF NOT EXISTS owner
 (
-    id                   BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id                   VARCHAR(255) PRIMARY KEY,
     name                 VARCHAR(255) NOT NULL,
     email                VARCHAR(255) NOT NULL,
     reservation_enabled  BOOLEAN NOT NULL DEFAULT TRUE,
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS owner
 -- Member 테이블
 CREATE TABLE IF NOT EXISTS member
 (
-    id                   BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id                   VARCHAR(255) PRIMARY KEY,
     name                 VARCHAR(255) NOT NULL,
     nickname             VARCHAR(255) NOT NULL,
     email                VARCHAR(255) NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS restaurant
     latitude   DOUBLE NOT NULL,
     longitude  DOUBLE NOT NULL,
     thumbnail  VARCHAR(255),
-    owner_id   BIGINT NOT NULL,
+    owner_id   VARCHAR(255) NOT NULL,
     created_at DATETIME(6) NOT NULL,
     updated_at DATETIME(6) NOT NULL,
     FOREIGN KEY (owner_id) REFERENCES owner (id),
@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS reservation
     status            VARCHAR(255) NOT NULL,
     restaurant_id     VARCHAR(255) NOT NULL,
     available_date_id BIGINT NOT NULL,
-    member_id         BIGINT NOT NULL,
+    member_id         VARCHAR(255) NOT NULL,
     party_size        INT NOT NULL,
     special_request   VARCHAR(255),
     created_at        DATETIME(6) NOT NULL,
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS reservation
 CREATE TABLE IF NOT EXISTS favorite_restaurant
 (
     id            BIGINT AUTO_INCREMENT PRIMARY KEY,
-    member_id     BIGINT NOT NULL,
+    member_id     VARCHAR(255) NOT NULL,
     restaurant_id VARCHAR(255) NOT NULL,
     created_at    DATETIME(6) NOT NULL,
     updated_at    DATETIME(6) NOT NULL,
@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS review
     rating        DOUBLE NOT NULL,
     situation     VARCHAR(255) NOT NULL,
     restaurant_id VARCHAR(255) NOT NULL,
-    member_id     BIGINT NOT NULL,
+    member_id     VARCHAR(255) NOT NULL,
     created_at    DATETIME(6) NOT NULL,
     updated_at    DATETIME(6) NOT NULL,
     FOREIGN KEY (restaurant_id) REFERENCES restaurant (id),

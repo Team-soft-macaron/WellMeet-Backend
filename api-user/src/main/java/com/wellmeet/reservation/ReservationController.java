@@ -29,7 +29,7 @@ public class ReservationController {
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
     public CreateReservationResponse reserve(
-            @RequestParam(value = "memberId") Long memberId,
+            @RequestParam(value = "memberId") String memberId,
             @Valid @RequestBody CreateReservationRequest request
     ) {
         return reservationService.reserve(memberId, request);
@@ -37,14 +37,14 @@ public class ReservationController {
 
     @GetMapping
     public List<SummaryReservationResponse> getReservations(
-            @RequestParam(value = "memberId") Long memberId
+            @RequestParam(value = "memberId") String memberId
     ) {
         return reservationService.getReservations(memberId);
     }
 
     @GetMapping("/{reservationId}")
     public ReservationResponse getReservation(
-            @RequestParam(value = "memberId") Long memberId,
+            @RequestParam(value = "memberId") String memberId,
             @PathVariable Long reservationId
     ) {
         return reservationService.getReservation(reservationId, memberId);
@@ -52,7 +52,7 @@ public class ReservationController {
 
     @PutMapping("/{reservationId}")
     public CreateReservationResponse updateReservation(
-            @RequestParam(value = "memberId") Long memberId,
+            @RequestParam(value = "memberId") String memberId,
             @PathVariable Long reservationId,
             @Valid @RequestBody CreateReservationRequest request
     ) {
@@ -62,7 +62,7 @@ public class ReservationController {
     @DeleteMapping("/{reservationId}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void cancelReservation(
-            @RequestParam(value = "memberId") Long memberId,
+            @RequestParam(value = "memberId") String memberId,
             @PathVariable Long reservationId
     ) {
         reservationService.cancel(reservationId, memberId);

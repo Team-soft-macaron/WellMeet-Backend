@@ -18,7 +18,7 @@ public class ReservationController {
 
     @GetMapping("/{restaurantId}")
     public List<ReservationResponse> getReservations(
-            @RequestParam(value = "ownerId") Long ownerId,
+            @RequestParam(value = "ownerId") String ownerId,
             @PathVariable String restaurantId
     ) {
         return reservationService.getReservations(restaurantId);

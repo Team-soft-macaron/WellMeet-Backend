@@ -25,7 +25,7 @@ public class ReservationService {
     private final MemberDomainService memberDomainService;
 
     @Transactional
-    public CreateReservationResponse reserve(Long memberId, CreateReservationRequest request) {
+    public CreateReservationResponse reserve(String memberId, CreateReservationRequest request) {
         AvailableDate availableDate = restaurantDomainService.getAvailableDate(request.getAvailableDateId(),
                 request.getRestaurantId());
         reservationDomainService.alreadyReserved(memberId, request.getRestaurantId(), request.getAvailableDateId());
@@ -39,7 +39,7 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
-    public List<SummaryReservationResponse> getReservations(Long memberId) {
+    public List<SummaryReservationResponse> getReservations(String memberId) {
         return reservationDomainService.findAllByMemberId(memberId)
                 .stream()
                 .map(SummaryReservationResponse::new)
@@ -47,7 +47,7 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
-    public ReservationResponse getReservation(Long reservationId, Long memberId) {
+    public ReservationResponse getReservation(Long reservationId, String memberId) {
         Reservation reservation = reservationDomainService.getByIdAndMemberId(reservationId, memberId);
         double rating = restaurantDomainService.getAverageRating(reservation.getRestaurant().getId());
         return new ReservationResponse(reservation, rating);
@@ -56,7 +56,7 @@ public class ReservationService {
     @Transactional
     public CreateReservationResponse updateReservation(
             Long reservationId,
-            Long memberId,
+            String memberId,
             CreateReservationRequest request
     ) {
         AvailableDate availableDate = restaurantDomainService.getAvailableDate(request.getAvailableDateId(),
@@ -75,7 +75,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public void cancel(Long reservationId, Long memberId) {
+    public void cancel(Long reservationId, String memberId) {
         Reservation reservation = reservationDomainService.getByIdAndMemberId(reservationId, memberId);
         AvailableDate availableDate = reservation.getAvailableDate();
         restaurantDomainService.increaseAvailableDateCapacity(availableDate, reservation.getPartySize());

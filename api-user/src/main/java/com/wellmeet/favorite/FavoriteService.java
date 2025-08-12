@@ -23,7 +23,7 @@ public class FavoriteService {
     private final RestaurantDomainService restaurantDomainService;
 
     @Transactional(readOnly = true)
-    public List<FavoriteRestaurantResponse> getFavoriteRestaurants(Long memberId) {
+    public List<FavoriteRestaurantResponse> getFavoriteRestaurants(String memberId) {
         return favoriteRestaurantDomainService.findAllByMemberId(memberId)
                 .stream()
                 .map(favoriteRestaurant -> getFavoriteRestaurantResponse(favoriteRestaurant.getRestaurant()))
@@ -36,7 +36,7 @@ public class FavoriteService {
     }
 
     @Transactional
-    public FavoriteRestaurantResponse addFavoriteRestaurant(Long memberId, String restaurantId) {
+    public FavoriteRestaurantResponse addFavoriteRestaurant(String memberId, String restaurantId) {
         Member member = memberDomainService.getById(memberId);
         Restaurant restaurant = restaurantDomainService.getById(restaurantId);
         FavoriteRestaurant favoriteRestaurant = new FavoriteRestaurant(member, restaurant);
@@ -45,7 +45,7 @@ public class FavoriteService {
     }
 
     @Transactional
-    public void removeFavoriteRestaurant(Long memberId, String restaurantId) {
+    public void removeFavoriteRestaurant(String memberId, String restaurantId) {
         FavoriteRestaurant favoriteRestaurant = favoriteRestaurantDomainService.getByMemberIdAndRestaurantId(memberId,
                 restaurantId);
         favoriteRestaurantDomainService.delete(favoriteRestaurant);

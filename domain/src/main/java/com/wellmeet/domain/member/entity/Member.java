@@ -4,10 +4,9 @@ import com.wellmeet.domain.common.BaseEntity;
 import com.wellmeet.domain.member.exception.MemberErrorCode;
 import com.wellmeet.domain.member.exception.MemberException;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,8 +20,7 @@ public class Member extends BaseEntity {
     protected static final int MAX_NICKNAME_LENGTH = 10;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @NotBlank
     private String name;
@@ -45,6 +43,7 @@ public class Member extends BaseEntity {
         validateName(name);
         validateNickname(nickname);
 
+        this.id = UUID.randomUUID().toString();
         this.name = name;
         this.nickname = nickname;
         this.email = email;

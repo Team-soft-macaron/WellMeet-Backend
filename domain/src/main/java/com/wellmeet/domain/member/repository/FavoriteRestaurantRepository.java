@@ -9,9 +9,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FavoriteRestaurantRepository extends JpaRepository<FavoriteRestaurant, Long> {
 
-    List<FavoriteRestaurant> findByMemberId(Long memberId);
+    List<FavoriteRestaurant> findByMemberId(String memberId);
 
-    boolean existsByMemberIdAndRestaurantId(Long memberId, String restaurantId);
+    boolean existsByMemberIdAndRestaurantId(String memberId, String restaurantId);
 
-    Optional<FavoriteRestaurant> findByMemberIdAndRestaurantId(Long memberId, String restaurantId);
+    Optional<FavoriteRestaurant> findByMemberIdAndRestaurantId(String memberId, String restaurantId);
 }

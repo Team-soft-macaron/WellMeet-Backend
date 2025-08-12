@@ -28,7 +28,7 @@ public class RestaurantController {
 
     @GetMapping("/{restaurantId}")
     public RestaurantResponse getRestaurant(
-            @RequestParam(value = "memberId") Long memberId,
+            @RequestParam(value = "memberId") String memberId,
             @PathVariable String restaurantId
     ) {
         return restaurantService.getRestaurant(restaurantId, memberId);
