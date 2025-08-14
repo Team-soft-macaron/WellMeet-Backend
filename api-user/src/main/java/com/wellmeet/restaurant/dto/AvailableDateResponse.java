@@ -13,12 +13,14 @@ public class AvailableDateResponse {
     private Long id;
     private LocalDate date;
     private LocalTime time;
+    private int capacity;
     private boolean available;
 
     public AvailableDateResponse(AvailableDate availableDate) {
         this.id = availableDate.getId();
         this.date = availableDate.getDate();
         this.time = availableDate.getTime();
+        this.capacity = availableDate.getMaxCapacity();
         this.available = availableDate.isAvailable();
     }
 }
