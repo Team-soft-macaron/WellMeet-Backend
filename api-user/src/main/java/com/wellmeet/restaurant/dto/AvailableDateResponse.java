@@ -10,11 +10,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AvailableDateResponse {
 
+    private Long id;
     private LocalDate date;
     private LocalTime time;
     private boolean available;
 
     public AvailableDateResponse(AvailableDate availableDate) {
+        this.id = availableDate.getId();
         this.date = availableDate.getDate();
         this.time = availableDate.getTime();
         this.available = availableDate.isAvailable();
