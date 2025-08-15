@@ -7,6 +7,8 @@ import com.wellmeet.domain.reservation.exception.ReservationException;
 import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -40,6 +42,7 @@ public class Reservation extends BaseEntity {
     private Long id;
 
     @NotNull
+    @Enumerated(value = EnumType.STRING)
     private ReservationStatus status;
 
     @NotNull

@@ -5,6 +5,8 @@ spring:
       - classpath:application-domain-redis-local.yml
   application:
     name: WellMeet-Backend
+server:
+  port: 8081
 
 cors:
   origin: http://localhost:5173
