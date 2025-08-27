@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "develop"
+      - "SCRUM-112"
     paths:
       - 'api-user/**'
       - 'domain/**'
