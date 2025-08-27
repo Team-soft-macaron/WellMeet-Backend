@@ -1,0 +1,11 @@
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.kafka:spring-kafka'
+
+    implementation 'software.amazon.msk:aws-msk-iam-auth:1.1.6'
+
+    implementation 'software.amazon.awssdk:kafka:2.20.26'
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}

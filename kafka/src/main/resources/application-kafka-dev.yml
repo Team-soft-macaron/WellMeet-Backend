@@ -1,0 +1,14 @@
+spring:
+  kafka:
+    bootstrap-servers: ${secret.kafka.bootstrap-servers}
+    producer:
+      acks: ${secret.kafka.producer.acks}
+      retries: ${secret.kafka.producer.retries}
+      batch-size: ${secret.kafka.producer.batch-size}
+      linger-ms: ${secret.kafka.producer.linger-ms}
+      buffer-memory: ${secret.kafka.producer.buffer-memory}
+      enable-idempotence: ${secret.kafka.producer.enable-idempotence}
+      max-in-flight-requests-per-connection: ${secret.kafka.producer.max-in-flight-requests-per-connection}
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      compression-type: ${secret.kafka.producer.compression-type}
