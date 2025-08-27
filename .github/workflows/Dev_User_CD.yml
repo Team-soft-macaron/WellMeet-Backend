@@ -9,8 +9,6 @@ on:
       - 'api-user/**'
       - 'domain/**'
       - 'domain-redis/**'
-      - 'common/**'
-      - 'common-test/**'
       - 'build.gradle'
       - 'settings.gradle'
       - '.github/workflows/Dev_User_CD.yml'
