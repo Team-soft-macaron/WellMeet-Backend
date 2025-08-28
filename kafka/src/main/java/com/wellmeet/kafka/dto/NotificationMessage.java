@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class NotificationMessage {
+
     private final MessageHeader header;
     private final NotificationInfo notification;
-    private final Object payload;
-    private final MessageMetadata metadata;
+    private final NotificationPayload payload;
 }

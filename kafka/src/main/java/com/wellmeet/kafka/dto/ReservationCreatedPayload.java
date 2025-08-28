@@ -6,9 +6,9 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class ReservationCreatedPayload {
+public class ReservationCreatedPayload extends NotificationPayload {
+
     private final Long reservationId;
-    private final String restaurantName;
     private final String customerName;
     private final LocalDateTime reservationTime;
     private final int partySize;

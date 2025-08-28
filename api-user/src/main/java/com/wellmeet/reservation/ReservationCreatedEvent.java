@@ -1,7 +1,9 @@
 package com.wellmeet.reservation;
 
 import java.time.LocalDateTime;
+import lombok.Getter;
 
+@Getter
 public class ReservationCreatedEvent {
 
     private final Long reservationId;
@@ -34,41 +36,5 @@ public class ReservationCreatedEvent {
         this.specialRequest = specialRequest;
         this.dateTime = dateTime;
         this.createdAt = createdAt;
-    }
-
-    public Long getReservationId() {
-        return reservationId;
-    }
-
-    public String getMemberId() {
-        return memberId;
-    }
-
-    public String getRestaurantId() {
-        return restaurantId;
-    }
-
-    public String getRestaurantName() {
-        return restaurantName;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public int getPartySize() {
-        return partySize;
-    }
-
-    public String getSpecialRequest() {
-        return specialRequest;
-    }
-
-    public LocalDateTime getDateTime() {
-        return dateTime;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
     }
 }
