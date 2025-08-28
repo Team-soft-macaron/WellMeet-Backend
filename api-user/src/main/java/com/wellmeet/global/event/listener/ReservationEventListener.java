@@ -1,5 +1,6 @@
-package com.wellmeet.reservation;
+package com.wellmeet.global.event.listener;
 
+import com.wellmeet.global.event.event.ReservationCreatedEvent;
 import com.wellmeet.kafka.dto.ReservationCreatedPayload;
 import com.wellmeet.kafka.service.KafkaProducerService;
 import lombok.RequiredArgsConstructor;

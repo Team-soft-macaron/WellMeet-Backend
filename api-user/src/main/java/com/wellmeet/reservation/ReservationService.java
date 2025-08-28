@@ -6,7 +6,8 @@ import com.wellmeet.domain.reservation.ReservationDomainService;
 import com.wellmeet.domain.reservation.entity.Reservation;
 import com.wellmeet.domain.restaurant.RestaurantDomainService;
 import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
-import org.springframework.context.ApplicationEventPublisher;
+import com.wellmeet.global.event.EventPublishService;
+import com.wellmeet.global.event.event.ReservationCreatedEvent;
 import com.wellmeet.reservation.dto.CreateReservationRequest;
 import com.wellmeet.reservation.dto.CreateReservationResponse;
 import com.wellmeet.reservation.dto.ReservationResponse;
@@ -24,7 +25,7 @@ public class ReservationService {
     private final ReservationRedisService reservationRedisService;
     private final RestaurantDomainService restaurantDomainService;
     private final MemberDomainService memberDomainService;
-    private final ApplicationEventPublisher eventPublisher;
+    private final EventPublishService eventPublishService;
 
     @Transactional
     public CreateReservationResponse reserve(String memberId, CreateReservationRequest request) {
@@ -37,18 +38,9 @@ public class ReservationService {
         Reservation reservation = request.toDomain(availableDate.getRestaurant(), availableDate, member);
 
         Reservation savedReservation = reservationDomainService.save(reservation);
-        ReservationCreatedEvent event = new ReservationCreatedEvent(
-                savedReservation.getId(),
-                member.getId(),
-                savedReservation.getRestaurant().getId(),
-                savedReservation.getRestaurant().getName(),
-                savedReservation.getStatus().name(),
-                savedReservation.getPartySize(),
-                savedReservation.getSpecialRequest(),
-                savedReservation.getDateTime(),
-                savedReservation.getCreatedAt()
-        );
-        eventPublisher.publishEvent(event);
+        ReservationCreatedEvent event = new ReservationCreatedEvent(savedReservation);
+        eventPublishService.publishReservationCreatedEvent(event);
+
         return new CreateReservationResponse(savedReservation);
     }
 
