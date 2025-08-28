@@ -3,6 +3,7 @@ spring:
     import:
       - classpath:application-domain-local.yml
       - classpath:application-domain-redis-local.yml
+      - classpath:application-kafka-local.yml
   application:
     name: WellMeet-Backend
 server:

@@ -8,8 +8,6 @@ on:
       - 'api-owner/**'
       - 'domain/**'
       - 'domain-redis/**'
-      - 'common/**'
-      - 'common-test/**'
       - 'build.gradle'
       - 'settings.gradle'
       - '.github/workflows/Dev_Owner_CD.yml'

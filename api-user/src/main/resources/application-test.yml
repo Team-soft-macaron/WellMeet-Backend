@@ -3,6 +3,7 @@ spring:
     import:
       - classpath:application-domain-test.yml
       - classpath:application-domain-redis-test.yml
+      - classpath:application-kafka-test.yml
 
 cors:
   origin: http://localhost:5173

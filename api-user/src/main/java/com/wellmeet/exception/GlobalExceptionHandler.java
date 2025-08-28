@@ -1,6 +1,7 @@
 package com.wellmeet.exception;
 
 import com.wellmeet.domain.common.WellMeetDomainException;
+import com.wellmeet.kafka.exception.WellMeetKafkaException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
@@ -18,6 +19,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(WellMeetDomainException.class)
     public ResponseEntity<ErrorResponse> handleWellMeetDomainException(WellMeetDomainException exception) {
+        return toResponse(exception.getStatusCode(), exception.getMessage());
+    }
+
+    @ExceptionHandler(WellMeetKafkaException.class)
+    public ResponseEntity<ErrorResponse> handleWellMeetKafkaException(WellMeetKafkaException exception) {
         return toResponse(exception.getStatusCode(), exception.getMessage());
     }
 
