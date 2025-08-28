@@ -18,13 +18,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class KafkaProducerService {
 
-    private static final String MESSAGE_VERSION = "1.0";
-
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public void sendNotificationMessage(String recipient, NotificationPayload payload) {
         NotificationType type = NotificationType.RESERVATION_CREATED;
-        MessageHeader header = new MessageHeader(MESSAGE_VERSION, type.getSource());
+        MessageHeader header = new MessageHeader(type.getSource());
 
         NotificationInfo notification = new NotificationInfo(type.getName(), type.getCategory(), recipient);
 
