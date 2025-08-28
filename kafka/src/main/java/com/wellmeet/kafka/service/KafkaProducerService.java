@@ -5,6 +5,8 @@ import com.wellmeet.kafka.dto.NotificationInfo;
 import com.wellmeet.kafka.dto.NotificationMessage;
 import com.wellmeet.kafka.dto.NotificationPayload;
 import com.wellmeet.kafka.dto.NotificationType;
+import com.wellmeet.kafka.exception.KafkaErrorCode;
+import com.wellmeet.kafka.exception.WellMeetKafkaException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -37,8 +39,7 @@ public class KafkaProducerService {
                     topic, key, result.getRecordMetadata().partition(), result.getRecordMetadata().offset());
         } catch (Exception e) {
             log.error("동기 메시지 전송 실패: topic={}, key={}, error={}", topic, key, e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException("Kafka 메시지 전송 실패", e);
+            throw new WellMeetKafkaException(KafkaErrorCode.KAFKA_PRODUCER_ERROR);
         }
     }
 }
