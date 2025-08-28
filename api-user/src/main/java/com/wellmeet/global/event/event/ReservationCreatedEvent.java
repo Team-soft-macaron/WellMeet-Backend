@@ -9,6 +9,7 @@ public class ReservationCreatedEvent {
 
     private final Long reservationId;
     private final String memberId;
+    private final String memberName;
     private final String restaurantId;
     private final String restaurantName;
     private final String status;
@@ -20,6 +21,7 @@ public class ReservationCreatedEvent {
     public ReservationCreatedEvent(Reservation reservation) {
         this.reservationId = reservation.getId();
         this.memberId = reservation.getMember().getId();
+        this.memberName = reservation.getMember().getName();
         this.restaurantId = reservation.getRestaurant().getId();
         this.restaurantName = reservation.getRestaurantName();
         this.status = reservation.getStatus().name();

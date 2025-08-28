@@ -20,7 +20,7 @@ public class ReservationEventListener {
     public void handleReservationCreated(ReservationCreatedEvent event) {
         ReservationCreatedPayload payload = new ReservationCreatedPayload(
                 event.getReservationId(),
-                event.getMemberId(),
+                event.getMemberName(),
                 event.getDateTime(),
                 event.getPartySize()
         );
