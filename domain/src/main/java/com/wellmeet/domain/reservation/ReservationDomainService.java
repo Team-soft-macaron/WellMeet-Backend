@@ -46,4 +46,10 @@ public class ReservationDomainService {
             throw new ReservationException(ReservationErrorCode.ALREADY_RESERVED);
         }
     }
+
+    public boolean alreadyUpdated(String memberId, String restaurantId, Long availableDateId,
+                                  int partySize) {
+        return reservationRepository.existsByMemberIdAndRestaurantIdAndAvailableDateIdAndPartySize(
+                memberId, restaurantId, availableDateId, partySize);
+    }
 }

@@ -69,6 +69,10 @@ public class ReservationService {
                 request.getRestaurantId());
         Reservation reservation = reservationDomainService.getByIdAndMemberId(reservationId, memberId);
         reservationRedisService.isUpdating(memberId, reservationId);
+        if (reservationDomainService.alreadyUpdated(memberId, request.getRestaurantId(), request.getAvailableDateId(),
+                request.getPartySize())) {
+            return new CreateReservationResponse(reservation);
+        }
         restaurantDomainService.increaseAvailableDateCapacity(reservation.getAvailableDate(),
                 reservation.getPartySize());
         restaurantDomainService.decreaseAvailableDateCapacity(availableDate, request.getPartySize());
