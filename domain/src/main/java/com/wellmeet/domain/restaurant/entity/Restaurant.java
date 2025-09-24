@@ -66,6 +66,8 @@ public class Restaurant extends BaseEntity {
     }
 
     public void update(String name, String address, double latitude, double longitude, String thumbnail){
+        validatePosition(latitude, longitude);
+        
         this.name = name;
         this.address = address;
         this.latitude = latitude;

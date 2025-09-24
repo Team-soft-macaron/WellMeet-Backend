@@ -5,6 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class RestaurantUpdateEvent {
+public class RestaurantUpdatedEvent {
+
     private final String restaurantId;
 }

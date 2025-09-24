@@ -11,7 +11,7 @@ import com.wellmeet.restaurant.dto.UpdateRestaurantRequest;
 import com.wellmeet.restaurant.dto.UpdateRestaurantResponse;
 import com.wellmeet.restaurant.dto.UpdateOperatingHoursRequest.DayHours;
 import com.wellmeet.restaurant.event.EventPublishService;
-import com.wellmeet.restaurant.event.RestaurantUpdateEvent;
+import com.wellmeet.restaurant.event.RestaurantUpdatedEvent;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -59,7 +59,7 @@ public class RestaurantService {
     public UpdateRestaurantResponse updateRestaurant(String restaurantId, UpdateRestaurantRequest request){
         Restaurant restaurant = restaurantDomainService.getById(restaurantId);
         restaurant.update(request.getName(), request.getAddress(), request.getLatitude(), request.getLongitude(), request.getThumbnail());
-        eventPublishService.publishReservationCreatedEvent(new RestaurantUpdateEvent(restaurantId));
+        eventPublishService.publishRestaurantUpdatedEvent(new RestaurantUpdatedEvent(restaurantId));
         return new UpdateRestaurantResponse(restaurant.getName(), restaurant.getAddress(), restaurant.getLatitude(), restaurant.getLongitude(), restaurant.getThumbnail());
     }
 }

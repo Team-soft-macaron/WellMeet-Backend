@@ -98,9 +98,9 @@ class RestaurantControllerTest extends BaseControllerTest {
 
         @Test
         void 식당_정보를_갱신한다(){
-            String newRestaurantName = "new restaurant";
             Owner owner = ownerGenerator.generate("owner1");
             Restaurant restaurant = restaurantGenerator.generate("restaurant1", owner);
+            String newRestaurantName = "new restaurant";
             UpdateRestaurantRequest request = new UpdateRestaurantRequest(newRestaurantName, "address", 36.5, 128.0, "thumbnail");
             UpdateRestaurantResponse response = given().contentType("application/json")
                 .pathParam("restaurantId", restaurant.getId()).queryParam("ownerId", owner.getId()).body(request)

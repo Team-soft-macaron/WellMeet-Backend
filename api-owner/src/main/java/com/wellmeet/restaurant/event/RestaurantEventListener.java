@@ -9,10 +9,11 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class RestaurantEventListener {
+
     private final RestaurantRedisService restaurantRedisService;
     
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void publishRestaurantUpdate(RestaurantUpdateEvent event){
+    public void publishRestaurantUpdate(RestaurantUpdatedEvent event){
         restaurantRedisService.publish("restaurant-update", event.getRestaurantId());
     }
 }

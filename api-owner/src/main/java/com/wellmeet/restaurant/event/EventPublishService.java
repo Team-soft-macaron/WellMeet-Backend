@@ -10,7 +10,7 @@ public class EventPublishService {
 
     private final ApplicationEventPublisher eventPublisher;
 
-    public void publishReservationCreatedEvent(RestaurantUpdateEvent event) {
+    public void publishRestaurantUpdatedEvent(RestaurantUpdatedEvent event) {
         eventPublisher.publishEvent(event);
     }
 }
