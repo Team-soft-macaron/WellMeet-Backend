@@ -64,4 +64,12 @@ public class Restaurant extends BaseEntity {
             throw new RestaurantException(RestaurantErrorCode.INVALID_LONGITUDE);
         }
     }
+
+    public void update(String name, String address, double latitude, double longitude, String thumbnail){
+        this.name = name;
+        this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.thumbnail = thumbnail;
+    }
 }

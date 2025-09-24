@@ -4,9 +4,14 @@ import com.wellmeet.domain.restaurant.RestaurantDomainService;
 import com.wellmeet.domain.restaurant.businesshour.entity.BusinessHour;
 import com.wellmeet.domain.restaurant.businesshour.entity.BusinessHours;
 import com.wellmeet.domain.restaurant.businesshour.entity.DayOfWeek;
+import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.restaurant.dto.OperatingHoursResponse;
 import com.wellmeet.restaurant.dto.UpdateOperatingHoursRequest;
+import com.wellmeet.restaurant.dto.UpdateRestaurantRequest;
+import com.wellmeet.restaurant.dto.UpdateRestaurantResponse;
 import com.wellmeet.restaurant.dto.UpdateOperatingHoursRequest.DayHours;
+import com.wellmeet.restaurant.event.EventPublishService;
+import com.wellmeet.restaurant.event.RestaurantUpdateEvent;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class RestaurantService {
 
     private final RestaurantDomainService restaurantDomainService;
+    private final EventPublishService eventPublishService;
 
     @Transactional(readOnly = true)
     public OperatingHoursResponse getOperatingHours(String restaurantId) {
@@ -47,5 +53,13 @@ public class RestaurantService {
                 dayHours.getBreakStart(),
                 dayHours.getBreakEnd()
         );
+    }
+
+    @Transactional
+    public UpdateRestaurantResponse updateRestaurant(String restaurantId, UpdateRestaurantRequest request){
+        Restaurant restaurant = restaurantDomainService.getById(restaurantId);
+        restaurant.update(request.getName(), request.getAddress(), request.getLatitude(), request.getLongitude(), request.getThumbnail());
+        eventPublishService.publishReservationCreatedEvent(new RestaurantUpdateEvent(restaurantId));
+        return new UpdateRestaurantResponse(restaurant.getName(), restaurant.getAddress(), restaurant.getLatitude(), restaurant.getLongitude(), restaurant.getThumbnail());
     }
 }
