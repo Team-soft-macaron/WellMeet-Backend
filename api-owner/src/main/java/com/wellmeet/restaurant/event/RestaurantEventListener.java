@@ -13,7 +13,6 @@ public class RestaurantEventListener {
     
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void publishRestaurantUpdate(RestaurantUpdateEvent event){
-        System.out.println("hello");
         restaurantRedisService.publish("restaurant-update", event.getRestaurantId());
     }
 }
