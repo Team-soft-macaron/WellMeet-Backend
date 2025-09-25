@@ -2,6 +2,8 @@ package com.wellmeet.restaurant;
 
 import com.wellmeet.restaurant.dto.OperatingHoursResponse;
 import com.wellmeet.restaurant.dto.UpdateOperatingHoursRequest;
+import com.wellmeet.restaurant.dto.UpdateRestaurantRequest;
+import com.wellmeet.restaurant.dto.UpdateRestaurantResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,5 +36,14 @@ public class RestaurantController {
             @Valid @RequestBody UpdateOperatingHoursRequest request
     ) {
         return restaurantService.updateOperatingHours(restaurantId, request);
+    }
+
+    @PutMapping("/{restaurantId}")
+    public UpdateRestaurantResponse updateRestaurant(
+            @RequestParam String ownerId,
+            @PathVariable String restaurantId,
+            @RequestBody UpdateRestaurantRequest request
+    ) {
+        return restaurantService.updateRestaurant(restaurantId, request);
     }
 }
