@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class EventPublishService {
+public class RestaurantEventPublishService {
 
     private final ApplicationEventPublisher eventPublisher;
 

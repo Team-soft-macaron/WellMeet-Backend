@@ -10,7 +10,7 @@ import com.wellmeet.restaurant.dto.UpdateOperatingHoursRequest;
 import com.wellmeet.restaurant.dto.UpdateRestaurantRequest;
 import com.wellmeet.restaurant.dto.UpdateRestaurantResponse;
 import com.wellmeet.restaurant.dto.UpdateOperatingHoursRequest.DayHours;
-import com.wellmeet.restaurant.event.EventPublishService;
+import com.wellmeet.restaurant.event.RestaurantEventPublishService;
 import com.wellmeet.restaurant.event.RestaurantUpdatedEvent;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class RestaurantService {
 
     private final RestaurantDomainService restaurantDomainService;
-    private final EventPublishService eventPublishService;
+    private final RestaurantEventPublishService restaurantEventPublishService;
 
     @Transactional(readOnly = true)
     public OperatingHoursResponse getOperatingHours(String restaurantId) {
@@ -59,7 +59,7 @@ public class RestaurantService {
     public UpdateRestaurantResponse updateRestaurant(String restaurantId, UpdateRestaurantRequest request){
         Restaurant restaurant = restaurantDomainService.getById(restaurantId);
         restaurant.update(request.getName(), request.getAddress(), request.getLatitude(), request.getLongitude(), request.getThumbnail());
-        eventPublishService.publishRestaurantUpdatedEvent(new RestaurantUpdatedEvent(restaurantId));
+        restaurantEventPublishService.publishRestaurantUpdatedEvent(new RestaurantUpdatedEvent(restaurantId));
         return new UpdateRestaurantResponse(restaurant.getName(), restaurant.getAddress(), restaurant.getLatitude(), restaurant.getLongitude(), restaurant.getThumbnail());
     }
 }
