@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class NotificationInfo {
 
-    private final String type;
-    private final String category;
+    private final NotificationType type;
     private final String recipient;
 }

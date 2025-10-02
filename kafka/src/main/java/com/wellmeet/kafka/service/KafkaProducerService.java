@@ -24,7 +24,7 @@ public class KafkaProducerService {
         NotificationType type = NotificationType.RESERVATION_CREATED;
         MessageHeader header = new MessageHeader(type.getSource());
 
-        NotificationInfo notification = new NotificationInfo(type.getName(), type.getCategory(), recipient);
+        NotificationInfo notification = new NotificationInfo(type, recipient);
 
         NotificationMessage message = new NotificationMessage(header, notification, payload);
         sendMessage(type.getTopic(), recipient, message);
