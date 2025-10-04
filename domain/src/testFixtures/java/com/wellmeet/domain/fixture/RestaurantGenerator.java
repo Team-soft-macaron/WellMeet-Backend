@@ -1,4 +1,4 @@
-package com.wellmeet.fixture;
+package com.wellmeet.domain.fixture;
 
 import com.wellmeet.domain.owner.entity.Owner;
 import com.wellmeet.domain.restaurant.entity.Restaurant;

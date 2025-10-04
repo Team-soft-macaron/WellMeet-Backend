@@ -1,4 +1,4 @@
-package com.wellmeet.fixture;
+package com.wellmeet.domain.fixture;
 
 import com.wellmeet.domain.member.entity.Member;
 import com.wellmeet.domain.member.repository.MemberRepository;

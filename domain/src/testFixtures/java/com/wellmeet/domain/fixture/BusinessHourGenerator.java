@@ -1,4 +1,4 @@
-package com.wellmeet.fixture;
+package com.wellmeet.domain.fixture;
 
 import com.wellmeet.domain.restaurant.businesshour.entity.BusinessHour;
 import com.wellmeet.domain.restaurant.businesshour.entity.DayOfWeek;
