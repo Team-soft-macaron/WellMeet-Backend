@@ -1,13 +1,13 @@
 package com.wellmeet;
 
 import com.wellmeet.domain.member.repository.FavoriteRestaurantRepository;
-import com.wellmeet.fixture.AvailableDateGenerator;
-import com.wellmeet.fixture.MemberGenerator;
-import com.wellmeet.fixture.MenuGenerator;
-import com.wellmeet.fixture.OwnerGenerator;
-import com.wellmeet.fixture.ReservationGenerator;
-import com.wellmeet.fixture.RestaurantGenerator;
-import com.wellmeet.fixture.ReviewGenerator;
+import com.wellmeet.domain.fixture.AvailableDateGenerator;
+import com.wellmeet.domain.fixture.MemberGenerator;
+import com.wellmeet.domain.fixture.MenuGenerator;
+import com.wellmeet.domain.fixture.OwnerGenerator;
+import com.wellmeet.domain.fixture.ReservationGenerator;
+import com.wellmeet.domain.fixture.RestaurantGenerator;
+import com.wellmeet.domain.fixture.ReviewGenerator;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.RequestLoggingFilter;

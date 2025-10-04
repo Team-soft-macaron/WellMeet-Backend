@@ -1,11 +1,11 @@
 package com.wellmeet;
 
-import com.wellmeet.fixture.AvailableDateGenerator;
-import com.wellmeet.fixture.BusinessHourGenerator;
-import com.wellmeet.fixture.MemberGenerator;
-import com.wellmeet.fixture.OwnerGenerator;
-import com.wellmeet.fixture.ReservationGenerator;
-import com.wellmeet.fixture.RestaurantGenerator;
+import com.wellmeet.domain.fixture.AvailableDateGenerator;
+import com.wellmeet.domain.fixture.BusinessHourGenerator;
+import com.wellmeet.domain.fixture.MemberGenerator;
+import com.wellmeet.domain.fixture.OwnerGenerator;
+import com.wellmeet.domain.fixture.ReservationGenerator;
+import com.wellmeet.domain.fixture.RestaurantGenerator;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.RequestLoggingFilter;

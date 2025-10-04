@@ -1,4 +1,4 @@
-package com.wellmeet.fixture;
+package com.wellmeet.domain.fixture;
 
 import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
 import com.wellmeet.domain.restaurant.availabledate.repository.AvailableDateRepository;
