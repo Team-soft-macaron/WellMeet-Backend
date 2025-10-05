@@ -5,7 +5,6 @@ import com.wellmeet.domain.reservation.entity.ReservationStatus;
 import com.wellmeet.domain.reservation.repository.ReservationRepository;
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -38,9 +37,10 @@ public class ReservationReminderReader {
 
         log.info("Setting up reader for reservations between {} and {}", start, end);
 
-        Map<String, Sort.Direction> sorts = new HashMap<>();
-        sorts.put("availableDate.date", Sort.Direction.ASC);
-        sorts.put("availableDate.time", Sort.Direction.ASC);
+        Map<String, Sort.Direction> sorts = Map.of(
+                "availableDate.date", Sort.Direction.ASC,
+                "availableDate.time", Sort.Direction.ASC
+        );
 
         return new RepositoryItemReaderBuilder<Reservation>()
                 .name("reservationReminderReader")
