@@ -9,6 +9,7 @@ public enum ReservationErrorCode {
     PARTY_SIZE_INVALID(400, "유효하지 않은 파티 사이즈입니다."),
     REQUEST_INVALID(400, "유효하지 않은 요청입니다."),
     ALREADY_RESERVED(400, "이미 예약된 날짜입니다."),
+    RESERVATION_NOT_FOUND(404, "예약을 찾을 수 없습니다."),
     ;
 
     private final int statusCode;

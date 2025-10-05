@@ -159,7 +159,7 @@ class ReservationControllerTest extends BaseControllerTest {
                     .contentType("application/json")
                     .queryParam("memberId", member.getId())
                     .body(request)
-                    .when().put("/user/reservation/{reservationId}", reservation.getId())
+                    .when().put("/user/reservation/update/{reservationId}", reservation.getId())
                     .then().statusCode(HttpStatus.OK.value())
                     .extract().as(CreateReservationResponse.class);
 
@@ -186,7 +186,7 @@ class ReservationControllerTest extends BaseControllerTest {
             given()
                     .contentType("application/json")
                     .queryParam("memberId", member.getId())
-                    .when().delete("/user/reservation/{reservationId}", reservation.getId())
+                    .when().patch("/user/reservation/cancel/{reservationId}", reservation.getId())
                     .then().statusCode(HttpStatus.NO_CONTENT.value());
         }
     }

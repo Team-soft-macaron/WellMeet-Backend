@@ -40,6 +40,11 @@ public class ReservationDomainService {
         return reservationRepository.findAllByRestaurantId(restaurantId);
     }
 
+    public Reservation getById(Long reservationId) {
+        return reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+    }
+
     public void alreadyReserved(String memberId, String restaurantId, Long availableDateId) {
         if (reservationRepository.existsByMemberIdAndRestaurantIdAndAvailableDateId(
                 memberId, restaurantId, availableDateId)) {
