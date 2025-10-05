@@ -1,0 +1,22 @@
+spring:
+  config:
+    import:
+      - classpath:application-domain-test.yml
+      - classpath:application-kafka-test.yml
+
+  batch:
+    job:
+      enabled: false
+    jdbc:
+      initialize-schema: always
+
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:org/springframework/batch/core/schema-mysql.sql
+      continue-on-error: true
+
+logging:
+  level:
+    com.wellmeet: DEBUG
+    org.springframework.batch: INFO
