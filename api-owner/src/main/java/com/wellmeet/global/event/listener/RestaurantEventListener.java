@@ -1,4 +1,4 @@
-package com.wellmeet.global.event.listner;
+package com.wellmeet.global.event.listener;
 
 import com.wellmeet.global.event.event.RestaurantUpdatedEvent;
 import com.wellmeet.restaurant.RestaurantRedisService;

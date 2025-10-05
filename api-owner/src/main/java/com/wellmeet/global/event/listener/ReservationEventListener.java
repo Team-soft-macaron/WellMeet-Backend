@@ -1,4 +1,4 @@
-package com.wellmeet.global.event.listner;
+package com.wellmeet.global.event.listener;
 
 import com.wellmeet.global.event.event.ReservationConfirmedEvent;
 import com.wellmeet.kafka.dto.payload.ReservationConfirmedPayload;
