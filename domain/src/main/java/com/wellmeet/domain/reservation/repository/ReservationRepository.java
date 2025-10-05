@@ -39,7 +39,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
                     "JOIN r.availableDate ad " +
                     "WHERE r.status = :status " +
                     "AND (ad.date > :startDate OR (ad.date = :startDate AND ad.time >= :startTime)) " +
-                    "AND (ad.date < :endDate OR (ad.date = :endDate AND ad.time <= :endTime))")
+                    "AND (ad.date < :endDate OR (ad.date = :endDate AND ad.time < :endTime))")
     Page<Reservation> findReservationsForReminderPage(
             @Param("status") ReservationStatus status,
             @Param("startDate") LocalDate startDate,
