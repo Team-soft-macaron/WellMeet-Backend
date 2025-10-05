@@ -80,6 +80,10 @@ public class Reservation extends BaseEntity {
         this.status = ReservationStatus.CANCELED;
     }
 
+    public void confirm() {
+        this.status = ReservationStatus.CONFIRMED;
+    }
+
     public void update(
             AvailableDate availableDate,
             int partySize,

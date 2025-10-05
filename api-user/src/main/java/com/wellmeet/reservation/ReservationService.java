@@ -7,7 +7,9 @@ import com.wellmeet.domain.reservation.entity.Reservation;
 import com.wellmeet.domain.restaurant.RestaurantDomainService;
 import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
 import com.wellmeet.global.event.EventPublishService;
+import com.wellmeet.global.event.event.ReservationCanceledEvent;
 import com.wellmeet.global.event.event.ReservationCreatedEvent;
+import com.wellmeet.global.event.event.ReservationUpdatedEvent;
 import com.wellmeet.reservation.dto.CreateReservationRequest;
 import com.wellmeet.reservation.dto.CreateReservationResponse;
 import com.wellmeet.reservation.dto.ReservationResponse;
@@ -81,6 +83,9 @@ public class ReservationService {
                 request.getPartySize(),
                 request.getSpecialRequest()
         );
+
+        ReservationUpdatedEvent event = new ReservationUpdatedEvent(reservation);
+        eventPublishService.publishReservationUpdatedEvent(event);
         return new CreateReservationResponse(reservation);
     }
 
@@ -90,5 +95,8 @@ public class ReservationService {
         AvailableDate availableDate = reservation.getAvailableDate();
         restaurantDomainService.increaseAvailableDateCapacity(availableDate, reservation.getPartySize());
         reservation.cancel();
+
+        ReservationCanceledEvent event = new ReservationCanceledEvent(reservation);
+        eventPublishService.publishReservationCanceledEvent(event);
     }
 }

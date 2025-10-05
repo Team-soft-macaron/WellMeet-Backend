@@ -1,12 +1,13 @@
-package com.wellmeet.kafka.dto;
+package com.wellmeet.kafka.dto.payload;
 
+import com.wellmeet.kafka.dto.NotificationPayload;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class ReservationCreatedPayload extends NotificationPayload {
+public class ReservationCanceledPayload extends NotificationPayload {
 
     private final Long reservationId;
     private final String customerName;

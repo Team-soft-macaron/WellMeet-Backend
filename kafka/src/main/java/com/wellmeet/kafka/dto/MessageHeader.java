@@ -9,11 +9,9 @@ public class MessageHeader {
 
     private final String messageId;
     private final LocalDateTime timestamp;
-    private final String source;
 
-    public MessageHeader(String source) {
+    public MessageHeader() {
         this.messageId = UUID.randomUUID().toString();
         this.timestamp = LocalDateTime.now();
-        this.source = source;
     }
 }

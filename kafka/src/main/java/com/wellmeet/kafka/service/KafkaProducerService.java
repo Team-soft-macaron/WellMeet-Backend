@@ -22,7 +22,7 @@ public class KafkaProducerService {
 
     public void sendNotificationMessage(String recipient, NotificationPayload payload) {
         NotificationType type = NotificationType.RESERVATION_CREATED;
-        MessageHeader header = new MessageHeader(type.getSource());
+        MessageHeader header = new MessageHeader();
 
         NotificationInfo notification = new NotificationInfo(type, recipient);
 
