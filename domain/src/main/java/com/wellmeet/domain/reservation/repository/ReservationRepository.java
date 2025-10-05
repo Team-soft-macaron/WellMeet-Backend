@@ -34,7 +34,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             "JOIN FETCH r.member " +
             "WHERE r.status = :status " +
             "AND (ad.date > :startDate OR (ad.date = :startDate AND ad.time >= :startTime)) " +
-            "AND (ad.date < :endDate OR (ad.date = :endDate AND ad.time <= :endTime))",
+            "AND (ad.date < :endDate OR (ad.date = :endDate AND ad.time < :endTime))",
             countQuery = "SELECT count(r) FROM Reservation r " +
                     "JOIN r.availableDate ad " +
                     "WHERE r.status = :status " +
