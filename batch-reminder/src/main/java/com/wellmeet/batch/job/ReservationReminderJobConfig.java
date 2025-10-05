@@ -8,6 +8,7 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.item.data.RepositoryItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -22,7 +23,7 @@ public class ReservationReminderJobConfig {
 
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
-    private final ReservationReminderReader reader;
+    private final RepositoryItemReader<Reservation> itemReader;
     private final ReservationReminderProcessor processor;
     private final ReservationReminderWriter writer;
 
@@ -37,7 +38,7 @@ public class ReservationReminderJobConfig {
     public Step sendReminderStep() {
         return new StepBuilder(STEP_NAME, jobRepository)
                 .<Reservation, ReservationReminderPayload>chunk(CHUNK_SIZE, transactionManager)
-                .reader(reader)
+                .reader(itemReader)
                 .processor(processor)
                 .writer(writer)
                 .build();

@@ -4,57 +4,55 @@ import com.wellmeet.domain.reservation.entity.Reservation;
 import com.wellmeet.domain.reservation.entity.ReservationStatus;
 import com.wellmeet.domain.reservation.repository.ReservationRepository;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.item.ItemReader;
-import org.springframework.stereotype.Component;
+import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.item.data.RepositoryItemReader;
+import org.springframework.batch.item.data.builder.RepositoryItemReaderBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.Sort;
 
 @Slf4j
-@Component
+@Configuration
 @RequiredArgsConstructor
-public class ReservationReminderReader implements ItemReader<Reservation> {
+public class ReservationReminderReader {
 
     private static final int REMINDER_HOURS_BEFORE = 3;
     private static final int TIME_WINDOW_MINUTES = 10;
+    private static final int PAGE_SIZE = 10;
 
     private final ReservationRepository reservationRepository;
-    private List<Reservation> reservations;
-    private int currentIndex = 0;
 
-    @Override
-    public Reservation read() {
-        if (reservations == null) {
-            reservations = fetchReservations();
-            log.info("Fetched {} reservations for reminder", reservations.size());
-        }
-
-        if (currentIndex < reservations.size()) {
-            return reservations.get(currentIndex++);
-        } else {
-            reset();
-            return null;
-        }
-    }
-
-    private List<Reservation> fetchReservations() {
+    @Bean
+    @StepScope
+    public RepositoryItemReader<Reservation> itemReader() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime start = now.plusHours(REMINDER_HOURS_BEFORE);
         LocalDateTime end = start.plusMinutes(TIME_WINDOW_MINUTES);
 
-        log.info("Searching reservations between {} and {}", start, end);
+        log.info("Setting up reader for reservations between {} and {}", start, end);
 
-        return reservationRepository.findReservationsForReminder(
-                ReservationStatus.CONFIRMED,
-                start.toLocalDate(),
-                start.toLocalTime(),
-                end.toLocalDate(),
-                end.toLocalTime()
-        );
-    }
+        Map<String, Sort.Direction> sorts = new HashMap<>();
+        sorts.put("availableDate.date", Sort.Direction.ASC);
+        sorts.put("availableDate.time", Sort.Direction.ASC);
 
-    private void reset() {
-        reservations = null;
-        currentIndex = 0;
+        return new RepositoryItemReaderBuilder<Reservation>()
+                .name("reservationReminderReader")
+                .repository(reservationRepository)
+                .methodName("findReservationsForReminderPage")
+                .arguments(List.of(
+                        ReservationStatus.CONFIRMED,
+                        start.toLocalDate(),
+                        start.toLocalTime(),
+                        end.toLocalDate(),
+                        end.toLocalTime()
+                ))
+                .pageSize(PAGE_SIZE)
+                .sorts(sorts)
+                .build();
     }
 }

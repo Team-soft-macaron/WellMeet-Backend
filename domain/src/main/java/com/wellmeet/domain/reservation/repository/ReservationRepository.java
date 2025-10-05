@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -39,5 +41,26 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             @Param("startTime") LocalTime startTime,
             @Param("endDate") LocalDate endDate,
             @Param("endTime") LocalTime endTime
+    );
+
+    @Query(value = "SELECT r FROM Reservation r " +
+            "JOIN FETCH r.availableDate ad " +
+            "JOIN FETCH r.restaurant " +
+            "JOIN FETCH r.member " +
+            "WHERE r.status = :status " +
+            "AND (ad.date > :startDate OR (ad.date = :startDate AND ad.time >= :startTime)) " +
+            "AND (ad.date < :endDate OR (ad.date = :endDate AND ad.time <= :endTime))",
+            countQuery = "SELECT count(r) FROM Reservation r " +
+                    "JOIN r.availableDate ad " +
+                    "WHERE r.status = :status " +
+                    "AND (ad.date > :startDate OR (ad.date = :startDate AND ad.time >= :startTime)) " +
+                    "AND (ad.date < :endDate OR (ad.date = :endDate AND ad.time <= :endTime))")
+    Page<Reservation> findReservationsForReminderPage(
+            @Param("status") ReservationStatus status,
+            @Param("startDate") LocalDate startDate,
+            @Param("startTime") LocalTime startTime,
+            @Param("endDate") LocalDate endDate,
+            @Param("endTime") LocalTime endTime,
+            Pageable pageable
     );
 }
