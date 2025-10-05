@@ -11,6 +11,7 @@ public enum NotificationType {
     RESERVATION_CONFIRMED("notification"),
     RESERVATION_UPDATED("notification"),
     RESERVATION_CANCELED("notification"),
+    RESERVATION_REMINDER("notification"),
     ;
 
     private final String topic;

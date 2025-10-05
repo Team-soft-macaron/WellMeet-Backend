@@ -1,0 +1,16 @@
+spring:
+  config:
+    import:
+      - classpath:application-domain-local.yml
+      - classpath:application-kafka-local.yml
+
+  batch:
+    job:
+      enabled: false
+    jdbc:
+      initialize-schema: always
+
+logging:
+  level:
+    com.wellmeet: DEBUG
+    org.springframework.batch: INFO

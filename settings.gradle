@@ -6,4 +6,5 @@ include 'api-owner'
 include 'api-user'
 include 'domain-redis'
 include 'kafka'
+include 'batch-reminder'
 
