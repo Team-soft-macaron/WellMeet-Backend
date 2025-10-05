@@ -25,7 +25,7 @@ public class ReservationController {
         return reservationService.getReservations(restaurantId);
     }
 
-    @PatchMapping("confirm/{reservationId}")
+    @PatchMapping("/confirm/{reservationId}")
     public void confirmReservation(
             @RequestParam(value = "ownerId") String ownerId,
             @PathVariable Long reservationId

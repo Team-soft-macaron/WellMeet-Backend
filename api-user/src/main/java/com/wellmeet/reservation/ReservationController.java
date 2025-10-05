@@ -50,7 +50,7 @@ public class ReservationController {
         return reservationService.getReservation(reservationId, memberId);
     }
 
-    @PutMapping("/{reservationId}")
+    @PutMapping("/update/{reservationId}")
     public CreateReservationResponse updateReservation(
             @RequestParam(value = "memberId") String memberId,
             @PathVariable Long reservationId,
@@ -59,7 +59,7 @@ public class ReservationController {
         return reservationService.updateReservation(reservationId, memberId, request);
     }
 
-    @PatchMapping("/{reservationId}")
+    @PatchMapping("/cancel/{reservationId}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void cancelReservation(
             @RequestParam(value = "memberId") String memberId,
