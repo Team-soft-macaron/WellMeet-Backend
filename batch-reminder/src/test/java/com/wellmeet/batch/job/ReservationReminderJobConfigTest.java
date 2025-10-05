@@ -110,7 +110,7 @@ class ReservationReminderJobConfigTest {
     @Test
     void Step이_올바른_청크_사이즈로_동작한다() throws Exception {
         LocalDateTime threeHoursLater = LocalDateTime.now(clock).plusHours(3).plusMinutes(5);
-        createConfirmedReservations(threeHoursLater, 6);
+        createConfirmedReservations(threeHoursLater, 25);
 
         JobParameters jobParameters = new JobParametersBuilder()
                 .addLong("time", System.currentTimeMillis())
@@ -119,7 +119,7 @@ class ReservationReminderJobConfigTest {
         JobExecution jobExecution = jobLauncherTestUtils.launchJob(jobParameters);
 
         assertThat(jobExecution.getExitStatus()).isEqualTo(ExitStatus.COMPLETED);
-        verify(kafkaProducerService, times(6)).sendNotificationMessage(any(), any());
+        verify(kafkaProducerService, times(5)).sendNotificationMessage(any(), any());
     }
 
     @Test
