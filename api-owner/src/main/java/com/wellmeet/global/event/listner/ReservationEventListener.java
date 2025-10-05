@@ -24,6 +24,6 @@ public class ReservationEventListener {
                 event.getDateTime(),
                 event.getPartySize()
         );
-        kafkaProducerService.sendNotificationMessage(event.getRestaurantId(), payload);
+        kafkaProducerService.sendNotificationMessage(event.getMemberId(), payload);
     }
 }

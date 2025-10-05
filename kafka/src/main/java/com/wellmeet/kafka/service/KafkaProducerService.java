@@ -21,7 +21,7 @@ public class KafkaProducerService {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public void sendNotificationMessage(String recipient, NotificationPayload payload) {
-        NotificationType type = NotificationType.RESERVATION_CREATED;
+        NotificationType type = payload.getType();
         MessageHeader header = new MessageHeader();
 
         NotificationInfo notification = new NotificationInfo(type, recipient);
@@ -30,7 +30,7 @@ public class KafkaProducerService {
         sendMessage(type.getTopic(), recipient, message);
     }
 
-    public void sendMessage(String topic, String key, NotificationMessage message) {
+    private void sendMessage(String topic, String key, NotificationMessage message) {
         try {
             SendResult<String, Object> result = kafkaTemplate.send(topic, key, message).get();
             log.info("동기 메시지 전송 성공: topic={}, key={}, partition={}, offset={}",
