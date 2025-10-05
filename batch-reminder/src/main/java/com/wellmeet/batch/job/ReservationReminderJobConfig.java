@@ -26,6 +26,7 @@ public class ReservationReminderJobConfig {
     private final RepositoryItemReader<Reservation> itemReader;
     private final ReservationReminderProcessor processor;
     private final ReservationReminderWriter writer;
+    private final NotificationSkipListener skipListener;
 
     @Bean
     public Job reservationReminderJob() {
@@ -46,7 +47,7 @@ public class ReservationReminderJobConfig {
                 .retryLimit(3)
                 .skip(Exception.class)
                 .skipLimit(10)
-                .listener(new NotificationSkipListener())
+                .listener(skipListener)
                 .build();
     }
 }

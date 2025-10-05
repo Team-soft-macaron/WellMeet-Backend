@@ -8,8 +8,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
 @SpringBootApplication(scanBasePackages = {"com.wellmeet.batch", "com.wellmeet.domain", "com.wellmeet.kafka"})
-@EntityScan(basePackages = "com.wellmeet.domain")
-@EnableJpaRepositories(basePackages = "com.wellmeet.domain")
+@EntityScan(basePackages = {"com.wellmeet.domain", "com.wellmeet.batch.entity"})
+@EnableJpaRepositories(basePackages = {"com.wellmeet.domain", "com.wellmeet.batch.repository"})
 public class ReminderBatchApplication {
 
     public static void main(String[] args) {

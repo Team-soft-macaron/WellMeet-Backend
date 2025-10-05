@@ -20,12 +20,14 @@ import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.batch.core.ExitStatus;
+import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.batch.test.context.SpringBatchTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -37,6 +39,10 @@ class ReservationReminderJobConfigTest {
 
     @Autowired
     private JobLauncherTestUtils jobLauncherTestUtils;
+
+    @Autowired
+    @Qualifier("reservationReminderJob")
+    private Job reservationReminderJob;
 
     @Autowired
     private ReservationRepository reservationRepository;
@@ -61,6 +67,8 @@ class ReservationReminderJobConfigTest {
 
     @BeforeEach
     void setUp() {
+        jobLauncherTestUtils.setJob(reservationReminderJob);
+
         reservationRepository.deleteAll();
         availableDateRepository.deleteAll();
         memberRepository.deleteAll();

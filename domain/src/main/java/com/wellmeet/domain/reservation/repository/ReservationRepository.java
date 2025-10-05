@@ -28,21 +28,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     boolean existsByMemberIdAndRestaurantIdAndAvailableDateIdAndPartySize(String memberId, String restaurantId,
                                                                           Long availableDateId, int partySize);
 
-    @Query("SELECT r FROM Reservation r " +
-            "JOIN FETCH r.availableDate ad " +
-            "JOIN FETCH r.restaurant " +
-            "JOIN FETCH r.member " +
-            "WHERE r.status = :status " +
-            "AND (ad.date > :startDate OR (ad.date = :startDate AND ad.time >= :startTime)) " +
-            "AND (ad.date < :endDate OR (ad.date = :endDate AND ad.time <= :endTime))")
-    List<Reservation> findReservationsForReminder(
-            @Param("status") ReservationStatus status,
-            @Param("startDate") LocalDate startDate,
-            @Param("startTime") LocalTime startTime,
-            @Param("endDate") LocalDate endDate,
-            @Param("endTime") LocalTime endTime
-    );
-
     @Query(value = "SELECT r FROM Reservation r " +
             "JOIN FETCH r.availableDate ad " +
             "JOIN FETCH r.restaurant " +
