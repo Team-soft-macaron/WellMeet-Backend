@@ -3,6 +3,7 @@ package com.wellmeet.batch.job;
 import com.wellmeet.domain.reservation.entity.Reservation;
 import com.wellmeet.domain.reservation.entity.ReservationStatus;
 import com.wellmeet.domain.reservation.repository.ReservationRepository;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -26,11 +27,12 @@ public class ReservationReminderReader {
     private static final int PAGE_SIZE = 10;
 
     private final ReservationRepository reservationRepository;
+    private final Clock clock;
 
     @Bean
     @StepScope
     public RepositoryItemReader<Reservation> itemReader() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(clock);
         LocalDateTime start = now.plusHours(REMINDER_HOURS_BEFORE);
         LocalDateTime end = start.plusMinutes(TIME_WINDOW_MINUTES);
 
