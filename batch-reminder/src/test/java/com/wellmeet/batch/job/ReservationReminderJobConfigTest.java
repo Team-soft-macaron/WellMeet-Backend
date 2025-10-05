@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import com.wellmeet.batch.config.TestClockConfiguration;
 import com.wellmeet.domain.member.entity.Member;
 import com.wellmeet.domain.member.repository.MemberRepository;
 import com.wellmeet.domain.owner.entity.Owner;
@@ -16,6 +17,7 @@ import com.wellmeet.domain.restaurant.availabledate.repository.AvailableDateRepo
 import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.domain.restaurant.repository.RestaurantRepository;
 import com.wellmeet.kafka.service.KafkaProducerService;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,12 +31,14 @@ import org.springframework.batch.test.context.SpringBatchTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBatchTest
 @SpringBootTest
 @ActiveProfiles("test")
+@Import(TestClockConfiguration.class)
 class ReservationReminderJobConfigTest {
 
     @Autowired
@@ -43,6 +47,9 @@ class ReservationReminderJobConfigTest {
     @Autowired
     @Qualifier("reservationReminderJob")
     private Job reservationReminderJob;
+
+    @Autowired
+    private Clock clock;
 
     @Autowired
     private ReservationRepository reservationRepository;
@@ -87,7 +94,7 @@ class ReservationReminderJobConfigTest {
 
     @Test
     void Job이_성공적으로_실행된다() throws Exception {
-        LocalDateTime threeHoursLater = LocalDateTime.now().plusHours(3).plusMinutes(5);
+        LocalDateTime threeHoursLater = LocalDateTime.now(clock).plusHours(3).plusMinutes(5);
         createConfirmedReservations(threeHoursLater, 5);
 
         JobParameters jobParameters = new JobParametersBuilder()
@@ -102,7 +109,7 @@ class ReservationReminderJobConfigTest {
 
     @Test
     void Step이_올바른_청크_사이즈로_동작한다() throws Exception {
-        LocalDateTime threeHoursLater = LocalDateTime.now().plusHours(3).plusMinutes(5);
+        LocalDateTime threeHoursLater = LocalDateTime.now(clock).plusHours(3).plusMinutes(5);
         createConfirmedReservations(threeHoursLater, 6);
 
         JobParameters jobParameters = new JobParametersBuilder()
@@ -129,9 +136,9 @@ class ReservationReminderJobConfigTest {
 
     @Test
     void 세_시간_이후_예약만_처리한다() throws Exception {
-        LocalDateTime twoHoursLater = LocalDateTime.now().plusHours(2);
-        LocalDateTime threeHoursLater = LocalDateTime.now().plusHours(3).plusMinutes(5);
-        LocalDateTime fourHoursLater = LocalDateTime.now().plusHours(4);
+        LocalDateTime twoHoursLater = LocalDateTime.now(clock).plusHours(2);
+        LocalDateTime threeHoursLater = LocalDateTime.now(clock).plusHours(3).plusMinutes(5);
+        LocalDateTime fourHoursLater = LocalDateTime.now(clock).plusHours(4);
 
         createConfirmedReservations(twoHoursLater, 3);
         createConfirmedReservations(threeHoursLater, 5);
