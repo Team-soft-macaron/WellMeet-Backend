@@ -1195,44 +1195,7 @@ assertEquals("식당",result.getName());
 
 ---
 
-### 4. EntityManager 사용 금지
-
-**중요**: 테스트 코드에서 **DataBaseCleaner를 제외하고는 절대로 EntityManager를 사용하지 마세요.**
-
-```java
-// ❌ Bad - EntityManager 사용
-@Autowired
-private EntityManager entityManager;
-
-@Test
-void 수용_인원을_감소시킨다() {
-    availableDateRepository.decreaseCapacity(availableDate.getId(), 4);
-    entityManager.flush();  // ❌ 사용 금지
-    entityManager.clear();  // ❌ 사용 금지
-
-    AvailableDate result = availableDateRepository.findById(availableDate.getId()).orElseThrow();
-    assertThat(result.getMaxCapacity()).isEqualTo(6);
-}
-
-// ✅ Good - EntityManager 없이 Repository만 사용
-@Test
-void 수용_인원을_감소시킨다() {
-    availableDateRepository.decreaseCapacity(availableDate.getId(), 4);
-
-    AvailableDate result = availableDateRepository.findById(availableDate.getId()).orElseThrow();
-    assertThat(result.getMaxCapacity()).isEqualTo(6);
-}
-```
-
-**이유**:
-- JPA는 트랜잭션 커밋 시점에 자동으로 flush됩니다
-- 테스트 메서드가 `@Transactional`로 실행되므로 메서드 종료 시 자동 처리됩니다
-- EntityManager를 직접 조작하면 테스트가 프로덕션 코드와 다른 방식으로 동작합니다
-- DataBaseCleaner는 테스트 간 데이터 정리를 위한 특수 목적이므로 예외입니다
-
----
-
-### 5. 예외 테스트
+### 4. 예외 테스트
 
 ```java
 // ✅ Good

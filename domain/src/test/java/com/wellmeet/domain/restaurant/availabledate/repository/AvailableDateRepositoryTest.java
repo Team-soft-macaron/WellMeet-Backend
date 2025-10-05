@@ -40,6 +40,8 @@ class AvailableDateRepositoryTest extends BaseRepositoryTest {
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant, 10);
 
             int updated = availableDateRepository.decreaseCapacity(availableDate.getId(), 4);
+            entityManager.flush();
+            entityManager.clear();
 
             assertThat(updated).isEqualTo(1);
 
@@ -55,6 +57,8 @@ class AvailableDateRepositoryTest extends BaseRepositoryTest {
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant, 4);
 
             int updated = availableDateRepository.decreaseCapacity(availableDate.getId(), 4);
+            entityManager.flush();
+            entityManager.clear();
 
             assertThat(updated).isEqualTo(1);
 
@@ -88,6 +92,8 @@ class AvailableDateRepositoryTest extends BaseRepositoryTest {
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant, 2);
 
             availableDateRepository.increaseCapacity(availableDate.getId(), 4);
+            entityManager.flush();
+            entityManager.clear();
 
             AvailableDate result = availableDateRepository.findById(availableDate.getId()).orElseThrow();
             assertThat(result.getMaxCapacity()).isEqualTo(6);
@@ -101,7 +107,11 @@ class AvailableDateRepositoryTest extends BaseRepositoryTest {
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant, 10);
 
             availableDateRepository.increaseCapacity(availableDate.getId(), 2);
+            entityManager.flush();
+            entityManager.clear();
             availableDateRepository.increaseCapacity(availableDate.getId(), 3);
+            entityManager.flush();
+            entityManager.clear();
 
             AvailableDate result = availableDateRepository.findById(availableDate.getId()).orElseThrow();
             assertThat(result.getMaxCapacity()).isEqualTo(15);

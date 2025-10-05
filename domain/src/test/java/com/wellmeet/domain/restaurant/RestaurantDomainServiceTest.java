@@ -116,6 +116,8 @@ class RestaurantDomainServiceTest extends BaseRepositoryTest {
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant, 10);
 
             restaurantDomainService.decreaseAvailableDateCapacity(availableDate, 4);
+            entityManager.flush();
+            entityManager.clear();
 
             AvailableDate result = availableDateRepository.findById(availableDate.getId()).orElseThrow();
             assertThat(result.getMaxCapacity()).isEqualTo(6);
@@ -143,6 +145,8 @@ class RestaurantDomainServiceTest extends BaseRepositoryTest {
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant, 5);
 
             restaurantDomainService.increaseAvailableDateCapacity(availableDate, 3);
+            entityManager.flush();
+            entityManager.clear();
 
             AvailableDate result = availableDateRepository.findById(availableDate.getId()).orElseThrow();
             assertThat(result.getMaxCapacity()).isEqualTo(8);

@@ -130,6 +130,8 @@ class AvailableDateDomainServiceTest extends BaseRepositoryTest {
             );
 
             availableDateDomainService.decreaseCapacity(availableDate, 4);
+            entityManager.flush();
+            entityManager.clear();
 
             AvailableDate result = availableDateRepository.findById(availableDate.getId()).orElseThrow();
             assertThat(result.getMaxCapacity()).isEqualTo(6);
@@ -167,6 +169,8 @@ class AvailableDateDomainServiceTest extends BaseRepositoryTest {
             );
 
             availableDateDomainService.increaseCapacity(availableDate, 3);
+            entityManager.flush();
+            entityManager.clear();
 
             AvailableDate result = availableDateRepository.findById(availableDate.getId()).orElseThrow();
             assertThat(result.getMaxCapacity()).isEqualTo(8);
