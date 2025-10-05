@@ -16,11 +16,16 @@ allprojects {
 subprojects {
     apply plugin: 'java'
     apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'jacoco'
 
     java {
         toolchain {
             languageVersion = JavaLanguageVersion.of(21)
         }
+    }
+
+    jacoco {
+        toolVersion = "0.8.11"
     }
 
     configurations {
@@ -45,5 +50,24 @@ subprojects {
 
     tasks.named('test') {
         useJUnitPlatform()
+        finalizedBy jacocoTestReport
+    }
+
+    jacocoTestReport {
+        dependsOn test
+        reports {
+            xml.required = true
+            html.required = true
+        }
+    }
+
+    jacocoTestCoverageVerification {
+        violationRules {
+            rule {
+                limit {
+                    minimum = 0.70
+                }
+            }
+        }
     }
 }
