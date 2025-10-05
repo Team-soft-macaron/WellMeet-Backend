@@ -41,6 +41,12 @@ public class ReservationReminderJobConfig {
                 .reader(itemReader)
                 .processor(processor)
                 .writer(writer)
+                .faultTolerant()
+                .retry(Exception.class)
+                .retryLimit(3)
+                .skip(Exception.class)
+                .skipLimit(10)
+                .listener(new NotificationSkipListener())
                 .build();
     }
 }

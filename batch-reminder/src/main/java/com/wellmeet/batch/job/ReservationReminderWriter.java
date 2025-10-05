@@ -18,14 +18,9 @@ public class ReservationReminderWriter implements ItemWriter<ReservationReminder
     @Override
     public void write(Chunk<? extends ReservationReminderPayload> chunk) {
         for (ReservationReminderPayload payload : chunk) {
-            try {
-                String recipient = payload.getCustomerId();
-                kafkaProducerService.sendNotificationMessage(recipient, payload);
-                log.info("Sent reminder notification for reservation ID: {}", payload.getReservationId());
-            } catch (Exception e) {
-                log.error("Failed to send reminder notification for reservation ID: {}",
-                        payload.getReservationId(), e);
-            }
+            String recipient = payload.getCustomerId();
+            kafkaProducerService.sendNotificationMessage(recipient, payload);
+            log.info("Sent reminder notification for reservation ID: {}", payload.getReservationId());
         }
     }
 }

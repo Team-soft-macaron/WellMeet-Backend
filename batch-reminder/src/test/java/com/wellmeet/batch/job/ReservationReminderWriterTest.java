@@ -1,5 +1,6 @@
 package com.wellmeet.batch.job;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -73,7 +74,7 @@ class ReservationReminderWriterTest {
         }
 
         @Test
-        void 발송_실패시_로그만_남기고_계속_진행한다() {
+        void 발송_실패시_예외를_던진다() {
             ReservationReminderPayload payload1 = new ReservationReminderPayload(
                     1L, "member-1", "김철수", "한식당", LocalDateTime.now(), 2
             );
@@ -86,9 +87,11 @@ class ReservationReminderWriterTest {
 
             Chunk<ReservationReminderPayload> chunk = new Chunk<>(Arrays.asList(payload1, payload2));
 
-            writer.write(chunk);
+            assertThatThrownBy(() -> writer.write(chunk))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessage("Kafka error");
 
-            verify(kafkaProducerService, times(2)).sendNotificationMessage(any(), any());
+            verify(kafkaProducerService, times(1)).sendNotificationMessage(eq("member-1"), any());
         }
 
         @Test
