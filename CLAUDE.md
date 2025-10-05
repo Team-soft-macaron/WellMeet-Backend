@@ -999,9 +999,7 @@ class ReservationReminderJobConfigTest {
     class ExecuteReminderJob {
 
         @Test
-        void 1
-
-        시간_전_예약_리마인더_배치가_성공한다() throws Exception {
+        void 한_시간_전_예약_리마인더_배치가_성공한다() throws Exception {
             Member member = createMember();
             Restaurant restaurant = createRestaurant();
             Reservation reservation = createReservation(
@@ -1179,11 +1177,9 @@ isEqualTo("식당");
 
 assertThat(list).
 
-hasSize(3)
-    .
+hasSize(3).
 
-extracting(Restaurant::getName)
-    .
+extracting(Restaurant::getName).
 
 containsExactly("A","B","C");
 

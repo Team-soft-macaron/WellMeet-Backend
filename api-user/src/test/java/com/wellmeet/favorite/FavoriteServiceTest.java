@@ -1,6 +1,8 @@
 package com.wellmeet.favorite;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -60,11 +62,11 @@ class FavoriteServiceTest {
 
             assertThat(result).hasSize(2);
             assertThat(result)
-                    .extracting(FavoriteRestaurantResponse::getName)
-                    .containsExactlyInAnyOrder("식당1", "식당2");
-            assertThat(result)
-                    .extracting(FavoriteRestaurantResponse::getRating)
-                    .containsExactlyInAnyOrder(4.5, 3.8);
+                    .extracting(FavoriteRestaurantResponse::getName, FavoriteRestaurantResponse::getRating)
+                    .containsExactlyInAnyOrder(
+                            tuple("식당1", 4.5),
+                            tuple("식당2", 3.8)
+                    );
         }
 
         @Test
@@ -101,7 +103,7 @@ class FavoriteServiceTest {
             assertThat(result.getName()).isEqualTo("맛집");
             assertThat(result.getRating()).isEqualTo(4.2);
             verify(favoriteRestaurantDomainService).save(
-                    org.mockito.ArgumentMatchers.any(FavoriteRestaurant.class)
+                    any(FavoriteRestaurant.class)
             );
         }
     }

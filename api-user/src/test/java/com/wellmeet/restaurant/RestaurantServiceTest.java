@@ -1,6 +1,7 @@
 package com.wellmeet.restaurant;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.Mockito.when;
 
 import com.wellmeet.domain.member.FavoriteRestaurantDomainService;
@@ -58,10 +59,12 @@ class RestaurantServiceTest {
             List<NearbyRestaurantResponse> responses = restaurantService.findWithNearbyRestaurant(latitude, longitude);
 
             assertThat(responses).hasSize(2);
-            assertThat(responses.get(0).getName()).isEqualTo("식당1");
-            assertThat(responses.get(0).getRating()).isEqualTo(4.5);
-            assertThat(responses.get(1).getName()).isEqualTo("식당2");
-            assertThat(responses.get(1).getRating()).isEqualTo(4.0);
+            assertThat(responses)
+                    .extracting(NearbyRestaurantResponse::getName, NearbyRestaurantResponse::getRating)
+                    .containsExactlyInAnyOrder(
+                            tuple("식당1", 4.5),
+                            tuple("식당2", 4.0)
+                    );
         }
 
         @Test

@@ -1,6 +1,7 @@
 package com.wellmeet.reservation;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -11,6 +12,7 @@ import com.wellmeet.domain.reservation.entity.Reservation;
 import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.global.event.EventPublishService;
+import com.wellmeet.global.event.event.ReservationConfirmedEvent;
 import com.wellmeet.reservation.dto.ReservationResponse;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -70,7 +72,7 @@ class ReservationServiceTest {
             reservationService.confirmReservation(reservation.getId());
 
             verify(eventPublishService).publishReservationConfirmedEvent(
-                    org.mockito.ArgumentMatchers.any(com.wellmeet.global.event.event.ReservationConfirmedEvent.class)
+                    any(ReservationConfirmedEvent.class)
             );
         }
     }
