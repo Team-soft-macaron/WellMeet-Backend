@@ -1,5 +1,6 @@
 package com.wellmeet.batch.scheduler;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,11 +18,12 @@ public class ReminderJobScheduler {
 
     private final JobLauncher jobLauncher;
     private final Job reservationReminderJob;
+    private final Clock clock;
 
     @Scheduled(cron = "0 */10 * * * *")
     public void runReminderJob() {
         try {
-            log.info("Starting reservation reminder job at {}", LocalDateTime.now());
+            log.info("Starting reservation reminder job at {}", LocalDateTime.now(clock));
 
             JobParameters jobParameters = new JobParametersBuilder()
                     .addLong("time", System.currentTimeMillis())
@@ -29,7 +31,7 @@ public class ReminderJobScheduler {
 
             jobLauncher.run(reservationReminderJob, jobParameters);
 
-            log.info("Completed reservation reminder job at {}", LocalDateTime.now());
+            log.info("Completed reservation reminder job at {}", LocalDateTime.now(clock));
         } catch (Exception e) {
             log.error("Failed to execute reservation reminder job", e);
         }
