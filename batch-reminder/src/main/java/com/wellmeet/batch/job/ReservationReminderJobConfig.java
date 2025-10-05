@@ -20,6 +20,8 @@ public class ReservationReminderJobConfig {
     private static final String JOB_NAME = "reservationReminderJob";
     private static final String STEP_NAME = "sendReminderStep";
     private static final int CHUNK_SIZE = 10;
+    static final int RETRY_LIMIT = 3;
+    private static final int SKIP_LIMIT = 10;
 
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
@@ -44,9 +46,9 @@ public class ReservationReminderJobConfig {
                 .writer(writer)
                 .faultTolerant()
                 .retry(Exception.class)
-                .retryLimit(3)
+                .retryLimit(RETRY_LIMIT)
                 .skip(Exception.class)
-                .skipLimit(10)
+                .skipLimit(SKIP_LIMIT)
                 .listener(skipListener)
                 .build();
     }

@@ -32,7 +32,7 @@ public class NotificationSkipListener implements SkipListener<ReservationReminde
     public void onSkipInWrite(ReservationReminderPayload item, Throwable throwable) {
         log.error(
                 "Failed to send notification after {} retries - reservationId={}, customerId={}, restaurantName={}, reservationTime={}",
-                3,
+                ReservationReminderJobConfig.RETRY_LIMIT,
                 item.getReservationId(),
                 item.getCustomerId(),
                 item.getRestaurantName(),
