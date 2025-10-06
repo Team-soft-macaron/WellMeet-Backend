@@ -18,8 +18,8 @@ public interface AvailableDateRepository extends JpaRepository<AvailableDate, Lo
 
     @Modifying
     @Query("update AvailableDate a "
-            + "set a.maxCapacity = a.maxCapacity - :partySize, "
-            + "a.isAvailable = case when (a.maxCapacity - :partySize) = 0 then false else a.isAvailable end "
+            + "set a.isAvailable = case when (a.maxCapacity - :partySize) = 0 then false else a.isAvailable end, "
+            + "a.maxCapacity = a.maxCapacity - :partySize "
             + "where a.id = :id and a.maxCapacity >= :partySize")
     int decreaseCapacity(@Param("id") Long id, @Param("partySize") int partySize);
 

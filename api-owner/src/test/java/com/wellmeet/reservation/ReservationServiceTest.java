@@ -1,6 +1,8 @@
 package com.wellmeet.reservation;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.wellmeet.domain.member.entity.Member;
@@ -9,6 +11,8 @@ import com.wellmeet.domain.reservation.ReservationDomainService;
 import com.wellmeet.domain.reservation.entity.Reservation;
 import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
+import com.wellmeet.global.event.EventPublishService;
+import com.wellmeet.global.event.event.ReservationConfirmedEvent;
 import com.wellmeet.reservation.dto.ReservationResponse;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,6 +28,9 @@ class ReservationServiceTest {
 
     @Mock
     private ReservationDomainService reservationDomainService;
+
+    @Mock
+    private EventPublishService eventPublishService;
 
     @InjectMocks
     private ReservationService reservationService;
@@ -46,6 +53,27 @@ class ReservationServiceTest {
             List<ReservationResponse> expectedReservations = reservationService.getReservations(restaurant.getId());
 
             assertThat(expectedReservations).hasSize(reservations.size());
+        }
+    }
+
+    @Nested
+    class ConfirmReservation {
+
+        @Test
+        void 예약을_확정한다() {
+            Restaurant restaurant = createRestaurant("Test Restaurant");
+            AvailableDate availableDate = createAvailableDate(LocalDateTime.now(), 10, restaurant);
+            Member member = createMember("Test");
+            Reservation reservation = createReservation(restaurant, availableDate, member, 4);
+
+            when(reservationDomainService.getById(reservation.getId()))
+                    .thenReturn(reservation);
+
+            reservationService.confirmReservation(reservation.getId());
+
+            verify(eventPublishService).publishReservationConfirmedEvent(
+                    any(ReservationConfirmedEvent.class)
+            );
         }
     }
 
