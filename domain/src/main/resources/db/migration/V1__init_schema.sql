@@ -1,5 +1,5 @@
 -- Owner 테이블
-CREATE TABLE IF NOT EXISTS owner
+CREATE TABLE owner
 (
     id                   VARCHAR(255) PRIMARY KEY,
     name                 VARCHAR(255) NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS owner
 );
 
 -- Member 테이블
-CREATE TABLE IF NOT EXISTS member
+CREATE TABLE member
 (
     id                   VARCHAR(255) PRIMARY KEY,
     name                 VARCHAR(255) NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS member
 );
 
 -- Restaurant 테이블
-CREATE TABLE IF NOT EXISTS restaurant
+CREATE TABLE restaurant
 (
     id         VARCHAR(255) PRIMARY KEY,
     name       VARCHAR(255) NOT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS restaurant
 );
 
 -- AvailableDate 테이블
-CREATE TABLE IF NOT EXISTS available_date
+CREATE TABLE available_date
 (
     id              BIGINT AUTO_INCREMENT PRIMARY KEY,
     available_date  DATE NOT NULL,
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS available_date
 );
 
 -- Reservation 테이블
-CREATE TABLE IF NOT EXISTS reservation
+CREATE TABLE reservation
 (
     id                BIGINT AUTO_INCREMENT PRIMARY KEY,
     status            VARCHAR(255) NOT NULL,
@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS reservation
 );
 
 -- FavoriteRestaurant 테이블 (member_restaurant를 favorite_restaurant로 변경)
-CREATE TABLE IF NOT EXISTS favorite_restaurant
+CREATE TABLE favorite_restaurant
 (
     id            BIGINT AUTO_INCREMENT PRIMARY KEY,
     member_id     VARCHAR(255) NOT NULL,
@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS favorite_restaurant
 );
 
 -- BusinessHour 테이블
-CREATE TABLE IF NOT EXISTS business_hour
+CREATE TABLE business_hour
 (
     id                BIGINT AUTO_INCREMENT PRIMARY KEY,
     day_of_week       VARCHAR(255) NOT NULL,
@@ -119,7 +119,7 @@ CREATE TABLE IF NOT EXISTS business_hour
 );
 
 -- Menu 테이블
-CREATE TABLE IF NOT EXISTS menu
+CREATE TABLE menu
 (
     id            BIGINT AUTO_INCREMENT PRIMARY KEY,
     name          VARCHAR(255) NOT NULL,
@@ -135,7 +135,7 @@ CREATE TABLE IF NOT EXISTS menu
 );
 
 -- Review 테이블
-CREATE TABLE IF NOT EXISTS review
+CREATE TABLE review
 (
     id            BIGINT AUTO_INCREMENT PRIMARY KEY,
     content       VARCHAR(500) NOT NULL,
@@ -154,7 +154,7 @@ CREATE TABLE IF NOT EXISTS review
 );
 
 -- ReviewTag 테이블
-CREATE TABLE IF NOT EXISTS review_tag
+CREATE TABLE review_tag
 (
     id         BIGINT AUTO_INCREMENT PRIMARY KEY,
     review_id  BIGINT NOT NULL,

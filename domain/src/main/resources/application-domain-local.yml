@@ -6,13 +6,13 @@ spring:
     password:
   jpa:
     show-sql: true
+    hibernate:
+      ddl-auto: validate
     properties:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
-  sql:
-    init:
-      mode: always
-      schema-locations: classpath:schema.sql
-      platform: mysql
-      encoding: UTF-8
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
