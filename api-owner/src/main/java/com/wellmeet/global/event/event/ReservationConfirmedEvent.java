@@ -18,10 +18,10 @@ public class ReservationConfirmedEvent {
     private final LocalDateTime dateTime;
     private final LocalDateTime createdAt;
 
-    public ReservationConfirmedEvent(Reservation reservation) {
+    public ReservationConfirmedEvent(Reservation reservation, String memberName) {
         this.reservationId = reservation.getId();
-        this.memberId = reservation.getMember().getId();
-        this.memberName = reservation.getMember().getName();
+        this.memberId = reservation.getMemberId();
+        this.memberName = memberName;
         this.restaurantId = reservation.getRestaurant().getId();
         this.restaurantName = reservation.getRestaurantName();
         this.status = reservation.getStatus().name();

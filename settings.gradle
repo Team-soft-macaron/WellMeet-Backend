@@ -1,6 +1,7 @@
 rootProject.name = 'WellMeet-Backend'
 
 include 'domain'
+include 'domain-member'
 include 'api-owner'
 include 'api-user'
 include 'infra-redis'

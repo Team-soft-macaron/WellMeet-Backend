@@ -1,6 +1,5 @@
 package com.wellmeet.reservation.dto;
 
-import com.wellmeet.domain.member.entity.Member;
 import com.wellmeet.domain.reservation.entity.Reservation;
 import com.wellmeet.domain.reservation.entity.ReservationStatus;
 import java.time.LocalDate;
@@ -23,9 +22,14 @@ public class ReservationResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public ReservationResponse(Reservation reservation) {
-        Member member = reservation.getMember();
-        CustomerSummaryResponse customerResponse = new CustomerSummaryResponse(member);
+    public ReservationResponse(Reservation reservation, String memberName, String memberPhone, String memberEmail, boolean memberVip) {
+        CustomerSummaryResponse customerResponse = new CustomerSummaryResponse(
+                reservation.getMemberId(),
+                memberName,
+                memberPhone,
+                memberEmail,
+                memberVip
+        );
 
         this.id = reservation.getId();
         this.customer = customerResponse;
@@ -48,12 +52,12 @@ public class ReservationResponse {
         private String email;
         private boolean vip;
 
-        public CustomerSummaryResponse(Member member) {
-            this.id = member.getId();
-            this.name = member.getName();
-            this.phone = member.getPhone();
-            this.email = member.getEmail();
-            this.vip = member.isVip();
+        public CustomerSummaryResponse(String id, String name, String phone, String email, boolean vip) {
+            this.id = id;
+            this.name = name;
+            this.phone = phone;
+            this.email = email;
+            this.vip = vip;
         }
     }
 }

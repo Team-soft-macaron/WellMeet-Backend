@@ -31,7 +31,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Query(value = "SELECT r FROM Reservation r " +
             "JOIN FETCH r.availableDate ad " +
             "JOIN FETCH r.restaurant " +
-            "JOIN FETCH r.member " +
             "WHERE r.status = :status " +
             "AND (ad.date > :startDate OR (ad.date = :startDate AND ad.time >= :startTime)) " +
             "AND (ad.date < :endDate OR (ad.date = :endDate AND ad.time < :endTime))",

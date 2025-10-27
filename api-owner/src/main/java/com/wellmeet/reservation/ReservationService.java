@@ -1,5 +1,7 @@
 package com.wellmeet.reservation;
 
+import com.wellmeet.domain.member.MemberDomainService;
+import com.wellmeet.domain.member.entity.Member;
 import com.wellmeet.domain.reservation.ReservationDomainService;
 import com.wellmeet.domain.reservation.entity.Reservation;
 import com.wellmeet.global.event.EventPublishService;
@@ -15,13 +17,23 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReservationService {
 
     private final ReservationDomainService reservationDomainService;
+    private final MemberDomainService memberDomainService;
     private final EventPublishService eventPublishService;
 
     @Transactional(readOnly = true)
     public List<ReservationResponse> getReservations(String restaurantId) {
         return reservationDomainService.findAllByRestaurantId(restaurantId)
                 .stream()
-                .map(ReservationResponse::new)
+                .map(reservation -> {
+                    Member member = memberDomainService.getById(reservation.getMemberId());
+                    return new ReservationResponse(
+                            reservation,
+                            member.getName(),
+                            member.getPhone(),
+                            member.getEmail(),
+                            member.isVip()
+                    );
+                })
                 .toList();
     }
 
@@ -30,7 +42,8 @@ public class ReservationService {
         Reservation reservation = reservationDomainService.getById(reservationId);
         reservation.confirm();
 
-        ReservationConfirmedEvent event = new ReservationConfirmedEvent(reservation);
+        Member member = memberDomainService.getById(reservation.getMemberId());
+        ReservationConfirmedEvent event = new ReservationConfirmedEvent(reservation, member.getName());
         eventPublishService.publishReservationConfirmedEvent(event);
     }
 }

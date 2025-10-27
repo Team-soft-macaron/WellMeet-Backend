@@ -1,11 +1,11 @@
 package com.wellmeet.domain.reservation.entity;
 
 import com.wellmeet.domain.common.BaseEntity;
-import com.wellmeet.domain.member.entity.Member;
 import com.wellmeet.domain.reservation.exception.ReservationErrorCode;
 import com.wellmeet.domain.reservation.exception.ReservationException;
 import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -17,6 +17,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -55,23 +56,22 @@ public class Reservation extends BaseEntity {
     @JoinColumn(name = "available_date_id")
     private AvailableDate availableDate;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @NotBlank
+    @Column(name = "member_id")
+    private String memberId;
 
     private int partySize;
     private String specialRequest;
 
     public Reservation(Restaurant restaurant, AvailableDate availableDate,
-                       Member member, int partySize, String specialRequest) {
+                       String memberId, int partySize, String specialRequest) {
         validatePartySize(partySize);
         validateRequest(specialRequest);
 
         this.status = ReservationStatus.PENDING;
         this.restaurant = restaurant;
         this.availableDate = availableDate;
-        this.member = member;
+        this.memberId = memberId;
         this.partySize = partySize;
         this.specialRequest = specialRequest;
     }

@@ -1,6 +1,5 @@
 package com.wellmeet.domain.fixture;
 
-import com.wellmeet.domain.member.entity.Member;
 import com.wellmeet.domain.reservation.entity.Reservation;
 import com.wellmeet.domain.reservation.repository.ReservationRepository;
 import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
@@ -16,8 +15,8 @@ public class ReservationGenerator {
         this.reservationRepository = reservationRepository;
     }
 
-    public Reservation generate(Restaurant restaurant, AvailableDate availableDate, Member member, int partySize) {
-        Reservation reservation = new Reservation(restaurant, availableDate, member, partySize, "request");
+    public Reservation generate(Restaurant restaurant, AvailableDate availableDate, String memberId, int partySize) {
+        Reservation reservation = new Reservation(restaurant, availableDate, memberId, partySize, "request");
         return reservationRepository.save(reservation);
     }
 }

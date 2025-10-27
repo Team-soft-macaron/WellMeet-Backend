@@ -1,10 +1,10 @@
 package com.wellmeet.domain.restaurant.review.entity;
 
 import com.wellmeet.domain.common.BaseEntity;
-import com.wellmeet.domain.member.entity.Member;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.domain.restaurant.exception.RestaurantErrorCode;
 import com.wellmeet.domain.restaurant.exception.RestaurantException;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -45,14 +45,13 @@ public class Review extends BaseEntity {
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @NotBlank
+    @Column(name = "member_id")
+    private String memberId;
 
     private double rating;
 
-    public Review(String content, double rating, Situation situation, Restaurant restaurant, Member member) {
+    public Review(String content, double rating, Situation situation, Restaurant restaurant, String memberId) {
         validateContent(content);
         validateRating(rating);
 
@@ -60,7 +59,7 @@ public class Review extends BaseEntity {
         this.rating = rating;
         this.situation = situation;
         this.restaurant = restaurant;
-        this.member = member;
+        this.memberId = memberId;
     }
 
     private void validateContent(String content) {
