@@ -17,6 +17,9 @@ import org.springframework.context.annotation.Import;
 class FavoriteRestaurantDomainServiceTest extends BaseRepositoryTest {
 
     @Autowired
+    private FavoriteRestaurantDomainService favoriteRestaurantDomainService;
+
+    @Autowired
     private FavoriteRestaurantRepository favoriteRestaurantRepository;
 
     @Autowired

@@ -2,7 +2,6 @@ package com.wellmeet.domain.member;
 
 import static org.assertj.core.api.Assertions.*;
 
-import com.wellmeet.BaseRepositoryTest;
 import com.wellmeet.domain.member.entity.Member;
 import com.wellmeet.domain.member.exception.MemberException;
 import com.wellmeet.domain.member.repository.MemberRepository;
