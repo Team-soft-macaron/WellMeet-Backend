@@ -27,10 +27,10 @@ class FavoriteControllerTest extends BaseControllerTest {
             Restaurant restaurant1 = restaurantGenerator.generate("Restaurant 1", owner1);
             Restaurant restaurant2 = restaurantGenerator.generate("Restaurant 2", owner2);
             Restaurant restaurant3 = restaurantGenerator.generate("Restaurant 3", owner3);
-            favoriteRestaurantRepository.save(new FavoriteRestaurant(testUser, restaurant1));
-            favoriteRestaurantRepository.save(new FavoriteRestaurant(testUser, restaurant2));
-            favoriteRestaurantRepository.save(new FavoriteRestaurant(anotherUser, restaurant2));
-            favoriteRestaurantRepository.save(new FavoriteRestaurant(anotherUser, restaurant3));
+            favoriteRestaurantRepository.save(new FavoriteRestaurant(testUser.getId(), restaurant1.getId()));
+            favoriteRestaurantRepository.save(new FavoriteRestaurant(testUser.getId(), restaurant2.getId()));
+            favoriteRestaurantRepository.save(new FavoriteRestaurant(anotherUser.getId(), restaurant2.getId()));
+            favoriteRestaurantRepository.save(new FavoriteRestaurant(anotherUser.getId(), restaurant3.getId()));
 
             FavoriteRestaurantResponse[] responses = given()
                     .contentType("application/json")
@@ -73,7 +73,7 @@ class FavoriteControllerTest extends BaseControllerTest {
             Member testUser = memberGenerator.generate("testUser");
             Owner owner = ownerGenerator.generate("Test Owner");
             Restaurant restaurant = restaurantGenerator.generate("Test Restaurant", owner);
-            favoriteRestaurantRepository.save(new FavoriteRestaurant(testUser, restaurant));
+            favoriteRestaurantRepository.save(new FavoriteRestaurant(testUser.getId(), restaurant.getId()));
 
             given()
                     .contentType("application/json")

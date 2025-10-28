@@ -37,10 +37,10 @@ public class ReservationService {
         reservationRedisService.isReserving(memberId, request.getRestaurantId(), request.getAvailableDateId());
         Member member = memberDomainService.getById(memberId);
         restaurantDomainService.decreaseAvailableDateCapacity(availableDate, request.getPartySize());
-        Reservation reservation = request.toDomain(availableDate.getRestaurant(), availableDate, member);
+        Reservation reservation = request.toDomain(availableDate.getRestaurant(), availableDate, memberId);
 
         Reservation savedReservation = reservationDomainService.save(reservation);
-        ReservationCreatedEvent event = new ReservationCreatedEvent(savedReservation);
+        ReservationCreatedEvent event = new ReservationCreatedEvent(savedReservation, member.getName());
         eventPublishService.publishReservationCreatedEvent(event);
 
         return new CreateReservationResponse(savedReservation);
@@ -84,7 +84,8 @@ public class ReservationService {
                 request.getSpecialRequest()
         );
 
-        ReservationUpdatedEvent event = new ReservationUpdatedEvent(reservation);
+        Member member = memberDomainService.getById(memberId);
+        ReservationUpdatedEvent event = new ReservationUpdatedEvent(reservation, member.getName());
         eventPublishService.publishReservationUpdatedEvent(event);
         return new CreateReservationResponse(reservation);
     }
@@ -96,7 +97,8 @@ public class ReservationService {
         restaurantDomainService.increaseAvailableDateCapacity(availableDate, reservation.getPartySize());
         reservation.cancel();
 
-        ReservationCanceledEvent event = new ReservationCanceledEvent(reservation);
+        Member member = memberDomainService.getById(memberId);
+        ReservationCanceledEvent event = new ReservationCanceledEvent(reservation, member.getName());
         eventPublishService.publishReservationCanceledEvent(event);
     }
 }

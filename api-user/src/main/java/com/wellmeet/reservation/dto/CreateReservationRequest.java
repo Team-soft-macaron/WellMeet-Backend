@@ -1,6 +1,5 @@
 package com.wellmeet.reservation.dto;
 
-import com.wellmeet.domain.member.entity.Member;
 import com.wellmeet.domain.reservation.entity.Reservation;
 import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
@@ -28,11 +27,11 @@ public class CreateReservationRequest {
         this.specialRequest = specialRequest;
     }
 
-    public Reservation toDomain(Restaurant restaurant, AvailableDate availableDate, Member member) {
+    public Reservation toDomain(Restaurant restaurant, AvailableDate availableDate, String memberId) {
         return new Reservation(
                 restaurant,
                 availableDate,
-                member,
+                memberId,
                 partySize,
                 specialRequest
         );

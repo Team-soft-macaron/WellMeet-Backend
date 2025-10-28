@@ -175,7 +175,7 @@ class RestaurantServiceTest {
 
     private Review createReview(Restaurant restaurant) {
         Member member = new Member("member", "nickname", "email@test.com", "010-1234-5678");
-        return new Review("맛있어요", 4.5, Situation.DATE, restaurant, member);
+        return new Review("맛있어요", 4.5, Situation.DATE, restaurant, member.getId());
     }
 
     private Menu createMenu(Restaurant restaurant) {

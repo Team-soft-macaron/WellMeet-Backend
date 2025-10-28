@@ -18,4 +18,6 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, String> 
             AND r.longitude BETWEEN :#{#boundingBox.minLongitude} AND :#{#boundingBox.maxLongitude}
             """)
     List<Restaurant> findWithBoundBox(@Param("boundingBox") BoundingBox boundingBox);
+
+    List<Restaurant> findAllByIdIn(List<String> restaurantIds);
 }

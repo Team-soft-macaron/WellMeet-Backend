@@ -103,8 +103,8 @@ class ReservationControllerTest extends BaseControllerTest {
                     restaurant);
             AvailableDate availableDate2 = availableDateGenerator.generate(LocalDateTime.now().plusDays(2), 10,
                     restaurant);
-            reservationGenerator.generate(restaurant, availableDate, member, 4);
-            reservationGenerator.generate(restaurant, availableDate2, member, 2);
+            reservationGenerator.generate(restaurant, availableDate, member.getId(), 4);
+            reservationGenerator.generate(restaurant, availableDate2, member.getId(), 2);
 
             SummaryReservationResponse[] reservationResponses = given()
                     .contentType("application/json")
@@ -127,7 +127,7 @@ class ReservationControllerTest extends BaseControllerTest {
             Restaurant restaurant = restaurantGenerator.generate("restaurant", owner);
             AvailableDate availableDate = availableDateGenerator.generate(LocalDateTime.now().plusDays(1), 10,
                     restaurant);
-            Reservation reservation = reservationGenerator.generate(restaurant, availableDate, member, 4);
+            Reservation reservation = reservationGenerator.generate(restaurant, availableDate, member.getId(), 4);
 
             ReservationResponse response = given()
                     .contentType("application/json")
@@ -150,7 +150,7 @@ class ReservationControllerTest extends BaseControllerTest {
             Restaurant restaurant = restaurantGenerator.generate("restaurant", owner);
             AvailableDate availableDate = availableDateGenerator.generate(LocalDateTime.now().plusDays(1), 10,
                     restaurant);
-            Reservation reservation = reservationGenerator.generate(restaurant, availableDate, member, 4);
+            Reservation reservation = reservationGenerator.generate(restaurant, availableDate, member.getId(), 4);
 
             CreateReservationRequest request = new CreateReservationRequest(restaurant.getId(), availableDate.getId(),
                     6, "updated request");
@@ -181,7 +181,7 @@ class ReservationControllerTest extends BaseControllerTest {
             Restaurant restaurant = restaurantGenerator.generate("restaurant", owner);
             AvailableDate availableDate = availableDateGenerator.generate(LocalDateTime.now().plusDays(1), 10,
                     restaurant);
-            Reservation reservation = reservationGenerator.generate(restaurant, availableDate, member, 4);
+            Reservation reservation = reservationGenerator.generate(restaurant, availableDate, member.getId(), 4);
 
             given()
                     .contentType("application/json")

@@ -1,14 +1,15 @@
 package com.wellmeet.favorite;
 
 import com.wellmeet.domain.member.FavoriteRestaurantDomainService;
-import com.wellmeet.domain.member.MemberDomainService;
 import com.wellmeet.domain.member.entity.FavoriteRestaurant;
-import com.wellmeet.domain.member.entity.Member;
 import com.wellmeet.domain.restaurant.RestaurantDomainService;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.domain.restaurant.review.ReviewDomainService;
 import com.wellmeet.favorite.dto.FavoriteRestaurantResponse;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,14 +20,27 @@ public class FavoriteService {
 
     private final FavoriteRestaurantDomainService favoriteRestaurantDomainService;
     private final ReviewDomainService reviewDomainService;
-    private final MemberDomainService memberDomainService;
     private final RestaurantDomainService restaurantDomainService;
 
     @Transactional(readOnly = true)
     public List<FavoriteRestaurantResponse> getFavoriteRestaurants(String memberId) {
-        return favoriteRestaurantDomainService.findAllByMemberId(memberId)
-                .stream()
-                .map(favoriteRestaurant -> getFavoriteRestaurantResponse(favoriteRestaurant.getRestaurant()))
+        List<FavoriteRestaurant> favoriteRestaurants = favoriteRestaurantDomainService.findAllByMemberId(memberId);
+        if (favoriteRestaurants.isEmpty()) {
+            return List.of();
+        }
+
+        List<String> restaurantIds = favoriteRestaurants.stream()
+                .map(FavoriteRestaurant::getRestaurantId)
+                .toList();
+
+        Map<String, Restaurant> restaurantsById = restaurantDomainService.findAllByIds(restaurantIds).stream()
+                .collect(Collectors.toMap(Restaurant::getId, Function.identity()));
+
+        return favoriteRestaurants.stream()
+                .map(favoriteRestaurant -> {
+                    Restaurant restaurant = restaurantsById.get(favoriteRestaurant.getRestaurantId());
+                    return getFavoriteRestaurantResponse(restaurant);
+                })
                 .toList();
     }
 
@@ -37,9 +51,8 @@ public class FavoriteService {
 
     @Transactional
     public FavoriteRestaurantResponse addFavoriteRestaurant(String memberId, String restaurantId) {
-        Member member = memberDomainService.getById(memberId);
         Restaurant restaurant = restaurantDomainService.getById(restaurantId);
-        FavoriteRestaurant favoriteRestaurant = new FavoriteRestaurant(member, restaurant);
+        FavoriteRestaurant favoriteRestaurant = new FavoriteRestaurant(memberId, restaurantId);
         favoriteRestaurantDomainService.save(favoriteRestaurant);
         return getFavoriteRestaurantResponse(restaurant);
     }

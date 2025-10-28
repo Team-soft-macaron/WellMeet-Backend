@@ -40,7 +40,7 @@ class ReservationEventListenerTest {
         void 예약_생성_이벤트를_처리하여_Kafka로_알림_메시지를_발송한다() {
             Reservation reservation = createReservation();
             Restaurant restaurant = reservation.getRestaurant();
-            ReservationCreatedEvent event = new ReservationCreatedEvent(reservation);
+            ReservationCreatedEvent event = new ReservationCreatedEvent(reservation, "member");
 
             reservationEventListener.handleReservationCreated(event);
 
@@ -58,7 +58,7 @@ class ReservationEventListenerTest {
         void 예약_수정_이벤트를_처리하여_Kafka로_알림_메시지를_발송한다() {
             Reservation reservation = createReservation();
             Restaurant restaurant = reservation.getRestaurant();
-            ReservationUpdatedEvent event = new ReservationUpdatedEvent(reservation);
+            ReservationUpdatedEvent event = new ReservationUpdatedEvent(reservation, "member");
 
             reservationEventListener.handleReservationUpdated(event);
 
@@ -76,7 +76,7 @@ class ReservationEventListenerTest {
         void 예약_취소_이벤트를_처리하여_Kafka로_알림_메시지를_발송한다() {
             Reservation reservation = createReservation();
             Restaurant restaurant = reservation.getRestaurant();
-            ReservationCanceledEvent event = new ReservationCanceledEvent(reservation);
+            ReservationCanceledEvent event = new ReservationCanceledEvent(reservation, "member");
 
             reservationEventListener.handleReservationCanceled(event);
 
@@ -106,6 +106,6 @@ class ReservationEventListenerTest {
                 restaurant
         );
         Member member = new Member("member", "nickname", "email@test.com", "010-1234-5678");
-        return new Reservation(restaurant, availableDate, member, 4, "요청사항");
+        return new Reservation(restaurant, availableDate, member.getId(), 4, "요청사항");
     }
 }

@@ -3,8 +3,6 @@ package com.wellmeet.domain.restaurant.review;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.wellmeet.BaseRepositoryTest;
-import com.wellmeet.domain.member.entity.Member;
-import com.wellmeet.domain.member.repository.MemberRepository;
 import com.wellmeet.domain.owner.entity.Owner;
 import com.wellmeet.domain.owner.repository.OwnerRepository;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
@@ -32,9 +30,6 @@ class ReviewDomainServiceTest extends BaseRepositoryTest {
     private RestaurantRepository restaurantRepository;
 
     @Autowired
-    private MemberRepository memberRepository;
-
-    @Autowired
     private OwnerRepository ownerRepository;
 
     @Nested
@@ -44,11 +39,9 @@ class ReviewDomainServiceTest extends BaseRepositoryTest {
         void 식당의_평균_평점을_조회한다() {
             Owner owner = createAndSaveOwner();
             Restaurant restaurant = createAndSaveRestaurant(owner);
-            Member member1 = createAndSaveMember("member1");
-            Member member2 = createAndSaveMember("member2");
 
-            createAndSaveReview(restaurant, member1, 5.0);
-            createAndSaveReview(restaurant, member2, 3.0);
+            createAndSaveReview(restaurant, "member1", 5.0);
+            createAndSaveReview(restaurant, "member2", 3.0);
 
             double averageRating = reviewDomainService.getAverageRating(restaurant.getId());
 
@@ -73,11 +66,9 @@ class ReviewDomainServiceTest extends BaseRepositoryTest {
         void 식당의_모든_리뷰를_조회한다() {
             Owner owner = createAndSaveOwner();
             Restaurant restaurant = createAndSaveRestaurant(owner);
-            Member member1 = createAndSaveMember("member1");
-            Member member2 = createAndSaveMember("member2");
 
-            createAndSaveReview(restaurant, member1, 5.0);
-            createAndSaveReview(restaurant, member2, 4.0);
+            createAndSaveReview(restaurant, "member1", 5.0);
+            createAndSaveReview(restaurant, "member2", 4.0);
 
             List<Review> reviews = reviewDomainService.getByRestaurantId(restaurant.getId());
 
@@ -99,10 +90,9 @@ class ReviewDomainServiceTest extends BaseRepositoryTest {
             Owner owner = createAndSaveOwner();
             Restaurant restaurant1 = createAndSaveRestaurant(owner);
             Restaurant restaurant2 = createAndSaveRestaurant(owner);
-            Member member = createAndSaveMember("member");
 
-            createAndSaveReview(restaurant1, member, 5.0);
-            createAndSaveReview(restaurant2, member, 4.0);
+            createAndSaveReview(restaurant1, "member", 5.0);
+            createAndSaveReview(restaurant2, "member", 4.0);
 
             List<Review> reviews = reviewDomainService.getByRestaurantId(restaurant1.getId());
 
@@ -128,13 +118,8 @@ class ReviewDomainServiceTest extends BaseRepositoryTest {
         return restaurantRepository.save(restaurant);
     }
 
-    private Member createAndSaveMember(String name) {
-        Member member = new Member(name, "nickname", name + "@test.com", "010-1234-5678");
-        return memberRepository.save(member);
-    }
-
-    private Review createAndSaveReview(Restaurant restaurant, Member member, double rating) {
-        Review review = new Review("맛있어요", rating, Situation.DATE, restaurant, member);
+    private Review createAndSaveReview(Restaurant restaurant, String memberId, double rating) {
+        Review review = new Review("맛있어요", rating, Situation.DATE, restaurant, memberId);
         return reviewRepository.save(review);
     }
 }

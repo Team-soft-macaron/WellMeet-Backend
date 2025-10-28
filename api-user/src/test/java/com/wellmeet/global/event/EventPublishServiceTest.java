@@ -34,7 +34,7 @@ class EventPublishServiceTest {
         @Test
         void 예약_생성_이벤트를_발행한다() {
             Reservation reservation = createReservation();
-            ReservationCreatedEvent event = new ReservationCreatedEvent(reservation);
+            ReservationCreatedEvent event = new ReservationCreatedEvent(reservation, "member");
 
             eventPublishService.publishReservationCreatedEvent(event);
 
@@ -48,7 +48,7 @@ class EventPublishServiceTest {
         @Test
         void 예약_수정_이벤트를_발행한다() {
             Reservation reservation = createReservation();
-            ReservationUpdatedEvent event = new ReservationUpdatedEvent(reservation);
+            ReservationUpdatedEvent event = new ReservationUpdatedEvent(reservation, "member");
 
             eventPublishService.publishReservationUpdatedEvent(event);
 
@@ -62,7 +62,7 @@ class EventPublishServiceTest {
         @Test
         void 예약_취소_이벤트를_발행한다() {
             Reservation reservation = createReservation();
-            ReservationCanceledEvent event = new ReservationCanceledEvent(reservation);
+            ReservationCanceledEvent event = new ReservationCanceledEvent(reservation, "member");
 
             eventPublishService.publishReservationCanceledEvent(event);
 
@@ -89,6 +89,6 @@ class EventPublishServiceTest {
                 restaurant
         );
         Member member = new Member("member", "nickname", "email@test.com", "010-1234-5678");
-        return new Reservation(restaurant, availableDate, member, 4, "요청사항");
+        return new Reservation(restaurant, availableDate, member.getId(), 4, "요청사항");
     }
 }

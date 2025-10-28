@@ -7,7 +7,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.wellmeet.domain.member.FavoriteRestaurantDomainService;
-import com.wellmeet.domain.member.MemberDomainService;
 import com.wellmeet.domain.member.entity.FavoriteRestaurant;
 import com.wellmeet.domain.member.entity.Member;
 import com.wellmeet.domain.owner.entity.Owner;
@@ -33,9 +32,6 @@ class FavoriteServiceTest {
     private ReviewDomainService reviewDomainService;
 
     @Mock
-    private MemberDomainService memberDomainService;
-
-    @Mock
     private RestaurantDomainService restaurantDomainService;
 
     @InjectMocks
@@ -49,14 +45,16 @@ class FavoriteServiceTest {
             Member member = createMember();
             Restaurant restaurant1 = createRestaurant("restaurant-1", "식당1");
             Restaurant restaurant2 = createRestaurant("restaurant-2", "식당2");
-            FavoriteRestaurant favorite1 = new FavoriteRestaurant(member, restaurant1);
-            FavoriteRestaurant favorite2 = new FavoriteRestaurant(member, restaurant2);
+            FavoriteRestaurant favorite1 = new FavoriteRestaurant(member.getId(), restaurant1.getId());
+            FavoriteRestaurant favorite2 = new FavoriteRestaurant(member.getId(), restaurant2.getId());
             List<FavoriteRestaurant> favorites = List.of(favorite1, favorite2);
 
             when(favoriteRestaurantDomainService.findAllByMemberId(member.getId()))
                     .thenReturn(favorites);
             when(reviewDomainService.getAverageRating("restaurant-1")).thenReturn(4.5);
             when(reviewDomainService.getAverageRating("restaurant-2")).thenReturn(3.8);
+            when(restaurantDomainService.findAllByIds(List.of(restaurant1.getId(), restaurant2.getId())))
+                    .thenReturn(List.of(restaurant1, restaurant2));
 
             List<FavoriteRestaurantResponse> result = favoriteService.getFavoriteRestaurants(member.getId());
 
@@ -90,7 +88,6 @@ class FavoriteServiceTest {
             Member member = createMember();
             Restaurant restaurant = createRestaurant("restaurant-1", "맛집");
 
-            when(memberDomainService.getById(member.getId())).thenReturn(member);
             when(restaurantDomainService.getById(restaurant.getId())).thenReturn(restaurant);
             when(reviewDomainService.getAverageRating(restaurant.getId())).thenReturn(4.2);
 
@@ -115,7 +112,7 @@ class FavoriteServiceTest {
         void 즐겨찾기_식당을_삭제한다() {
             Member member = createMember();
             Restaurant restaurant = createRestaurant("restaurant-1", "식당");
-            FavoriteRestaurant favoriteRestaurant = new FavoriteRestaurant(member, restaurant);
+            FavoriteRestaurant favoriteRestaurant = new FavoriteRestaurant(member.getId(), restaurant.getId());
 
             when(favoriteRestaurantDomainService.getByMemberIdAndRestaurantId(
                     member.getId(),

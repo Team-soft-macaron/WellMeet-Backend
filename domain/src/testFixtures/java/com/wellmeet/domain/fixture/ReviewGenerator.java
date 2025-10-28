@@ -1,6 +1,5 @@
 package com.wellmeet.domain.fixture;
 
-import com.wellmeet.domain.member.entity.Member;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.domain.restaurant.review.entity.Review;
 import com.wellmeet.domain.restaurant.review.entity.Situation;
@@ -16,8 +15,8 @@ public class ReviewGenerator {
         this.reviewRepository = reviewRepository;
     }
 
-    public Review generate(int rating, Restaurant restaurant, Member member) {
-        Review review = new Review("content", rating, Situation.DATE, restaurant, member);
+    public Review generate(int rating, Restaurant restaurant, String memberId) {
+        Review review = new Review("content", rating, Situation.DATE, restaurant, memberId);
         return reviewRepository.save(review);
     }
 }

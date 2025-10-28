@@ -2,16 +2,11 @@ package com.wellmeet.domain.member;
 
 import static org.assertj.core.api.Assertions.*;
 
-import com.wellmeet.BaseRepositoryTest;
 import com.wellmeet.domain.member.entity.FavoriteRestaurant;
 import com.wellmeet.domain.member.entity.Member;
 import com.wellmeet.domain.member.exception.MemberException;
 import com.wellmeet.domain.member.repository.FavoriteRestaurantRepository;
 import com.wellmeet.domain.member.repository.MemberRepository;
-import com.wellmeet.domain.owner.entity.Owner;
-import com.wellmeet.domain.owner.repository.OwnerRepository;
-import com.wellmeet.domain.restaurant.entity.Restaurant;
-import com.wellmeet.domain.restaurant.repository.RestaurantRepository;
 import java.util.List;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -30,22 +25,16 @@ class FavoriteRestaurantDomainServiceTest extends BaseRepositoryTest {
     @Autowired
     private MemberRepository memberRepository;
 
-    @Autowired
-    private RestaurantRepository restaurantRepository;
-
-    @Autowired
-    private OwnerRepository ownerRepository;
-
     @Nested
     class IsFavorite {
 
         @Test
         void 즐겨찾기에_등록된_레스토랑이면_true를_반환한다() {
             Member member = createAndSaveMember("member");
-            Restaurant restaurant = createAndSaveRestaurant("restaurant");
-            favoriteRestaurantRepository.save(new FavoriteRestaurant(member, restaurant));
+            String restaurantId = "restaurant-id";
+            favoriteRestaurantRepository.save(new FavoriteRestaurant(member.getId(), restaurantId));
 
-            boolean result = favoriteRestaurantDomainService.isFavorite(member.getId(), restaurant.getId());
+            boolean result = favoriteRestaurantDomainService.isFavorite(member.getId(), restaurantId);
 
             assertThat(result).isTrue();
         }
@@ -53,9 +42,9 @@ class FavoriteRestaurantDomainServiceTest extends BaseRepositoryTest {
         @Test
         void 즐겨찾기에_등록되지_않은_레스토랑이면_false를_반환한다() {
             Member member = createAndSaveMember("member");
-            Restaurant restaurant = createAndSaveRestaurant("restaurant");
+            String restaurantId = "restaurant-id";
 
-            boolean result = favoriteRestaurantDomainService.isFavorite(member.getId(), restaurant.getId());
+            boolean result = favoriteRestaurantDomainService.isFavorite(member.getId(), restaurantId);
 
             assertThat(result).isFalse();
         }
@@ -67,10 +56,10 @@ class FavoriteRestaurantDomainServiceTest extends BaseRepositoryTest {
         @Test
         void 회원의_모든_즐겨찾기_레스토랑을_조회한다() {
             Member member = createAndSaveMember("member");
-            Restaurant restaurant1 = createAndSaveRestaurant("restaurant1");
-            Restaurant restaurant2 = createAndSaveRestaurant("restaurant2");
-            favoriteRestaurantRepository.save(new FavoriteRestaurant(member, restaurant1));
-            favoriteRestaurantRepository.save(new FavoriteRestaurant(member, restaurant2));
+            String restaurantId1 = "restaurant-id-1";
+            String restaurantId2 = "restaurant-id-2";
+            favoriteRestaurantRepository.save(new FavoriteRestaurant(member.getId(), restaurantId1));
+            favoriteRestaurantRepository.save(new FavoriteRestaurant(member.getId(), restaurantId2));
 
             List<FavoriteRestaurant> result = favoriteRestaurantDomainService.findAllByMemberId(member.getId());
 
@@ -93,16 +82,16 @@ class FavoriteRestaurantDomainServiceTest extends BaseRepositoryTest {
         @Test
         void 즐겨찾기_레스토랑을_저장한다() {
             Member member = createAndSaveMember("member");
-            Restaurant restaurant = createAndSaveRestaurant("restaurant");
-            FavoriteRestaurant favoriteRestaurant = new FavoriteRestaurant(member, restaurant);
+            String restaurantId = "restaurant-id";
+            FavoriteRestaurant favoriteRestaurant = new FavoriteRestaurant(member.getId(), restaurantId);
 
             favoriteRestaurantDomainService.save(favoriteRestaurant);
 
             FavoriteRestaurant saved = favoriteRestaurantRepository.findByMemberIdAndRestaurantId(
-                    member.getId(), restaurant.getId()
+                    member.getId(), restaurantId
             ).orElseThrow();
-            assertThat(saved.getMember().getId()).isEqualTo(member.getId());
-            assertThat(saved.getRestaurant().getId()).isEqualTo(restaurant.getId());
+            assertThat(saved.getMemberId()).isEqualTo(member.getId());
+            assertThat(saved.getRestaurantId()).isEqualTo(restaurantId);
         }
     }
 
@@ -112,25 +101,25 @@ class FavoriteRestaurantDomainServiceTest extends BaseRepositoryTest {
         @Test
         void 즐겨찾기_레스토랑을_조회한다() {
             Member member = createAndSaveMember("member");
-            Restaurant restaurant = createAndSaveRestaurant("restaurant");
-            favoriteRestaurantRepository.save(new FavoriteRestaurant(member, restaurant));
+            String restaurantId = "restaurant-id";
+            favoriteRestaurantRepository.save(new FavoriteRestaurant(member.getId(), restaurantId));
 
             FavoriteRestaurant result = favoriteRestaurantDomainService.getByMemberIdAndRestaurantId(
-                    member.getId(), restaurant.getId()
+                    member.getId(), restaurantId
             );
 
-            assertThat(result.getMember().getId()).isEqualTo(member.getId());
-            assertThat(result.getRestaurant().getId()).isEqualTo(restaurant.getId());
+            assertThat(result.getMemberId()).isEqualTo(member.getId());
+            assertThat(result.getRestaurantId()).isEqualTo(restaurantId);
         }
 
         @Test
         void 존재하지_않으면_예외가_발생한다() {
             Member member = createAndSaveMember("member");
-            Restaurant restaurant = createAndSaveRestaurant("restaurant");
+            String restaurantId = "restaurant-id";
 
             assertThatThrownBy(() ->
                     favoriteRestaurantDomainService.getByMemberIdAndRestaurantId(
-                            member.getId(), restaurant.getId()
+                            member.getId(), restaurantId
                     )
             ).isInstanceOf(MemberException.class);
         }
@@ -142,15 +131,15 @@ class FavoriteRestaurantDomainServiceTest extends BaseRepositoryTest {
         @Test
         void 즐겨찾기_레스토랑을_삭제한다() {
             Member member = createAndSaveMember("member");
-            Restaurant restaurant = createAndSaveRestaurant("restaurant");
+            String restaurantId = "restaurant-id";
             FavoriteRestaurant favoriteRestaurant = favoriteRestaurantRepository.save(
-                    new FavoriteRestaurant(member, restaurant)
+                    new FavoriteRestaurant(member.getId(), restaurantId)
             );
 
             favoriteRestaurantDomainService.delete(favoriteRestaurant);
 
             boolean exists = favoriteRestaurantRepository.existsByMemberIdAndRestaurantId(
-                    member.getId(), restaurant.getId()
+                    member.getId(), restaurantId
             );
             assertThat(exists).isFalse();
         }
@@ -159,11 +148,5 @@ class FavoriteRestaurantDomainServiceTest extends BaseRepositoryTest {
     private Member createAndSaveMember(String name) {
         Member member = new Member(name, "nickname", "email@example.com", "010-1234-5678");
         return memberRepository.save(member);
-    }
-
-    private Restaurant createAndSaveRestaurant(String name) {
-        Owner owner = ownerRepository.save(new Owner("owner", "owner@example.com"));
-        Restaurant restaurant = new Restaurant(name, "description", "address", 37.5, 127.0, "thumbnail", owner);
-        return restaurantRepository.save(restaurant);
     }
 }
