@@ -8,5 +8,10 @@ dependencies {
 
     runtimeOnly 'com.mysql:mysql-connector-j'
 
+    testImplementation project(':domain')
+    testImplementation(testFixtures(project(':domain')))
+
     testFixturesImplementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    testFixturesImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testFixturesImplementation 'org.junit.jupiter:junit-jupiter-params'
 }

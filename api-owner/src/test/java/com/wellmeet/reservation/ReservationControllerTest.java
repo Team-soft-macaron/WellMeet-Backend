@@ -27,9 +27,9 @@ class ReservationControllerTest extends BaseControllerTest {
                     restaurant2);
             Member member1 = memberGenerator.generate("mem1");
             Member member2 = memberGenerator.generate("mem2");
-            reservationGenerator.generate(restaurant1, availableDate1, member1, 2);
-            reservationGenerator.generate(restaurant1, availableDate1, member2, 4);
-            reservationGenerator.generate(restaurant2, availableDate2, member1, 3);
+            reservationGenerator.generate(restaurant1, availableDate1, member1.getId(), 2);
+            reservationGenerator.generate(restaurant1, availableDate1, member2.getId(), 4);
+            reservationGenerator.generate(restaurant2, availableDate2, member1.getId(), 3);
 
             ReservationResponse[] reservationResponses = given()
                     .pathParam("restaurantId", restaurant1.getId())

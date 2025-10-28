@@ -3,8 +3,6 @@ package com.wellmeet.domain.restaurant.review.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.wellmeet.BaseRepositoryTest;
-import com.wellmeet.domain.member.entity.Member;
-import com.wellmeet.domain.member.repository.MemberRepository;
 import com.wellmeet.domain.owner.entity.Owner;
 import com.wellmeet.domain.owner.repository.OwnerRepository;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
@@ -25,9 +23,6 @@ class ReviewRepositoryTest extends BaseRepositoryTest {
     private RestaurantRepository restaurantRepository;
 
     @Autowired
-    private MemberRepository memberRepository;
-
-    @Autowired
     private OwnerRepository ownerRepository;
 
     @Nested
@@ -37,13 +32,10 @@ class ReviewRepositoryTest extends BaseRepositoryTest {
         void 리뷰의_평균_평점을_계산한다() {
             Owner owner = createAndSaveOwner();
             Restaurant restaurant = createAndSaveRestaurant(owner);
-            Member member1 = createAndSaveMember("member1");
-            Member member2 = createAndSaveMember("member2");
-            Member member3 = createAndSaveMember("member3");
 
-            createAndSaveReview(restaurant, member1, 5.0);
-            createAndSaveReview(restaurant, member2, 4.0);
-            createAndSaveReview(restaurant, member3, 3.0);
+            createAndSaveReview(restaurant, "member1", 5.0);
+            createAndSaveReview(restaurant, "member2", 4.0);
+            createAndSaveReview(restaurant, "member3", 3.0);
 
             double averageRating = reviewRepository.getAverageRating(restaurant.getId());
 
@@ -64,11 +56,9 @@ class ReviewRepositoryTest extends BaseRepositoryTest {
         void 소수점_평균_평점을_정확하게_계산한다() {
             Owner owner = createAndSaveOwner();
             Restaurant restaurant = createAndSaveRestaurant(owner);
-            Member member1 = createAndSaveMember("member1");
-            Member member2 = createAndSaveMember("member2");
 
-            createAndSaveReview(restaurant, member1, 4.5);
-            createAndSaveReview(restaurant, member2, 3.5);
+            createAndSaveReview(restaurant, "member1", 4.5);
+            createAndSaveReview(restaurant, "member2", 3.5);
 
             double averageRating = reviewRepository.getAverageRating(restaurant.getId());
 
@@ -80,10 +70,9 @@ class ReviewRepositoryTest extends BaseRepositoryTest {
             Owner owner = createAndSaveOwner();
             Restaurant restaurant1 = createAndSaveRestaurant(owner);
             Restaurant restaurant2 = createAndSaveRestaurant(owner);
-            Member member = createAndSaveMember("member");
 
-            createAndSaveReview(restaurant1, member, 5.0);
-            createAndSaveReview(restaurant2, member, 1.0);
+            createAndSaveReview(restaurant1, "member", 5.0);
+            createAndSaveReview(restaurant2, "member", 1.0);
 
             double averageRating = reviewRepository.getAverageRating(restaurant1.getId());
 
@@ -109,13 +98,8 @@ class ReviewRepositoryTest extends BaseRepositoryTest {
         return restaurantRepository.save(restaurant);
     }
 
-    private Member createAndSaveMember(String name) {
-        Member member = new Member(name, "nickname", name + "@test.com", "010-1234-5678");
-        return memberRepository.save(member);
-    }
-
-    private Review createAndSaveReview(Restaurant restaurant, Member member, double rating) {
-        Review review = new Review("맛있어요", rating, Situation.DATE, restaurant, member);
+    private Review createAndSaveReview(Restaurant restaurant, String memberId, double rating) {
+        Review review = new Review("맛있어요", rating, Situation.DATE, restaurant, memberId);
         return reviewRepository.save(review);
     }
 }

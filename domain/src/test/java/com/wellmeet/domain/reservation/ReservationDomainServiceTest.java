@@ -5,8 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.wellmeet.BaseRepositoryTest;
-import com.wellmeet.domain.member.entity.Member;
-import com.wellmeet.domain.member.repository.MemberRepository;
 import com.wellmeet.domain.owner.entity.Owner;
 import com.wellmeet.domain.owner.repository.OwnerRepository;
 import com.wellmeet.domain.reservation.entity.Reservation;
@@ -42,9 +40,6 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
     private AvailableDateRepository availableDateRepository;
 
     @Autowired
-    private MemberRepository memberRepository;
-
-    @Autowired
     private OwnerRepository ownerRepository;
 
     @Nested
@@ -52,12 +47,11 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 예약을_저장한다() {
-            Member member = createAndSaveMember();
             Owner owner = createAndSaveOwner();
             Restaurant restaurant = createAndSaveRestaurant(owner);
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant);
 
-            Reservation reservation = new Reservation(restaurant, availableDate, member, 4, "request");
+            Reservation reservation = new Reservation(restaurant, availableDate, "member", 4, "request");
 
             Reservation saved = reservationDomainService.save(reservation);
 
@@ -71,15 +65,14 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 예약을_조회한다() {
-            Member member = createAndSaveMember();
             Owner owner = createAndSaveOwner();
             Restaurant restaurant = createAndSaveRestaurant(owner);
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant);
-            Reservation reservation = createAndSaveReservation(restaurant, availableDate, member);
+            Reservation reservation = createAndSaveReservation(restaurant, availableDate, "member");
 
             Reservation result = reservationDomainService.getByIdAndMemberId(
                     reservation.getId(),
-                    member.getId()
+                    "member"
             );
 
             assertThat(result.getId()).isEqualTo(reservation.getId());
@@ -87,16 +80,14 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 다른_회원의_예약_조회_시_예외가_발생한다() {
-            Member member1 = createAndSaveMember();
-            Member member2 = createAndSaveMember();
             Owner owner = createAndSaveOwner();
             Restaurant restaurant = createAndSaveRestaurant(owner);
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant);
-            Reservation reservation = createAndSaveReservation(restaurant, availableDate, member1);
+            Reservation reservation = createAndSaveReservation(restaurant, availableDate, "member1");
 
             assertThatThrownBy(() -> reservationDomainService.getByIdAndMemberId(
                     reservation.getId(),
-                    member2.getId()
+                    "member2"
             ))
                     .isInstanceOf(ReservationException.class)
                     .hasMessageContaining(ReservationErrorCode.UNAUTHORIZED_RESERVATION_ACCESS.getMessage());
@@ -108,26 +99,24 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 회원의_모든_예약을_조회한다() {
-            Member member = createAndSaveMember();
             Owner owner = createAndSaveOwner();
             Restaurant restaurant = createAndSaveRestaurant(owner);
 
             AvailableDate ad1 = createAndSaveAvailableDate(restaurant);
             AvailableDate ad2 = createAndSaveAvailableDate(restaurant);
 
-            createAndSaveReservation(restaurant, ad1, member);
-            createAndSaveReservation(restaurant, ad2, member);
+            createAndSaveReservation(restaurant, ad1, "member");
+            createAndSaveReservation(restaurant, ad2, "member");
 
-            List<Reservation> result = reservationDomainService.findAllByMemberId(member.getId());
+            List<Reservation> result = reservationDomainService.findAllByMemberId("member");
 
             assertThat(result).hasSize(2);
         }
 
         @Test
         void 예약이_없으면_빈_리스트를_반환한다() {
-            Member member = createAndSaveMember();
 
-            List<Reservation> result = reservationDomainService.findAllByMemberId(member.getId());
+            List<Reservation> result = reservationDomainService.findAllByMemberId("member");
 
             assertThat(result).isEmpty();
         }
@@ -138,14 +127,13 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 이미_예약한_경우_예외가_발생한다() {
-            Member member = createAndSaveMember();
             Owner owner = createAndSaveOwner();
             Restaurant restaurant = createAndSaveRestaurant(owner);
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant);
-            createAndSaveReservation(restaurant, availableDate, member);
+            createAndSaveReservation(restaurant, availableDate, "member");
 
             assertThatThrownBy(() -> reservationDomainService.alreadyReserved(
-                    member.getId(),
+                    "member",
                     restaurant.getId(),
                     availableDate.getId()
             ))
@@ -155,13 +143,12 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 예약하지_않은_경우_예외가_발생하지_않는다() {
-            Member member = createAndSaveMember();
             Owner owner = createAndSaveOwner();
             Restaurant restaurant = createAndSaveRestaurant(owner);
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant);
 
             assertThatCode(() -> reservationDomainService.alreadyReserved(
-                    member.getId(),
+                    "member",
                     restaurant.getId(),
                     availableDate.getId()
             )).doesNotThrowAnyException();
@@ -173,14 +160,13 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 동일한_정보로_수정하면_true를_반환한다() {
-            Member member = createAndSaveMember();
             Owner owner = createAndSaveOwner();
             Restaurant restaurant = createAndSaveRestaurant(owner);
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant);
-            Reservation reservation = createAndSaveReservation(restaurant, availableDate, member);
+            Reservation reservation = createAndSaveReservation(restaurant, availableDate, "member");
 
             boolean result = reservationDomainService.alreadyUpdated(
-                    member.getId(),
+                    "member",
                     restaurant.getId(),
                     availableDate.getId(),
                     reservation.getPartySize()
@@ -191,14 +177,13 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 다른_정보로_수정하면_false를_반환한다() {
-            Member member = createAndSaveMember();
             Owner owner = createAndSaveOwner();
             Restaurant restaurant = createAndSaveRestaurant(owner);
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant);
-            Reservation reservation = createAndSaveReservation(restaurant, availableDate, member);
+            Reservation reservation = createAndSaveReservation(restaurant, availableDate, "member");
 
             boolean result = reservationDomainService.alreadyUpdated(
-                    member.getId(),
+                    "member",
                     restaurant.getId(),
                     availableDate.getId(),
                     reservation.getPartySize() + 1
@@ -206,11 +191,6 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
 
             assertThat(result).isFalse();
         }
-    }
-
-    private Member createAndSaveMember() {
-        Member member = new Member("member", "nickname", "email@test.com", "010-1234-5678");
-        return memberRepository.save(member);
     }
 
     private Owner createAndSaveOwner() {
@@ -241,8 +221,8 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
         return availableDateRepository.save(availableDate);
     }
 
-    private Reservation createAndSaveReservation(Restaurant restaurant, AvailableDate availableDate, Member member) {
-        Reservation reservation = new Reservation(restaurant, availableDate, member, 4, "request");
+    private Reservation createAndSaveReservation(Restaurant restaurant, AvailableDate availableDate, String memberId) {
+        Reservation reservation = new Reservation(restaurant, availableDate, memberId, 4, "request");
         return reservationRepository.save(reservation);
     }
 }

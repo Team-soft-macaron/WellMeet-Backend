@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.wellmeet.domain.member.MemberDomainService;
 import com.wellmeet.domain.member.entity.Member;
 import com.wellmeet.domain.owner.entity.Owner;
 import com.wellmeet.domain.reservation.ReservationDomainService;
@@ -30,6 +31,9 @@ class ReservationServiceTest {
     private ReservationDomainService reservationDomainService;
 
     @Mock
+    private MemberDomainService memberDomainService;
+
+    @Mock
     private EventPublishService eventPublishService;
 
     @InjectMocks
@@ -50,6 +54,11 @@ class ReservationServiceTest {
 
             when(reservationDomainService.findAllByRestaurantId(restaurant.getId()))
                     .thenReturn(reservations);
+            when(memberDomainService.getById(member1.getId()))
+                    .thenReturn(member1);
+            when(memberDomainService.getById(member2.getId()))
+                    .thenReturn(member2);
+
             List<ReservationResponse> expectedReservations = reservationService.getReservations(restaurant.getId());
 
             assertThat(expectedReservations).hasSize(reservations.size());
@@ -68,6 +77,8 @@ class ReservationServiceTest {
 
             when(reservationDomainService.getById(reservation.getId()))
                     .thenReturn(reservation);
+            when(memberDomainService.getById(member.getId()))
+                    .thenReturn(member);
 
             reservationService.confirmReservation(reservation.getId());
 
@@ -91,6 +102,6 @@ class ReservationServiceTest {
 
     private Reservation createReservation(Restaurant restaurant, AvailableDate availableDate, Member member,
                                           int partySize) {
-        return new Reservation(restaurant, availableDate, member, partySize, "request");
+        return new Reservation(restaurant, availableDate, member.getId(), partySize, "request");
     }
 }

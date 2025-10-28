@@ -38,7 +38,7 @@ class ReservationEventListenerTest {
             AvailableDate availableDate = createAvailableDate(restaurant);
             Member member = createMember();
             Reservation reservation = createReservation(restaurant, availableDate, member);
-            ReservationConfirmedEvent event = new ReservationConfirmedEvent(reservation);
+            ReservationConfirmedEvent event = new ReservationConfirmedEvent(reservation, member.getName());
 
             reservationEventListener.handleReservationConfirmed(event);
 
@@ -72,6 +72,6 @@ class ReservationEventListenerTest {
     }
 
     private Reservation createReservation(Restaurant restaurant, AvailableDate availableDate, Member member) {
-        return new Reservation(restaurant, availableDate, member, 4, "request");
+        return new Reservation(restaurant, availableDate, member.getId(), 4, "request");
     }
 }

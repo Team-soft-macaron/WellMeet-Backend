@@ -50,8 +50,8 @@ class RestaurantControllerTest extends BaseControllerTest {
             menuGenerator.generate("menu1", 10000, restaurant);
             menuGenerator.generate("menu2", 15000, restaurant);
             Member member = memberGenerator.generate("testMember");
-            reviewGenerator.generate(5, restaurant, member);
-            reviewGenerator.generate(4, restaurant, member);
+            reviewGenerator.generate(5, restaurant, member.getId());
+            reviewGenerator.generate(4, restaurant, member.getId());
 
             RestaurantResponse restaurantResponse = given()
                     .contentType(ContentType.JSON)

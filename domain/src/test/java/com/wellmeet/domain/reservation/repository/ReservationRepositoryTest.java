@@ -1,10 +1,8 @@
 package com.wellmeet.domain.reservation.repository;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.wellmeet.BaseRepositoryTest;
-import com.wellmeet.domain.member.entity.Member;
-import com.wellmeet.domain.member.repository.MemberRepository;
 import com.wellmeet.domain.owner.entity.Owner;
 import com.wellmeet.domain.owner.repository.OwnerRepository;
 import com.wellmeet.domain.reservation.entity.Reservation;
@@ -34,9 +32,6 @@ class ReservationRepositoryTest extends BaseRepositoryTest {
     private AvailableDateRepository availableDateRepository;
 
     @Autowired
-    private MemberRepository memberRepository;
-
-    @Autowired
     private OwnerRepository ownerRepository;
 
     @Nested
@@ -44,7 +39,6 @@ class ReservationRepositoryTest extends BaseRepositoryTest {
 
         @Test
         void 지정한_시간_범위_내의_승인된_예약을_조회한다() {
-            Member member = createAndSaveMember();
             Owner owner = createAndSaveOwner();
             Restaurant restaurant = createAndSaveRestaurant(owner);
 
@@ -57,9 +51,9 @@ class ReservationRepositoryTest extends BaseRepositoryTest {
             AvailableDate ad2 = createAndSaveAvailableDate(restaurant, targetDate, time2);
             AvailableDate ad3 = createAndSaveAvailableDate(restaurant, targetDate, time3);
 
-            createAndSaveReservation(restaurant, ad1, member, ReservationStatus.CONFIRMED);
-            createAndSaveReservation(restaurant, ad2, member, ReservationStatus.CONFIRMED);
-            createAndSaveReservation(restaurant, ad3, member, ReservationStatus.CONFIRMED);
+            createAndSaveReservation(restaurant, ad2, "member", ReservationStatus.CONFIRMED);
+            createAndSaveReservation(restaurant, ad3, "member", ReservationStatus.CONFIRMED);
+            createAndSaveReservation(restaurant, ad1, "member", ReservationStatus.CONFIRMED);
 
             LocalDate startDate = LocalDate.of(2025, 12, 25);
             LocalTime startTime = LocalTime.of(18, 30);
@@ -79,7 +73,6 @@ class ReservationRepositoryTest extends BaseRepositoryTest {
 
         @Test
         void 승인되지_않은_예약은_조회되지_않는다() {
-            Member member = createAndSaveMember();
             Owner owner = createAndSaveOwner();
             Restaurant restaurant = createAndSaveRestaurant(owner);
 
@@ -87,7 +80,7 @@ class ReservationRepositoryTest extends BaseRepositoryTest {
             LocalTime targetTime = LocalTime.of(19, 0);
 
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant, targetDate, targetTime);
-            createAndSaveReservation(restaurant, availableDate, member, ReservationStatus.PENDING);
+            createAndSaveReservation(restaurant, availableDate, "member", ReservationStatus.PENDING);
 
             LocalDate startDate = LocalDate.of(2025, 12, 25);
             LocalTime startTime = LocalTime.of(18, 0);
@@ -106,7 +99,6 @@ class ReservationRepositoryTest extends BaseRepositoryTest {
 
         @Test
         void 시간_범위_밖의_예약은_조회되지_않는다() {
-            Member member = createAndSaveMember();
             Owner owner = createAndSaveOwner();
             Restaurant restaurant = createAndSaveRestaurant(owner);
 
@@ -117,8 +109,8 @@ class ReservationRepositoryTest extends BaseRepositoryTest {
             AvailableDate ad1 = createAndSaveAvailableDate(restaurant, targetDate, time1);
             AvailableDate ad2 = createAndSaveAvailableDate(restaurant, targetDate, time2);
 
-            createAndSaveReservation(restaurant, ad1, member, ReservationStatus.CONFIRMED);
-            createAndSaveReservation(restaurant, ad2, member, ReservationStatus.CONFIRMED);
+            createAndSaveReservation(restaurant, ad1, "member", ReservationStatus.CONFIRMED);
+            createAndSaveReservation(restaurant, ad2, "member", ReservationStatus.CONFIRMED);
 
             LocalDate startDate = LocalDate.of(2025, 12, 25);
             LocalTime startTime = LocalTime.of(18, 0);
@@ -137,7 +129,6 @@ class ReservationRepositoryTest extends BaseRepositoryTest {
 
         @Test
         void 페이징이_정상적으로_동작한다() {
-            Member member = createAndSaveMember();
             Owner owner = createAndSaveOwner();
             Restaurant restaurant = createAndSaveRestaurant(owner);
 
@@ -145,7 +136,7 @@ class ReservationRepositoryTest extends BaseRepositoryTest {
 
             for (int hour = 18; hour <= 20; hour++) {
                 AvailableDate ad = createAndSaveAvailableDate(restaurant, targetDate, LocalTime.of(hour, 0));
-                createAndSaveReservation(restaurant, ad, member, ReservationStatus.CONFIRMED);
+                createAndSaveReservation(restaurant, ad, "member", ReservationStatus.CONFIRMED);
             }
 
             Page<Reservation> page1 = reservationRepository.findReservationsForReminderPage(
@@ -159,11 +150,6 @@ class ReservationRepositoryTest extends BaseRepositoryTest {
             assertThat(page1.getTotalElements()).isEqualTo(3);
             assertThat(page1.getTotalPages()).isEqualTo(2);
         }
-    }
-
-    private Member createAndSaveMember() {
-        Member member = new Member("member", "nickname", "email@test.com", "010-1234-5678");
-        return memberRepository.save(member);
     }
 
     private Owner createAndSaveOwner() {
@@ -190,8 +176,8 @@ class ReservationRepositoryTest extends BaseRepositoryTest {
     }
 
     private Reservation createAndSaveReservation(Restaurant restaurant, AvailableDate availableDate,
-                                                  Member member, ReservationStatus status) {
-        Reservation reservation = new Reservation(restaurant, availableDate, member, 4, "request");
+                                                  String memberId, ReservationStatus status) {
+        Reservation reservation = new Reservation(restaurant, availableDate, memberId, 4, "request");
         if (status == ReservationStatus.CONFIRMED) {
             reservation.confirm();
         } else if (status == ReservationStatus.CANCELED) {
