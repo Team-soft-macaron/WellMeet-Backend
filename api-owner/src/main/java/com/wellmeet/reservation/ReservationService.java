@@ -8,6 +8,9 @@ import com.wellmeet.global.event.EventPublishService;
 import com.wellmeet.global.event.event.ReservationConfirmedEvent;
 import com.wellmeet.reservation.dto.ReservationResponse;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,10 +25,21 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public List<ReservationResponse> getReservations(String restaurantId) {
-        return reservationDomainService.findAllByRestaurantId(restaurantId)
-                .stream()
+        List<Reservation> reservations = reservationDomainService.findAllByRestaurantId(restaurantId);
+        if (reservations.isEmpty()) {
+            return List.of();
+        }
+
+        List<String> memberIds = reservations.stream()
+                .map(Reservation::getMemberId)
+                .distinct()
+                .toList();
+        Map<String, Member> membersById = memberDomainService.findAllByIds(memberIds).stream()
+                .collect(Collectors.toMap(Member::getId, Function.identity()));
+
+        return reservations.stream()
                 .map(reservation -> {
-                    Member member = memberDomainService.getById(reservation.getMemberId());
+                    Member member = membersById.get(reservation.getMemberId());
                     return new ReservationResponse(
                             reservation,
                             member.getName(),

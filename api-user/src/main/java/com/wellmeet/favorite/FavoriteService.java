@@ -7,6 +7,9 @@ import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.domain.restaurant.review.ReviewDomainService;
 import com.wellmeet.favorite.dto.FavoriteRestaurantResponse;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,10 +24,21 @@ public class FavoriteService {
 
     @Transactional(readOnly = true)
     public List<FavoriteRestaurantResponse> getFavoriteRestaurants(String memberId) {
-        return favoriteRestaurantDomainService.findAllByMemberId(memberId)
-                .stream()
+        List<FavoriteRestaurant> favoriteRestaurants = favoriteRestaurantDomainService.findAllByMemberId(memberId);
+        if (favoriteRestaurants.isEmpty()) {
+            return List.of();
+        }
+
+        List<String> restaurantIds = favoriteRestaurants.stream()
+                .map(FavoriteRestaurant::getRestaurantId)
+                .toList();
+
+        Map<String, Restaurant> restaurantsById = restaurantDomainService.findAllByIds(restaurantIds).stream()
+                .collect(Collectors.toMap(Restaurant::getId, Function.identity()));
+
+        return favoriteRestaurants.stream()
                 .map(favoriteRestaurant -> {
-                    Restaurant restaurant = restaurantDomainService.getById(favoriteRestaurant.getRestaurantId());
+                    Restaurant restaurant = restaurantsById.get(favoriteRestaurant.getRestaurantId());
                     return getFavoriteRestaurantResponse(restaurant);
                 })
                 .toList();
