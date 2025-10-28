@@ -167,7 +167,7 @@ class ReservationReminderJobConfigTest {
             Reservation reservation = new Reservation(
                     restaurant,
                     availableDate,
-                    member,
+                    member.getId(),
                     4,
                     "요청사항 " + i
             );
