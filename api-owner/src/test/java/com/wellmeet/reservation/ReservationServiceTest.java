@@ -54,10 +54,8 @@ class ReservationServiceTest {
 
             when(reservationDomainService.findAllByRestaurantId(restaurant.getId()))
                     .thenReturn(reservations);
-            when(memberDomainService.getById(member1.getId()))
-                    .thenReturn(member1);
-            when(memberDomainService.getById(member2.getId()))
-                    .thenReturn(member2);
+            when(memberDomainService.findAllByIds(List.of(member1.getId(), member2.getId())))
+                    .thenReturn(List.of(member1, member2));
 
             List<ReservationResponse> expectedReservations = reservationService.getReservations(restaurant.getId());
 

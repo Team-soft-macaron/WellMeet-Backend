@@ -53,8 +53,8 @@ class FavoriteServiceTest {
                     .thenReturn(favorites);
             when(reviewDomainService.getAverageRating("restaurant-1")).thenReturn(4.5);
             when(reviewDomainService.getAverageRating("restaurant-2")).thenReturn(3.8);
-            when(restaurantDomainService.getById(restaurant1.getId())).thenReturn(restaurant1);
-            when(restaurantDomainService.getById(restaurant2.getId())).thenReturn(restaurant2);
+            when(restaurantDomainService.findAllByIds(List.of(restaurant1.getId(), restaurant2.getId())))
+                    .thenReturn(List.of(restaurant1, restaurant2));
 
             List<FavoriteRestaurantResponse> result = favoriteService.getFavoriteRestaurants(member.getId());
 
