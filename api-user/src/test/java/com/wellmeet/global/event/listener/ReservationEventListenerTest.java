@@ -39,8 +39,10 @@ class ReservationEventListenerTest {
         @Test
         void 예약_생성_이벤트를_처리하여_Kafka로_알림_메시지를_발송한다() {
             Reservation reservation = createReservation();
-            Restaurant restaurant = reservation.getRestaurant();
-            ReservationCreatedEvent event = new ReservationCreatedEvent(reservation, "member");
+            Restaurant restaurant = getRestaurant();
+            AvailableDate availableDate = getAvailableDate(restaurant);
+            LocalDateTime dateTime = LocalDateTime.of(availableDate.getDate(), availableDate.getTime());
+            ReservationCreatedEvent event = new ReservationCreatedEvent(reservation, "member", restaurant.getName(), dateTime);
 
             reservationEventListener.handleReservationCreated(event);
 
@@ -57,8 +59,10 @@ class ReservationEventListenerTest {
         @Test
         void 예약_수정_이벤트를_처리하여_Kafka로_알림_메시지를_발송한다() {
             Reservation reservation = createReservation();
-            Restaurant restaurant = reservation.getRestaurant();
-            ReservationUpdatedEvent event = new ReservationUpdatedEvent(reservation, "member");
+            Restaurant restaurant = getRestaurant();
+            AvailableDate availableDate = getAvailableDate(restaurant);
+            LocalDateTime dateTime = LocalDateTime.of(availableDate.getDate(), availableDate.getTime());
+            ReservationUpdatedEvent event = new ReservationUpdatedEvent(reservation, "member", restaurant.getName(), dateTime);
 
             reservationEventListener.handleReservationUpdated(event);
 
@@ -75,8 +79,10 @@ class ReservationEventListenerTest {
         @Test
         void 예약_취소_이벤트를_처리하여_Kafka로_알림_메시지를_발송한다() {
             Reservation reservation = createReservation();
-            Restaurant restaurant = reservation.getRestaurant();
-            ReservationCanceledEvent event = new ReservationCanceledEvent(reservation, "member");
+            Restaurant restaurant = getRestaurant();
+            AvailableDate availableDate = getAvailableDate(restaurant);
+            LocalDateTime dateTime = LocalDateTime.of(availableDate.getDate(), availableDate.getTime());
+            ReservationCanceledEvent event = new ReservationCanceledEvent(reservation, "member", restaurant.getName(), dateTime);
 
             reservationEventListener.handleReservationCanceled(event);
 
@@ -87,9 +93,9 @@ class ReservationEventListenerTest {
         }
     }
 
-    private Reservation createReservation() {
+    private Restaurant getRestaurant() {
         Owner owner = new Owner("owner", "owner@test.com");
-        Restaurant restaurant = new Restaurant(
+        return new Restaurant(
                 "식당",
                 "description",
                 "서울시 강남구",
@@ -98,14 +104,22 @@ class ReservationEventListenerTest {
                 "thumbnail.jpg",
                 owner.getId()
         );
+    }
+
+    private AvailableDate getAvailableDate(Restaurant restaurant) {
         LocalDateTime dateTime = LocalDateTime.now().plusDays(1);
-        AvailableDate availableDate = new AvailableDate(
+        return new AvailableDate(
                 dateTime.toLocalDate(),
                 dateTime.toLocalTime(),
                 10,
                 restaurant
         );
+    }
+
+    private Reservation createReservation() {
+        Restaurant restaurant = getRestaurant();
+        AvailableDate availableDate = getAvailableDate(restaurant);
         Member member = new Member("member", "nickname", "email@test.com", "010-1234-5678");
-        return new Reservation(restaurant, availableDate, member.getId(), 4, "요청사항");
+        return new Reservation(restaurant.getId(), availableDate.getId(), member.getId(), 4, "요청사항");
     }
 }

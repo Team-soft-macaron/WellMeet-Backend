@@ -6,6 +6,7 @@ dependencies {
     implementation project(':domain')
     implementation project(':domain-member')
     implementation project(':domain-owner')
+    implementation project(':domain-restaurant')
     implementation project(':infra-redis')
     implementation project(':infra-kafka')
 
@@ -16,5 +17,6 @@ dependencies {
     testImplementation(testFixtures(project(':domain')))
     testImplementation(testFixtures(project(':domain-member')))
     testImplementation(testFixtures(project(':domain-owner')))
+    testImplementation(testFixtures(project(':domain-restaurant')))
     testImplementation 'io.rest-assured:rest-assured'
 }

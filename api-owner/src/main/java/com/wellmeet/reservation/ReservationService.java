@@ -4,9 +4,11 @@ import com.wellmeet.domain.member.MemberDomainService;
 import com.wellmeet.domain.member.entity.Member;
 import com.wellmeet.domain.reservation.ReservationDomainService;
 import com.wellmeet.domain.reservation.entity.Reservation;
+import com.wellmeet.domain.restaurant.RestaurantDomainService;
 import com.wellmeet.global.event.EventPublishService;
 import com.wellmeet.global.event.event.ReservationConfirmedEvent;
 import com.wellmeet.reservation.dto.ReservationResponse;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -21,6 +23,7 @@ public class ReservationService {
 
     private final ReservationDomainService reservationDomainService;
     private final MemberDomainService memberDomainService;
+    private final RestaurantDomainService restaurantDomainService;
     private final EventPublishService eventPublishService;
 
     @Transactional(readOnly = true)
@@ -40,8 +43,11 @@ public class ReservationService {
         return reservations.stream()
                 .map(reservation -> {
                     Member member = membersById.get(reservation.getMemberId());
+                    var availableDate = restaurantDomainService.getAvailableDate(
+                            reservation.getAvailableDateId(), reservation.getRestaurantId());
                     return new ReservationResponse(
                             reservation,
+                            availableDate,
                             member.getName(),
                             member.getPhone(),
                             member.getEmail(),
@@ -57,7 +63,12 @@ public class ReservationService {
         reservation.confirm();
 
         Member member = memberDomainService.getById(reservation.getMemberId());
-        ReservationConfirmedEvent event = new ReservationConfirmedEvent(reservation, member.getName());
+        var restaurant = restaurantDomainService.getById(reservation.getRestaurantId());
+        var availableDate = restaurantDomainService.getAvailableDate(
+                reservation.getAvailableDateId(), reservation.getRestaurantId());
+        LocalDateTime dateTime = LocalDateTime.of(availableDate.getDate(), availableDate.getTime());
+        ReservationConfirmedEvent event = new ReservationConfirmedEvent(
+                reservation, member.getName(), restaurant.getName(), dateTime);
         eventPublishService.publishReservationConfirmedEvent(event);
     }
 }

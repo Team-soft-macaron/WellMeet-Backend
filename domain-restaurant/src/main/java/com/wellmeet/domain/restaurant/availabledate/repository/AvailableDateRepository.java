@@ -26,4 +26,6 @@ public interface AvailableDateRepository extends JpaRepository<AvailableDate, Lo
     @Modifying
     @Query("update AvailableDate a set a.maxCapacity = a.maxCapacity + :partySize, a.isAvailable = true where a.id = :id")
     void increaseCapacity(@Param("id") Long id, @Param("partySize") int partySize);
+
+    List<AvailableDate> findAllByIdIn(List<Long> availableDateIds);
 }

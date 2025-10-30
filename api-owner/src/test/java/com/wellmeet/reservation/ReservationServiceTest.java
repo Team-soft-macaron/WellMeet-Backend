@@ -10,6 +10,7 @@ import com.wellmeet.domain.member.entity.Member;
 import com.wellmeet.domain.owner.entity.Owner;
 import com.wellmeet.domain.reservation.ReservationDomainService;
 import com.wellmeet.domain.reservation.entity.Reservation;
+import com.wellmeet.domain.restaurant.RestaurantDomainService;
 import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.global.event.EventPublishService;
@@ -34,6 +35,9 @@ class ReservationServiceTest {
     private MemberDomainService memberDomainService;
 
     @Mock
+    private RestaurantDomainService restaurantDomainService;
+
+    @Mock
     private EventPublishService eventPublishService;
 
     @InjectMocks
@@ -56,6 +60,8 @@ class ReservationServiceTest {
                     .thenReturn(reservations);
             when(memberDomainService.findAllByIds(List.of(member1.getId(), member2.getId())))
                     .thenReturn(List.of(member1, member2));
+            when(restaurantDomainService.getAvailableDate(availableDate.getId(), restaurant.getId()))
+                    .thenReturn(availableDate);
 
             List<ReservationResponse> expectedReservations = reservationService.getReservations(restaurant.getId());
 
@@ -77,6 +83,10 @@ class ReservationServiceTest {
                     .thenReturn(reservation);
             when(memberDomainService.getById(member.getId()))
                     .thenReturn(member);
+            when(restaurantDomainService.getById(restaurant.getId()))
+                    .thenReturn(restaurant);
+            when(restaurantDomainService.getAvailableDate(availableDate.getId(), restaurant.getId()))
+                    .thenReturn(availableDate);
 
             reservationService.confirmReservation(reservation.getId());
 
@@ -101,6 +111,6 @@ class ReservationServiceTest {
 
     private Reservation createReservation(Restaurant restaurant, AvailableDate availableDate, Member member,
                                           int partySize) {
-        return new Reservation(restaurant, availableDate, member.getId(), partySize, "request");
+        return new Reservation(restaurant.getId(), availableDate.getId(), member.getId(), partySize, "request");
     }
 }

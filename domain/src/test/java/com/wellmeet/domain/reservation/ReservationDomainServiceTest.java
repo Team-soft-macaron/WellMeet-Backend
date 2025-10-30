@@ -10,14 +10,8 @@ import com.wellmeet.domain.reservation.entity.Reservation;
 import com.wellmeet.domain.reservation.exception.ReservationErrorCode;
 import com.wellmeet.domain.reservation.exception.ReservationException;
 import com.wellmeet.domain.reservation.repository.ReservationRepository;
-import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
-import com.wellmeet.domain.restaurant.availabledate.repository.AvailableDateRepository;
-import com.wellmeet.domain.restaurant.entity.Restaurant;
-import com.wellmeet.domain.restaurant.repository.RestaurantRepository;
-import java.time.LocalDate;
-import java.time.LocalTime;
+
 import java.util.List;
-import java.util.UUID;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,21 +26,15 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
     @Autowired
     private ReservationRepository reservationRepository;
 
-    @Autowired
-    private RestaurantRepository restaurantRepository;
-
-    @Autowired
-    private AvailableDateRepository availableDateRepository;
-
     @Nested
     class Save {
 
         @Test
         void 예약을_저장한다() {
-            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
-            AvailableDate availableDate = createAndSaveAvailableDate(restaurant);
+            String restaurantId = "test-restaurant-id";
+            Long availableDateId = 1L;
 
-            Reservation reservation = new Reservation(restaurant, availableDate, "member", 4, "request");
+            Reservation reservation = new Reservation(restaurantId, availableDateId, "member", 4, "request");
 
             Reservation saved = reservationDomainService.save(reservation);
 
@@ -60,9 +48,9 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 예약을_조회한다() {
-            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
-            AvailableDate availableDate = createAndSaveAvailableDate(restaurant);
-            Reservation reservation = createAndSaveReservation(restaurant, availableDate, "member");
+            String restaurantId = "test-restaurant-id";
+            Long availableDateId = 1L;
+            Reservation reservation = createAndSaveReservation(restaurantId, availableDateId, "member");
 
             Reservation result = reservationDomainService.getByIdAndMemberId(
                     reservation.getId(),
@@ -74,9 +62,9 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 다른_회원의_예약_조회_시_예외가_발생한다() {
-            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
-            AvailableDate availableDate = createAndSaveAvailableDate(restaurant);
-            Reservation reservation = createAndSaveReservation(restaurant, availableDate, "member1");
+            String restaurantId = "test-restaurant-id";
+            Long availableDateId = 1L;
+            Reservation reservation = createAndSaveReservation(restaurantId, availableDateId, "member1");
 
             assertThatThrownBy(() -> reservationDomainService.getByIdAndMemberId(
                     reservation.getId(),
@@ -92,13 +80,12 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 회원의_모든_예약을_조회한다() {
-            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
+            String restaurantId = "test-restaurant-id";
+            Long availableDateId1 = 1L;
+            Long availableDateId2 = 2L;
 
-            AvailableDate ad1 = createAndSaveAvailableDate(restaurant);
-            AvailableDate ad2 = createAndSaveAvailableDate(restaurant);
-
-            createAndSaveReservation(restaurant, ad1, "member");
-            createAndSaveReservation(restaurant, ad2, "member");
+            createAndSaveReservation(restaurantId, availableDateId1, "member");
+            createAndSaveReservation(restaurantId, availableDateId2, "member");
 
             List<Reservation> result = reservationDomainService.findAllByMemberId("member");
 
@@ -119,14 +106,14 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 이미_예약한_경우_예외가_발생한다() {
-            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
-            AvailableDate availableDate = createAndSaveAvailableDate(restaurant);
-            createAndSaveReservation(restaurant, availableDate, "member");
+            String restaurantId = "test-restaurant-id";
+            Long availableDateId = 1L;
+            createAndSaveReservation(restaurantId, availableDateId, "member");
 
             assertThatThrownBy(() -> reservationDomainService.alreadyReserved(
                     "member",
-                    restaurant.getId(),
-                    availableDate.getId()
+                    restaurantId,
+                    availableDateId
             ))
                     .isInstanceOf(ReservationException.class)
                     .hasMessageContaining(ReservationErrorCode.ALREADY_RESERVED.getMessage());
@@ -134,13 +121,13 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 예약하지_않은_경우_예외가_발생하지_않는다() {
-            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
-            AvailableDate availableDate = createAndSaveAvailableDate(restaurant);
+            String restaurantId = "test-restaurant-id";
+            Long availableDateId = 1L;
 
             assertThatCode(() -> reservationDomainService.alreadyReserved(
                     "member",
-                    restaurant.getId(),
-                    availableDate.getId()
+                    restaurantId,
+                    availableDateId
             )).doesNotThrowAnyException();
         }
     }
@@ -150,14 +137,14 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 동일한_정보로_수정하면_true를_반환한다() {
-            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
-            AvailableDate availableDate = createAndSaveAvailableDate(restaurant);
-            Reservation reservation = createAndSaveReservation(restaurant, availableDate, "member");
+            String restaurantId = "test-restaurant-id";
+            Long availableDateId = 1L;
+            Reservation reservation = createAndSaveReservation(restaurantId, availableDateId, "member");
 
             boolean result = reservationDomainService.alreadyUpdated(
                     "member",
-                    restaurant.getId(),
-                    availableDate.getId(),
+                    restaurantId,
+                    availableDateId,
                     reservation.getPartySize()
             );
 
@@ -166,14 +153,14 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 다른_정보로_수정하면_false를_반환한다() {
-            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
-            AvailableDate availableDate = createAndSaveAvailableDate(restaurant);
-            Reservation reservation = createAndSaveReservation(restaurant, availableDate, "member");
+            String restaurantId = "test-restaurant-id";
+            Long availableDateId = 1L;
+            Reservation reservation = createAndSaveReservation(restaurantId, availableDateId, "member");
 
             boolean result = reservationDomainService.alreadyUpdated(
                     "member",
-                    restaurant.getId(),
-                    availableDate.getId(),
+                    restaurantId,
+                    availableDateId,
                     reservation.getPartySize() + 1
             );
 
@@ -181,31 +168,8 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
         }
     }
 
-    private Restaurant createAndSaveRestaurant(String ownerId) {
-        Restaurant restaurant = new Restaurant(
-                UUID.randomUUID().toString(),
-                "식당",
-                "address",
-                37.5,
-                127.0,
-                "thumbnail",
-                ownerId
-        );
-        return restaurantRepository.save(restaurant);
-    }
-
-    private AvailableDate createAndSaveAvailableDate(Restaurant restaurant) {
-        AvailableDate availableDate = new AvailableDate(
-                LocalDate.of(2025, 12, 25),
-                LocalTime.of(18, 0),
-                10,
-                restaurant
-        );
-        return availableDateRepository.save(availableDate);
-    }
-
-    private Reservation createAndSaveReservation(Restaurant restaurant, AvailableDate availableDate, String memberId) {
-        Reservation reservation = new Reservation(restaurant, availableDate, memberId, 4, "request");
+    private Reservation createAndSaveReservation(String restaurantId, Long availableDateId, String memberId) {
+        Reservation reservation = new Reservation(restaurantId, availableDateId, memberId, 4, "request");
         return reservationRepository.save(reservation);
     }
 }

@@ -6,6 +6,7 @@ import com.wellmeet.domain.reservation.ReservationDomainService;
 import com.wellmeet.domain.reservation.entity.Reservation;
 import com.wellmeet.domain.restaurant.RestaurantDomainService;
 import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
+import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.global.event.EventPublishService;
 import com.wellmeet.global.event.event.ReservationCanceledEvent;
 import com.wellmeet.global.event.event.ReservationCreatedEvent;
@@ -14,7 +15,11 @@ import com.wellmeet.reservation.dto.CreateReservationRequest;
 import com.wellmeet.reservation.dto.CreateReservationResponse;
 import com.wellmeet.reservation.dto.ReservationResponse;
 import com.wellmeet.reservation.dto.SummaryReservationResponse;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,28 +42,51 @@ public class ReservationService {
         reservationRedisService.isReserving(memberId, request.getRestaurantId(), request.getAvailableDateId());
         Member member = memberDomainService.getById(memberId);
         restaurantDomainService.decreaseAvailableDateCapacity(availableDate, request.getPartySize());
-        Reservation reservation = request.toDomain(availableDate.getRestaurant(), availableDate, memberId);
+        Reservation reservation = request.toDomain(memberId);
 
         Reservation savedReservation = reservationDomainService.save(reservation);
-        ReservationCreatedEvent event = new ReservationCreatedEvent(savedReservation, member.getName());
+        var restaurant = restaurantDomainService.getById(savedReservation.getRestaurantId());
+        LocalDateTime dateTime = LocalDateTime.of(availableDate.getDate(), availableDate.getTime());
+        ReservationCreatedEvent event = new ReservationCreatedEvent(
+                savedReservation, member.getName(), restaurant.getName(), dateTime);
         eventPublishService.publishReservationCreatedEvent(event);
 
-        return new CreateReservationResponse(savedReservation);
+        return new CreateReservationResponse(savedReservation, restaurant.getName(), availableDate);
     }
 
     @Transactional(readOnly = true)
     public List<SummaryReservationResponse> getReservations(String memberId) {
-        return reservationDomainService.findAllByMemberId(memberId)
-                .stream()
-                .map(SummaryReservationResponse::new)
+        List<Reservation> reservations = reservationDomainService.findAllByMemberId(memberId);
+        List<String> restaurantIds = reservations.stream()
+                .map(Reservation::getRestaurantId)
+                .toList();
+        List<Long> availableDateIds = reservations.stream()
+                .map(Reservation::getAvailableDateId)
+                .toList();
+
+        Map<String, Restaurant> restaurantsById = restaurantDomainService.findAllByIds(restaurantIds).stream()
+                .collect(Collectors.toMap(Restaurant::getId, Function.identity()));
+        Map<Long, AvailableDate> availableDatesById = restaurantDomainService
+                .findAllAvailableDatesByIds(availableDateIds).stream()
+                .collect(Collectors.toMap(AvailableDate::getId, Function.identity()));
+
+        return reservations.stream()
+                .map(reservation -> {
+                    var restaurant = restaurantsById.get(reservation.getRestaurantId());
+                    var availableDate = availableDatesById.get(reservation.getAvailableDateId());
+                    return new SummaryReservationResponse(reservation, restaurant.getName(), availableDate);
+                })
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public ReservationResponse getReservation(Long reservationId, String memberId) {
         Reservation reservation = reservationDomainService.getByIdAndMemberId(reservationId, memberId);
-        double rating = restaurantDomainService.getAverageRating(reservation.getRestaurant().getId());
-        return new ReservationResponse(reservation, rating);
+        var restaurant = restaurantDomainService.getById(reservation.getRestaurantId());
+        var availableDate = restaurantDomainService.getAvailableDate(
+                reservation.getAvailableDateId(), reservation.getRestaurantId());
+        double rating = restaurantDomainService.getAverageRating(reservation.getRestaurantId());
+        return new ReservationResponse(reservation, restaurant, availableDate, rating);
     }
 
     @Transactional
@@ -73,32 +101,44 @@ public class ReservationService {
         reservationRedisService.isUpdating(memberId, reservationId);
         if (reservationDomainService.alreadyUpdated(memberId, request.getRestaurantId(), request.getAvailableDateId(),
                 request.getPartySize())) {
-            return new CreateReservationResponse(reservation);
+            var restaurant = restaurantDomainService.getById(reservation.getRestaurantId());
+            var currentAvailableDate = restaurantDomainService.getAvailableDate(
+                    reservation.getAvailableDateId(), reservation.getRestaurantId());
+            return new CreateReservationResponse(reservation, restaurant.getName(), currentAvailableDate);
         }
-        restaurantDomainService.increaseAvailableDateCapacity(reservation.getAvailableDate(),
+        AvailableDate oldAvailableDate = restaurantDomainService.getAvailableDate(
+                reservation.getAvailableDateId(), reservation.getRestaurantId());
+        restaurantDomainService.increaseAvailableDateCapacity(oldAvailableDate,
                 reservation.getPartySize());
         restaurantDomainService.decreaseAvailableDateCapacity(availableDate, request.getPartySize());
         reservation.update(
-                availableDate,
+                request.getAvailableDateId(),
                 request.getPartySize(),
                 request.getSpecialRequest()
         );
 
         Member member = memberDomainService.getById(memberId);
-        ReservationUpdatedEvent event = new ReservationUpdatedEvent(reservation, member.getName());
+        var restaurant = restaurantDomainService.getById(reservation.getRestaurantId());
+        LocalDateTime dateTime = LocalDateTime.of(availableDate.getDate(), availableDate.getTime());
+        ReservationUpdatedEvent event = new ReservationUpdatedEvent(
+                reservation, member.getName(), restaurant.getName(), dateTime);
         eventPublishService.publishReservationUpdatedEvent(event);
-        return new CreateReservationResponse(reservation);
+        return new CreateReservationResponse(reservation, restaurant.getName(), availableDate);
     }
 
     @Transactional
     public void cancel(Long reservationId, String memberId) {
         Reservation reservation = reservationDomainService.getByIdAndMemberId(reservationId, memberId);
-        AvailableDate availableDate = reservation.getAvailableDate();
+        AvailableDate availableDate = restaurantDomainService.getAvailableDate(
+                reservation.getAvailableDateId(), reservation.getRestaurantId());
         restaurantDomainService.increaseAvailableDateCapacity(availableDate, reservation.getPartySize());
         reservation.cancel();
 
         Member member = memberDomainService.getById(memberId);
-        ReservationCanceledEvent event = new ReservationCanceledEvent(reservation, member.getName());
+        var restaurant = restaurantDomainService.getById(reservation.getRestaurantId());
+        LocalDateTime dateTime = LocalDateTime.of(availableDate.getDate(), availableDate.getTime());
+        ReservationCanceledEvent event = new ReservationCanceledEvent(
+                reservation, member.getName(), restaurant.getName(), dateTime);
         eventPublishService.publishReservationCanceledEvent(event);
     }
 }
