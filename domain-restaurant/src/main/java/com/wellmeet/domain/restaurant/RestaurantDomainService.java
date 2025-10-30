@@ -75,4 +75,8 @@ public class RestaurantDomainService {
     public List<Restaurant> findAllByIds(List<String> restaurantIds) {
         return restaurantRepository.findAllByIdIn(restaurantIds);
     }
+
+    public List<AvailableDate> findAllAvailableDatesByIds(List<Long> availableDateIds) {
+        return availableDateDomainService.findAllByIds(availableDateIds);
+    }
 }

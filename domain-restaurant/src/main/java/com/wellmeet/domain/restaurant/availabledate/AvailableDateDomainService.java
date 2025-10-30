@@ -33,4 +33,8 @@ public class AvailableDateDomainService {
     public void increaseCapacity(AvailableDate availableDate, int partySize) {
         availableDateRepository.increaseCapacity(availableDate.getId(), partySize);
     }
+
+    public List<AvailableDate> findAllByIds(List<Long> availableDateIds) {
+        return availableDateRepository.findAllByIdIn(availableDateIds);
+    }
 }

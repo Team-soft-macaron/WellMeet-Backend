@@ -6,6 +6,7 @@ import com.wellmeet.domain.reservation.ReservationDomainService;
 import com.wellmeet.domain.reservation.entity.Reservation;
 import com.wellmeet.domain.restaurant.RestaurantDomainService;
 import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
+import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.global.event.EventPublishService;
 import com.wellmeet.global.event.event.ReservationCanceledEvent;
 import com.wellmeet.global.event.event.ReservationCreatedEvent;
@@ -16,6 +17,9 @@ import com.wellmeet.reservation.dto.ReservationResponse;
 import com.wellmeet.reservation.dto.SummaryReservationResponse;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,12 +56,24 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public List<SummaryReservationResponse> getReservations(String memberId) {
-        return reservationDomainService.findAllByMemberId(memberId)
-                .stream()
+        List<Reservation> reservations = reservationDomainService.findAllByMemberId(memberId);
+        List<String> restaurantIds = reservations.stream()
+                .map(Reservation::getRestaurantId)
+                .toList();
+        List<Long> availableDateIds = reservations.stream()
+                .map(Reservation::getAvailableDateId)
+                .toList();
+
+        Map<String, Restaurant> restaurantsById = restaurantDomainService.findAllByIds(restaurantIds).stream()
+                .collect(Collectors.toMap(Restaurant::getId, Function.identity()));
+        Map<Long, AvailableDate> availableDatesById = restaurantDomainService
+                .findAllAvailableDatesByIds(availableDateIds).stream()
+                .collect(Collectors.toMap(AvailableDate::getId, Function.identity()));
+
+        return reservations.stream()
                 .map(reservation -> {
-                    var restaurant = restaurantDomainService.getById(reservation.getRestaurantId());
-                    var availableDate = restaurantDomainService.getAvailableDate(
-                            reservation.getAvailableDateId(), reservation.getRestaurantId());
+                    var restaurant = restaurantsById.get(reservation.getRestaurantId());
+                    var availableDate = availableDatesById.get(reservation.getAvailableDateId());
                     return new SummaryReservationResponse(reservation, restaurant.getName(), availableDate);
                 })
                 .toList();
