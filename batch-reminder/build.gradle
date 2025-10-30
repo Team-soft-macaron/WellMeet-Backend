@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation project(':domain')
+    implementation project(':domain-reservation')
     implementation project(':domain-member')
     implementation project(':domain-owner')
     implementation project(':domain-restaurant')
