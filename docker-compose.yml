@@ -1,0 +1,114 @@
+version: '3.8'
+
+services:
+  # MySQL - Domain별 분리
+  mysql-reservation:
+    image: mysql:8.0
+    container_name: mysql-reservation
+    environment:
+      MYSQL_DATABASE: wellmeet_reservation
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-reservation-data:/var/lib/mysql
+    networks:
+      - wellmeet-network
+
+  mysql-member:
+    image: mysql:8.0
+    container_name: mysql-member
+    environment:
+      MYSQL_DATABASE: wellmeet_member
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-member-data:/var/lib/mysql
+    networks:
+      - wellmeet-network
+
+  mysql-owner:
+    image: mysql:8.0
+    container_name: mysql-owner
+    environment:
+      MYSQL_DATABASE: wellmeet_owner
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql-owner-data:/var/lib/mysql
+    networks:
+      - wellmeet-network
+
+  mysql-restaurant:
+    image: mysql:8.0
+    container_name: mysql-restaurant
+    environment:
+      MYSQL_DATABASE: wellmeet_restaurant
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - "3309:3306"
+    volumes:
+      - mysql-restaurant-data:/var/lib/mysql
+    networks:
+      - wellmeet-network
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - wellmeet-network
+
+  # Kafka
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    ports:
+      - "2181:2181"
+    networks:
+      - wellmeet-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    ports:
+      - "9092:9092"
+    networks:
+      - wellmeet-network
+
+  # Eureka Server
+  discovery-server:
+    build:
+      context: .
+      dockerfile: discovery-server/Dockerfile
+    container_name: discovery-server
+    ports:
+      - "8761:8761"
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+    networks:
+      - wellmeet-network
+
+volumes:
+  mysql-reservation-data:
+  mysql-member-data:
+  mysql-owner-data:
+  mysql-restaurant-data:
+
+networks:
+  wellmeet-network:
+    name: wellmeet-network
+    driver: bridge

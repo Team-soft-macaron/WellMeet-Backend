@@ -18,34 +18,198 @@
 
 ```
 WellMeet-Backend/
-├── api-user/          # 사용자 API (REST Controller + Service)
-├── api-owner/         # 사업자 API (REST Controller + Service)
-├── domain-reservation/            # 예약 도메인 로직 (Entity + Domain Service + Repository)
-├── domain-redis/      # Redis 분산 락 서비스
-├── kafka/             # Kafka Producer 서비스
-├── batch-reminder/    # 예약 리마인더 배치
-└── common/            # 공통 유틸리티
+├── api-user/              # 사용자 API (REST Controller + Service)
+├── api-owner/             # 사업자 API (REST Controller + Service)
+├── domain-reservation/    # 예약 도메인 (Entity + Repository + Flyway)
+├── domain-member/         # 회원 도메인 (Entity + Repository + testFixtures)
+├── domain-owner/          # 사업자 도메인 (Entity + Repository + testFixtures)
+├── domain-restaurant/     # 식당 도메인 (Entity + Repository + testFixtures)
+├── infra-redis/           # Redis 분산 락 (Redisson 3.50.0)
+├── infra-kafka/           # Kafka Producer (AWS MSK + IAM Auth)
+└── batch-reminder/        # 예약 리마인더 배치 (Spring Batch)
 ```
 
 ### 의존성 관계
 
+**현재 구조 (Phase 1: Monolithic)**:
+
 ```
-api-user    →  domain-reservation, domain-redis, kafka
-api-owner   →  domain-reservation, domain-redis, kafka
-batch       →  domain-reservation, kafka
-domain-redis → (독립)
-kafka       → (독립)
+api-user       → domain-reservation, domain-member, domain-owner, domain-restaurant, infra-redis, infra-kafka
+api-owner      → domain-reservation, domain-member, domain-owner, domain-restaurant, infra-redis, infra-kafka
+batch-reminder → domain-reservation, domain-member, domain-owner, domain-restaurant, infra-kafka
+
+domain-reservation → (독립, Flyway 사용)
+domain-member      → (독립)
+domain-owner       → (독립)
+domain-restaurant  → (독립)
+infra-redis        → (독립)
+infra-kafka        → (독립)
 ```
+
+⚠️ **아키텍처 전환 계획**: 각 domain-* 모듈을 독립 서비스로 분리 예정 (Microservices 구조)
+→ API 모듈에서 도메인 의존성 제거 후 REST API로 통신
+→ infra-kafka를 통한 이벤트 기반 비동기 통신
+
+---
+
+## 🏗️ 아키텍처 마이그레이션 로드맵
+
+### Phase 1: Monolithic 구조 (현재)
+
+**특징**:
+
+- API 모듈이 domain 모듈에 직접 의존
+- 단일 애플리케이션으로 배포
+- 빠른 개발 및 테스트 가능
+- 모듈 간 직접 메소드 호출
+
+**장점**:
+
+- 간단한 배포 및 운영
+- 트랜잭션 관리 용이
+- 디버깅 및 추적이 쉬움
+- 낮은 네트워크 오버헤드
+
+**단점**:
+
+- 서비스 간 결합도 높음
+- 독립적인 스케일링 불가
+- 한 모듈의 장애가 전체 시스템에 영향
+
+### Phase 2: Microservices 구조 (목표)
+
+**구조**:
+
+```
+api-user (Gateway)     →  [HTTP/REST]  →  domain-member (Service)
+                       →  [HTTP/REST]  →  domain-restaurant (Service)
+                       →  [HTTP/REST]  →  domain-reservation (Service)
+                       →  [Kafka]      ↔  infra-kafka (Message Broker)
+
+api-owner (Gateway)    →  [HTTP/REST]  →  domain-owner (Service)
+                       →  [HTTP/REST]  →  domain-restaurant (Service)
+                       →  [HTTP/REST]  →  domain-reservation (Service)
+                       →  [Kafka]      ↔  infra-kafka (Message Broker)
+
+batch-reminder         →  [HTTP/REST]  →  domain-reservation (Service)
+                       →  [Kafka]      →  infra-kafka (Notification)
+```
+
+**특징**:
+
+- 각 domain을 독립 서비스로 분리
+- REST API로 서비스 간 통신
+- Kafka를 통한 비동기 이벤트 기반 통신
+- 각 서비스 독립 배포 및 스케일링
+
+**장점**:
+
+- 서비스 별 독립 배포 가능
+- 기술 스택 다양화 가능
+- 장애 격리 (Fault Isolation)
+- 탄력적 스케일링
+
+**단점**:
+
+- 분산 트랜잭션 관리 복잡
+- 네트워크 레이턴시 증가
+- 운영 복잡도 상승 (모니터링, 로깅, 추적)
+
+### 마이그레이션 전략
+
+#### Step 1: API 인터페이스 추가 (Phase 1.5)
+
+각 domain 모듈에 REST Controller 추가:
+
+- `domain-member` → MemberInternalController
+- `domain-owner` → OwnerInternalController
+- `domain-restaurant` → RestaurantInternalController
+- `domain-reservation` → ReservationInternalController
+
+**목적**: 기존 의존성을 유지하면서 REST API 엔드포인트 동시 제공
+
+#### Step 2: API 모듈에 HTTP Client 추가
+
+- Spring Cloud OpenFeign 또는 RestTemplate 도입
+- 각 domain 서비스를 호출하는 Client 인터페이스 생성
+- Fallback 메커니즘 구현 (Circuit Breaker)
+
+#### Step 3: 점진적 전환
+
+1. **읽기 전용 API부터 전환**:
+    - 조회(GET) 요청을 HTTP 호출로 전환
+    - 기존 직접 호출과 병행 운영 (Feature Toggle)
+2. **쓰기 API 전환**:
+    - 생성/수정/삭제(POST/PUT/DELETE) 요청 전환
+    - 트랜잭션 경계 재정의 (Saga Pattern 고려)
+3. **의존성 제거**:
+    - API 모듈의 domain 모듈 의존성 완전 제거
+    - 독립 배포 가능 확인
+
+#### Step 4: 서비스 분리 및 배포
+
+- 각 domain 모듈을 독립 애플리케이션으로 전환
+- Kubernetes 또는 ECS에 개별 서비스 배포
+- Service Mesh 도입 고려 (Istio, Linkerd)
+
+### 테스트 전략 변화
+
+| 항목                   | Phase 1 (현재)       | Phase 2 (목표)                  |
+|----------------------|--------------------|-------------------------------|
+| **단위 테스트**           | 모듈 내 직접 호출         | Mock HTTP Client              |
+| **통합 테스트**           | 실제 DB + Repository | Mock External Services        |
+| **E2E 테스트**          | 단일 애플리케이션          | 멀티 서비스 환경 (Testcontainers)    |
+| **Contract Testing** | 불필요                | Pact 또는 Spring Cloud Contract |
+| **성능 테스트**           | JMeter (단일 앱)      | Gatling (분산 환경)               |
+
+**Phase 2 테스트 가이드라인**:
+
+- API 모듈: Mock 기반 단위 테스트 (WireMock 활용)
+- Domain 서비스: 기존 통합 테스트 유지
+- Contract Test: API 스펙 변경 시 자동 검증
+- E2E Test: Docker Compose로 전체 서비스 환경 구성
+
+### 고려사항
+
+**분산 트랜잭션**:
+
+- Saga Pattern 적용 (Choreography 또는 Orchestration)
+- 보상 트랜잭션 (Compensating Transaction) 설계
+- 이벤트 소싱 (Event Sourcing) 도입 검토
+
+**데이터 일관성**:
+
+- Eventual Consistency 허용 범위 정의
+- CQRS (Command Query Responsibility Segregation) 패턴 고려
+- 중복 데이터 관리 전략 (각 서비스가 필요한 데이터 복제)
+
+**통신 방식**:
+
+- 동기 통신: REST API (읽기, 즉시 응답 필요)
+- 비동기 통신: Kafka 이벤트 (쓰기, 시간 지연 허용)
+
+**모니터링 및 추적**:
+
+- 분산 추적 (Distributed Tracing): Jaeger, Zipkin
+- 중앙 로깅: ELK Stack, CloudWatch Logs Insights
+- 메트릭 수집: Prometheus + Grafana
 
 ---
 
 ## 테스트 레이어별 구성
 
-### 1. Entity Layer (domain-reservation 모듈)
+### 1. Entity Layer (domain-* 모듈)
 
 **목적**: 도메인 객체의 생성, 검증, 비즈니스 규칙 테스트
 
-**위치**: `domain-reservation/src/test/java/com/wellmeet/domain/{aggregate}/entity/`
+**적용 모듈**:
+
+- `domain-reservation` (예약)
+- `domain-member` (회원)
+- `domain-owner` (사업자)
+- `domain-restaurant` (식당)
+
+**위치**: `domain-{모듈명}/src/test/java/com/wellmeet/domain/{aggregate}/entity/`
 
 **베이스 클래스**: 없음 (순수 단위 테스트)
 
@@ -150,11 +314,18 @@ class RestaurantTest {
 
 ---
 
-### 2. Repository Layer (domain-reservation 모듈)
+### 2. Repository Layer (domain-* 모듈)
 
 **목적**: @Query 어노테이션으로 직접 작성한 커스텀 쿼리 메소드 테스트
 
-**위치**: `domain-reservation/src/test/java/com/wellmeet/domain/{aggregate}/repository/`
+**적용 모듈**:
+
+- `domain-reservation` (예약)
+- `domain-member` (회원)
+- `domain-owner` (사업자)
+- `domain-restaurant` (식당)
+
+**위치**: `domain-{모듈명}/src/test/java/com/wellmeet/domain/{aggregate}/repository/`
 
 **베이스 클래스**: `BaseRepositoryTest`
 
@@ -711,13 +882,15 @@ public abstract class BaseControllerTest {
 
 ---
 
-### 6. Redis Service Layer (domain-redis 모듈)
+### 6. Redis Service Layer (infra-redis 모듈)
 
 **목적**: 분산 락, 캐싱 로직 테스트
 
-**위치**: `domain-redis/src/test/java/com/wellmeet/{feature}/`
+**위치**: `infra-redis/src/test/java/com/wellmeet/{feature}/`
 
 **베이스 클래스**: Testcontainers 기반 통합 테스트
+
+**주요 기술**: Redisson 3.50.0 (분산 락 라이브러리)
 
 **구성 예시**:
 
@@ -844,13 +1017,17 @@ class ReservationRedisServiceTest {
 
 ---
 
-### 7. Kafka Producer Layer (kafka 모듈)
+### 7. Kafka Producer Layer (infra-kafka 모듈)
 
 **목적**: 메시지 발송, 직렬화, 에러 처리 테스트
 
-**위치**: `kafka/src/test/java/com/wellmeet/kafka/`
+**위치**: `infra-kafka/src/test/java/com/wellmeet/kafka/`
 
 **베이스 클래스**: EmbeddedKafka 기반 통합 테스트
+
+**주요 기술**: AWS MSK (Managed Streaming for Apache Kafka) + IAM 인증
+
+⚠️ **현재 상태**: 테스트 미작성 (아래 예시는 향후 작성을 위한 가이드)
 
 **구성 예시**:
 
@@ -967,6 +1144,8 @@ class KafkaProducerServiceTest {
 
 **베이스 클래스**: `TestBatchConfig` 포함
 
+⚠️ **현재 상태**: 테스트 미작성 (아래 예시는 향후 작성을 위한 가이드)
+
 **구성 예시**:
 
 ```java
@@ -1040,7 +1219,47 @@ class ReservationReminderJobConfigTest {
 | Repository     | 통합 테스트 | BaseRepositoryTest           | @Query 커스텀 쿼리만       |
 | Domain Service | 통합 테스트 | BaseRepositoryTest + @Import | 비즈니스 로직 + Repository |
 
+**특징**: Flyway를 통한 DB 마이그레이션 관리
 **커버리지 목표**: 85%
+
+---
+
+### domain-member 모듈
+
+| Layer      | 테스트 타입 | 베이스 클래스            | 주요 검증              |
+|------------|--------|--------------------|--------------------|
+| Entity     | 단위 테스트 | 없음                 | 회원 생성, 검증, 비즈니스 규칙 |
+| Repository | 통합 테스트 | BaseRepositoryTest | @Query 커스텀 쿼리만     |
+
+**특징**: testFixtures 제공 (다른 모듈에서 재사용 가능)
+**커버리지 목표**: 85%
+
+---
+
+### domain-owner 모듈
+
+| Layer      | 테스트 타입 | 베이스 클래스            | 주요 검증               |
+|------------|--------|--------------------|---------------------|
+| Entity     | 단위 테스트 | 없음                 | 사업자 생성, 검증, 비즈니스 규칙 |
+| Repository | 통합 테스트 | BaseRepositoryTest | @Query 커스텀 쿼리만      |
+
+**특징**: testFixtures 제공 (다른 모듈에서 재사용 가능)
+**커버리지 목표**: 85%
+
+---
+
+### domain-restaurant 모듈
+
+| Layer      | 테스트 타입 | 베이스 클래스            | 주요 검증                    |
+|------------|--------|--------------------|--------------------------|
+| Entity     | 단위 테스트 | 없음                 | 식당 생성, 좌표 검증, 메타데이터 관리   |
+| Repository | 통합 테스트 | BaseRepositoryTest | BoundingBox 쿼리, 위치 기반 조회 |
+
+**특징**:
+
+- testFixtures 제공 (다른 모듈에서 재사용 가능)
+- 좌표 기반 쿼리 (BoundingBox, 거리 계산)
+  **커버리지 목표**: 85%
 
 ---
 
@@ -1056,24 +1275,27 @@ class ReservationReminderJobConfigTest {
 
 ---
 
-### domain-redis 모듈
+### infra-redis 모듈
 
 | Layer         | 테스트 타입 | 베이스 클래스        | 주요 검증     |
 |---------------|--------|----------------|-----------|
 | Redis Service | 통합 테스트 | Testcontainers | 분산 락, 동시성 |
 
-**커버리지 목표**: 90% (Critical)
+**특징**: Redisson 3.50.0 사용 (분산 락 라이브러리)
+**커버리지 목표**: 90% (Critical - 동시성 제어 핵심 모듈)
 
 ---
 
-### kafka 모듈
+### infra-kafka 모듈
 
 | Layer    | 테스트 타입 | 베이스 클래스       | 주요 검증       |
 |----------|--------|---------------|-------------|
 | Producer | 통합 테스트 | EmbeddedKafka | 메시지 발송, 직렬화 |
 | DTO      | 단위 테스트 | 없음            | 직렬화/역직렬화    |
 
-**커버리지 목표**: 70%
+**특징**: AWS MSK + IAM 인증 사용
+⚠️ **현재 상태**: 테스트 미작성
+**커버리지 목표**: 70% (작성 후)
 
 ---
 
@@ -1085,7 +1307,8 @@ class ReservationReminderJobConfigTest {
 | Processor  | 단위 테스트 | 없음              | 데이터 변환 로직     |
 | Writer     | 단위/통합  | Mock/실제         | 외부 호출 (Kafka) |
 
-**커버리지 목표**: 75%
+⚠️ **현재 상태**: 테스트 미작성
+**커버리지 목표**: 75% (작성 후)
 
 ---
 
@@ -1311,17 +1534,31 @@ spring:
     show-sql: false
 ```
 
-**domain-redis 모듈** (`domain-redis/src/main/resources/application-domain-redis-test.yml`):
+**infra-redis 모듈** (`infra-redis/src/main/resources/application-infra-redis-test.yml`):
 
 ```yaml
 spring:
   config:
     activate:
-      on-profile: domain-redis-test
+      on-profile: infra-redis-test
   data:
     redis:
       host: localhost
       port: 6379
+```
+
+**infra-kafka 모듈** (`infra-kafka/src/main/resources/application-infra-kafka-test.yml`):
+
+```yaml
+spring:
+  config:
+    activate:
+      on-profile: infra-kafka-test
+  kafka:
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 ```
 
 **api-user/api-owner 모듈** (`api-user/src/main/resources/application-test.yml`):
@@ -1331,40 +1568,408 @@ spring:
   config:
     import:
       - application-domain-test.yml
-      - application-domain-redis-test.yml
-      - application-kafka-test.yml
+      - application-infra-redis-test.yml
+      - application-infra-kafka-test.yml
 ```
 
 ---
 
-### 3. Test Fixtures (domain-reservation 모듈)
+### 3. Test Fixtures (Gradle testFixtures 플러그인)
 
-**Generator 패턴**:
+WellMeet-Backend 프로젝트는 Gradle의 `java-test-fixtures` 플러그인을 사용하여 테스트 데이터 생성 코드를 모듈 간 재사용할 수 있도록 구성합니다.
+
+#### testFixtures 적용 모듈
+
+- `domain-reservation` → 예약, 예약 가능 날짜 생성
+- `domain-member` → 회원, 즐겨찾기 생성
+- `domain-owner` → 사업자 생성
+- `domain-restaurant` → 식당, 메뉴 생성
+
+#### build.gradle 설정
+
+**domain 모듈 (예: domain-member/build.gradle)**:
+
+```gradle
+plugins {
+    id 'java-library'
+    id 'java-test-fixtures'  // testFixtures 플러그인 활성화
+}
+
+dependencies {
+    // 일반 의존성
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // testFixtures에서 필요한 의존성
+    testFixturesImplementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    testFixturesImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+```
+
+**API 모듈 (예: api-user/build.gradle)**:
+
+```gradle
+dependencies {
+    // domain 모듈 의존성
+    implementation project(':domain-member')
+    implementation project(':domain-owner')
+    implementation project(':domain-restaurant')
+    implementation project(':domain-reservation')
+
+    // testFixtures 사용
+    testImplementation(testFixtures(project(':domain-member')))
+    testImplementation(testFixtures(project(':domain-owner')))
+    testImplementation(testFixtures(project(':domain-restaurant')))
+    testImplementation(testFixtures(project(':domain-reservation')))
+}
+```
+
+#### 디렉토리 구조
+
+```
+domain-member/
+├── src/
+│   ├── main/java/               # 프로덕션 코드
+│   ├── test/java/               # 모듈 내부 테스트
+│   └── testFixtures/java/       # 다른 모듈에서 사용 가능한 Test Fixture
+│       └── com/wellmeet/domain/member/
+│           ├── MemberFixture.java
+│           └── FavoriteRestaurantFixture.java
+```
+
+#### Generator 패턴 구현 예시
+
+**domain-restaurant/src/testFixtures/java/com/wellmeet/domain/restaurant/RestaurantFixture.java**:
 
 ```java
+package com.wellmeet.domain.restaurant;
+
+import com.wellmeet.domain.owner.entity.Owner;
+import com.wellmeet.domain.restaurant.entity.Restaurant;
+import com.wellmeet.domain.restaurant.repository.RestaurantRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
-public class RestaurantGenerator {
+public class RestaurantFixture {
 
     @Autowired
     private RestaurantRepository restaurantRepository;
 
-    public Restaurant generate() {
-        return generate("기본 식당", 37.5, 127.0);
+    public Restaurant create(String name, Owner owner) {
+        return create(name, 37.5, 127.0, owner);
     }
 
-    public Restaurant generate(String name, double lat, double lon) {
+    public Restaurant create(String name, double lat, double lon, Owner owner) {
         Restaurant restaurant = Restaurant.builder()
                 .name(name)
                 .address("서울시 강남구")
                 .latitude(lat)
                 .longitude(lon)
                 .phoneNumber("02-1234-5678")
+                .owner(owner)
+                .thumbnailUrl("https://example.com/thumbnail.jpg")
                 .build();
         return restaurantRepository.save(restaurant);
     }
 }
 ```
+
+**domain-member/src/testFixtures/java/com/wellmeet/domain/member/MemberFixture.java**:
+
+```java
+package com.wellmeet.domain.member;
+
+import com.wellmeet.domain.member.entity.Member;
+import com.wellmeet.domain.member.repository.MemberRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class MemberFixture {
+
+    @Autowired
+    private MemberRepository memberRepository;
+
+    public Member create(String name) {
+        return create(name, name + "@example.com");
+    }
+
+    public Member create(String name, String email) {
+        Member member = Member.builder()
+                .name(name)
+                .nickname(name + "_nick")
+                .email(email)
+                .phoneNumber("010-1234-5678")
+                .build();
+        return memberRepository.save(member);
+    }
+}
+```
+
+#### API 모듈에서 사용 예시
+
+**api-user/src/test/java/com/wellmeet/reservation/ReservationServiceTest.java**:
+
+```java
+
+@SpringBootTest
+class ReservationServiceTest {
+
+    @Autowired
+    private MemberFixture memberFixture;  // domain-member testFixtures
+
+    @Autowired
+    private OwnerFixture ownerFixture;  // domain-owner testFixtures
+
+    @Autowired
+    private RestaurantFixture restaurantFixture;  // domain-restaurant testFixtures
+
+    @Autowired
+    private ReservationService reservationService;
+
+    @Test
+    void 예약을_생성한다() {
+        // testFixtures를 활용한 데이터 준비
+        Member member = memberFixture.create("testUser");
+        Owner owner = ownerFixture.create("testOwner");
+        Restaurant restaurant = restaurantFixture.create("테스트 식당", owner);
+
+        // 비즈니스 로직 테스트
+        ReservationResponse response = reservationService.reserve(...);
+
+        assertThat(response).isNotNull();
+    }
+}
+```
+
+#### testFixtures의 장점
+
+1. **재사용성**: 여러 모듈에서 동일한 테스트 데이터 생성 로직 공유
+2. **일관성**: 도메인 객체 생성 방식이 중앙화되어 일관성 유지
+3. **유지보수**: 도메인 모델 변경 시 testFixtures만 수정하면 됨
+4. **캡슐화**: 도메인 지식을 testFixtures에 캡슐화
+5. **독립성**: 각 도메인 모듈이 자신의 testFixtures 제공
+
+#### 주의사항
+
+- testFixtures는 **테스트 전용**이며, 프로덕션 코드에서 사용 불가
+- testFixtures 간 의존성은 최소화 (순환 의존성 방지)
+- Repository를 주입받아 실제 DB에 저장하는 방식 사용
+- 복잡한 비즈니스 로직은 testFixtures에 포함하지 않음
+
+---
+
+## 인프라 통합
+
+### Flyway 데이터베이스 마이그레이션
+
+#### 개요
+
+`domain-reservation` 모듈에서만 Flyway를 사용하여 데이터베이스 스키마 버전 관리를 수행합니다.
+
+#### 적용 위치
+
+- **모듈**: `domain-reservation`
+- **마이그레이션 파일**: `domain-reservation/src/main/resources/db/migration/`
+- **실행 시점**: Spring Boot 애플리케이션 시작 시 자동 실행
+
+#### build.gradle 설정
+
+```gradle
+dependencies {
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-mysql'
+}
+```
+
+#### application.yml 설정
+
+```yaml
+spring:
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+    sql-migration-prefix: V
+    sql-migration-suffix: .sql
+```
+
+#### 마이그레이션 파일 네이밍
+
+```
+db/migration/
+├── V1__create_reservation_table.sql
+├── V2__create_available_date_table.sql
+├── V3__add_status_column_to_reservation.sql
+└── V4__add_index_on_reservation_date.sql
+```
+
+**규칙**:
+
+- `V{버전번호}__{설명}.sql` 형식
+- 버전 번호는 순차적으로 증가
+- 실행 순서는 버전 번호 기준
+
+#### 다른 domain 모듈
+
+다른 domain 모듈(member, owner, restaurant)은 Flyway를 사용하지 않고 JPA `ddl-auto` 설정 사용:
+
+```yaml
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop  # 테스트 환경
+```
+
+**이유**:
+
+- `domain-reservation`은 예약 데이터의 히스토리 관리가 중요하여 스키마 변경 추적 필요
+- 다른 모듈은 상대적으로 단순한 CRUD 작업 위주
+
+#### 테스트 환경에서의 Flyway
+
+테스트 환경에서도 Flyway가 자동 실행되어 일관된 스키마 환경 보장:
+
+**domain-reservation/src/test/resources/application-domain-test.yml**:
+
+```yaml
+spring:
+  flyway:
+    enabled: true
+    clean-on-validation-error: true  # 테스트 시 스키마 초기화
+```
+
+---
+
+### AWS MSK (Kafka) 통합
+
+#### 개요
+
+`infra-kafka` 모듈은 AWS MSK (Managed Streaming for Apache Kafka)와 IAM 인증을 사용하여 메시지 브로커 통합을 제공합니다.
+
+#### build.gradle 설정
+
+```gradle
+dependencies {
+    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'software.amazon.msk:aws-msk-iam-auth:2.2.0'
+    implementation 'com.amazonaws:aws-java-sdk-kafka:1.12.565'
+}
+```
+
+#### 특징
+
+**IAM 인증 사용**:
+
+- AWS IAM Role 기반 인증
+- Access Key/Secret Key 불필요
+- ECS/EKS에서 Task Role 또는 Pod Identity 활용
+
+**보안**:
+
+- TLS 암호화 통신
+- VPC 내부 통신
+- Security Group 기반 접근 제어
+
+#### application.yml 설정 (프로덕션)
+
+```yaml
+spring:
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    security:
+      protocol: SASL_SSL
+    properties:
+      sasl.mechanism: AWS_MSK_IAM
+      sasl.jaas.config: software.amazon.msk.auth.iam.IAMLoginModule required;
+      sasl.client.callback.handler.class: software.amazon.msk.auth.iam.IAMClientCallbackHandler
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 3
+```
+
+#### 테스트 환경
+
+테스트 환경에서는 EmbeddedKafka 사용 (IAM 인증 불필요):
+
+**application-infra-kafka-test.yml**:
+
+```yaml
+spring:
+  kafka:
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+```
+
+#### 주요 토픽
+
+- `notification` - 사용자 알림 메시지
+- `reservation-created` - 예약 생성 이벤트
+- `reservation-cancelled` - 예약 취소 이벤트
+- `reminder` - 리마인더 메시지 (batch-reminder 모듈에서 사용)
+
+#### 메시지 구조 예시
+
+```json
+{
+  "header": {
+    "messageId": "msg-123",
+    "recipientId": "member-456",
+    "timestamp": "2025-10-30T12:00:00Z",
+    "type": "RESERVATION_CREATED"
+  },
+  "payload": {
+    "reservationId": "reservation-789",
+    "restaurantName": "맛집",
+    "reservationDate": "2025-11-01T19:00:00",
+    "partySize": 4
+  }
+}
+```
+
+#### Producer 예시
+
+**infra-kafka/src/main/java/com/wellmeet/kafka/service/KafkaProducerService.java**:
+
+```java
+
+@Service
+public class KafkaProducerService {
+
+    private final KafkaTemplate<String, NotificationMessage> kafkaTemplate;
+
+    public void sendNotificationMessage(String memberId, Object payload) {
+        NotificationMessage message = NotificationMessage.builder()
+                .header(MessageHeader.builder()
+                        .messageId(UUID.randomUUID().toString())
+                        .recipientId(memberId)
+                        .timestamp(LocalDateTime.now())
+                        .build())
+                .payload(payload)
+                .build();
+
+        kafkaTemplate.send("notification", memberId, message);
+    }
+}
+```
+
+#### 모니터링
+
+**CloudWatch Metrics**:
+
+- 메시지 발송 성공/실패율
+- 지연 시간 (Latency)
+- Consumer Lag
+
+**Kafka 로그**:
+
+- Producer 전송 로그
+- 재시도 횟수
+- 오류 메시지
 
 ---
 
@@ -1413,4 +2018,20 @@ public class RestaurantGenerator {
 
 ---
 
-**마지막 업데이트**: 2025-10-05
+**마지막 업데이트**: 2025-10-30
+
+## 변경 이력
+
+**2025-10-30**:
+
+- 프로젝트 구조 업데이트 (3개 신규 도메인 모듈 추가: member, owner, restaurant)
+- 모듈명 변경 반영 (domain-redis → infra-redis, kafka → infra-kafka)
+- Microservices 아키텍처 마이그레이션 로드맵 추가
+- testFixtures 패턴 상세 문서화
+- Flyway 및 AWS MSK 통합 문서화
+- 테스트 설정 파일 경로 업데이트
+- 테스트 미작성 모듈 명시 (infra-kafka, batch-reminder)
+
+**2025-10-05**:
+
+- 초기 문서 작성
