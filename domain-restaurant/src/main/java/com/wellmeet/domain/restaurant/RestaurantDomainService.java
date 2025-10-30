@@ -13,7 +13,6 @@ import com.wellmeet.domain.restaurant.model.BoundingBox;
 import com.wellmeet.domain.restaurant.repository.RestaurantRepository;
 import com.wellmeet.domain.restaurant.review.ReviewDomainService;
 import com.wellmeet.domain.restaurant.review.entity.Review;
-import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

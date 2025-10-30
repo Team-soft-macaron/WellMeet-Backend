@@ -2,8 +2,6 @@ package com.wellmeet.domain.fixture;
 
 import com.wellmeet.domain.reservation.entity.Reservation;
 import com.wellmeet.domain.reservation.repository.ReservationRepository;
-import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
-import com.wellmeet.domain.restaurant.entity.Restaurant;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,8 +13,8 @@ public class ReservationGenerator {
         this.reservationRepository = reservationRepository;
     }
 
-    public Reservation generate(Restaurant restaurant, AvailableDate availableDate, String memberId, int partySize) {
-        Reservation reservation = new Reservation(restaurant, availableDate, memberId, partySize, "request");
+    public Reservation generate(String restaurantId, Long availableDateId, String memberId, int partySize) {
+        Reservation reservation = new Reservation(restaurantId, availableDateId, memberId, partySize, "request");
         return reservationRepository.save(reservation);
     }
 }

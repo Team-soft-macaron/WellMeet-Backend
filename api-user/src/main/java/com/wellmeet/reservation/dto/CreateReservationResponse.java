@@ -2,6 +2,7 @@ package com.wellmeet.reservation.dto;
 
 import com.wellmeet.domain.reservation.entity.Reservation;
 import com.wellmeet.domain.reservation.entity.ReservationStatus;
+import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,11 +18,11 @@ public class CreateReservationResponse {
     private int partySize;
     private String specialRequest;
 
-    public CreateReservationResponse(Reservation reservation) {
+    public CreateReservationResponse(Reservation reservation, String restaurantName, AvailableDate availableDate) {
         this.id = reservation.getId();
-        this.restaurantName = reservation.getRestaurant().getName();
+        this.restaurantName = restaurantName;
         this.status = reservation.getStatus();
-        this.dateTime = reservation.getDateTime();
+        this.dateTime = LocalDateTime.of(availableDate.getDate(), availableDate.getTime());
         this.partySize = reservation.getPartySize();
         this.specialRequest = reservation.getSpecialRequest();
     }

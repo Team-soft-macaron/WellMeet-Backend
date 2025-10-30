@@ -50,7 +50,9 @@ class EventPublishServiceTest {
             AvailableDate availableDate = createAvailableDate(restaurant);
             Member member = createMember();
             Reservation reservation = createReservation(restaurant, availableDate, member);
-            ReservationConfirmedEvent event = new ReservationConfirmedEvent(reservation, member.getName());
+            LocalDateTime dateTime = LocalDateTime.of(availableDate.getDate(), availableDate.getTime());
+            ReservationConfirmedEvent event = new ReservationConfirmedEvent(
+                    reservation, member.getName(), restaurant.getName(), dateTime);
 
             eventPublishService.publishReservationConfirmedEvent(event);
 
@@ -81,6 +83,6 @@ class EventPublishServiceTest {
     }
 
     private Reservation createReservation(Restaurant restaurant, AvailableDate availableDate, Member member) {
-        return new Reservation(restaurant, availableDate, member.getId(), 4, "request");
+        return new Reservation(restaurant.getId(), availableDate.getId(), member.getId(), 4, "request");
     }
 }

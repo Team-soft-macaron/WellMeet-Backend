@@ -18,16 +18,16 @@ public class ReservationCanceledEvent {
     private final LocalDateTime dateTime;
     private final LocalDateTime createdAt;
 
-    public ReservationCanceledEvent(Reservation reservation, String memberName) {
+    public ReservationCanceledEvent(Reservation reservation, String memberName, String restaurantName, LocalDateTime dateTime) {
         this.reservationId = reservation.getId();
         this.memberId = reservation.getMemberId();
         this.memberName = memberName;
-        this.restaurantId = reservation.getRestaurant().getId();
-        this.restaurantName = reservation.getRestaurantName();
+        this.restaurantId = reservation.getRestaurantId();
+        this.restaurantName = restaurantName;
         this.status = reservation.getStatus().name();
         this.partySize = reservation.getPartySize();
         this.specialRequest = reservation.getSpecialRequest();
-        this.dateTime = reservation.getDateTime();
+        this.dateTime = dateTime;
         this.createdAt = reservation.getCreatedAt();
     }
 }

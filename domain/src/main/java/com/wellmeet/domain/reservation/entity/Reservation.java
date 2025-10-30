@@ -3,23 +3,18 @@ package com.wellmeet.domain.reservation.entity;
 import com.wellmeet.domain.common.BaseEntity;
 import com.wellmeet.domain.reservation.exception.ReservationErrorCode;
 import com.wellmeet.domain.reservation.exception.ReservationException;
-import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
-import com.wellmeet.domain.restaurant.entity.Restaurant;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -46,15 +41,13 @@ public class Reservation extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private ReservationStatus status;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "restaurant_id")
-    private Restaurant restaurant;
+    @NotBlank
+    @Column(name = "restaurant_id")
+    private String restaurantId;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "available_date_id")
-    private AvailableDate availableDate;
+    @Column(name = "available_date_id")
+    private Long availableDateId;
 
     @NotBlank
     @Column(name = "member_id")
@@ -63,14 +56,14 @@ public class Reservation extends BaseEntity {
     private int partySize;
     private String specialRequest;
 
-    public Reservation(Restaurant restaurant, AvailableDate availableDate,
+    public Reservation(String restaurantId, Long availableDateId,
                        String memberId, int partySize, String specialRequest) {
         validatePartySize(partySize);
         validateRequest(specialRequest);
 
         this.status = ReservationStatus.PENDING;
-        this.restaurant = restaurant;
-        this.availableDate = availableDate;
+        this.restaurantId = restaurantId;
+        this.availableDateId = availableDateId;
         this.memberId = memberId;
         this.partySize = partySize;
         this.specialRequest = specialRequest;
@@ -85,14 +78,14 @@ public class Reservation extends BaseEntity {
     }
 
     public void update(
-            AvailableDate availableDate,
+            Long availableDateId,
             int partySize,
             String specialRequest
     ) {
         validatePartySize(partySize);
         validateRequest(specialRequest);
 
-        this.availableDate = availableDate;
+        this.availableDateId = availableDateId;
         this.partySize = partySize;
         this.specialRequest = specialRequest;
     }
@@ -109,11 +102,5 @@ public class Reservation extends BaseEntity {
         }
     }
 
-    public String getRestaurantName() {
-        return restaurant.getName();
-    }
 
-    public LocalDateTime getDateTime() {
-        return LocalDateTime.of(availableDate.getDate(), availableDate.getTime());
-    }
 }

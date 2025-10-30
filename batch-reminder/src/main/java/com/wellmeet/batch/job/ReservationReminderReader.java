@@ -31,28 +31,17 @@ public class ReservationReminderReader {
     @Bean
     @StepScope
     public RepositoryItemReader<Reservation> itemReader() {
-        LocalDateTime now = LocalDateTime.now(clock);
-        LocalDateTime start = now.plusHours(REMINDER_HOURS_BEFORE);
-        LocalDateTime end = start.plusMinutes(TIME_WINDOW_MINUTES);
-
-        log.info("Setting up reader for reservations between {} and {}", start, end);
+        log.info("Setting up reader for confirmed reservations");
 
         Map<String, Sort.Direction> sorts = Map.of(
-                "availableDate.date", Sort.Direction.ASC,
-                "availableDate.time", Sort.Direction.ASC
+                "availableDateId", Sort.Direction.ASC
         );
 
         return new RepositoryItemReaderBuilder<Reservation>()
                 .name("reservationReminderReader")
                 .repository(reservationRepository)
-                .methodName("findReservationsForReminderPage")
-                .arguments(List.of(
-                        ReservationStatus.CONFIRMED,
-                        start.toLocalDate(),
-                        start.toLocalTime(),
-                        end.toLocalDate(),
-                        end.toLocalTime()
-                ))
+                .methodName("findAllByStatusOrderByAvailableDateIdAsc")
+                .arguments(List.of(ReservationStatus.CONFIRMED))
                 .pageSize(PAGE_SIZE)
                 .sorts(sorts)
                 .build();

@@ -165,8 +165,8 @@ class ReservationReminderJobConfigTest {
             availableDateRepository.save(availableDate);
 
             Reservation reservation = new Reservation(
-                    restaurant,
-                    availableDate,
+                    restaurant.getId(),
+                    availableDate.getId(),
                     member.getId(),
                     4,
                     "요청사항 " + i
