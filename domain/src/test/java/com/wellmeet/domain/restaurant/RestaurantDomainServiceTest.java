@@ -4,8 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.wellmeet.BaseRepositoryTest;
-import com.wellmeet.domain.owner.entity.Owner;
-import com.wellmeet.domain.owner.repository.OwnerRepository;
+
 import com.wellmeet.domain.restaurant.availabledate.AvailableDateDomainService;
 import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
 import com.wellmeet.domain.restaurant.availabledate.repository.AvailableDateRepository;
@@ -45,9 +44,6 @@ class RestaurantDomainServiceTest extends BaseRepositoryTest {
     private AvailableDateRepository availableDateRepository;
 
     @Autowired
-    private OwnerRepository ownerRepository;
-
-    @Autowired
     private EntityManager entityManager;
 
     @Nested
@@ -55,8 +51,7 @@ class RestaurantDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 식당을_조회한다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant("맛집", owner);
+            Restaurant restaurant = createAndSaveRestaurant("맛집", "test-owner-id");
 
             Restaurant result = restaurantDomainService.getById(restaurant.getId());
 
@@ -79,10 +74,10 @@ class RestaurantDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void BoundingBox를_계산하여_주변_식당을_조회한다() {
-            Owner owner = createAndSaveOwner();
-            createAndSaveRestaurant("식당1", 37.5, 127.0, owner);
-            createAndSaveRestaurant("식당2", 37.501, 127.001, owner);
-            createAndSaveRestaurant("먼식당", 38.0, 128.0, owner);
+            String ownerId = "test-owner-id";
+            createAndSaveRestaurant("식당1", 37.5, 127.0, ownerId);
+            createAndSaveRestaurant("식당2", 37.501, 127.001, ownerId);
+            createAndSaveRestaurant("먼식당", 38.0, 128.0, ownerId);
 
             double userLat = 37.5;
             double userLon = 127.0;
@@ -94,8 +89,7 @@ class RestaurantDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 반경_내에_식당이_없으면_빈_리스트를_반환한다() {
-            Owner owner = createAndSaveOwner();
-            createAndSaveRestaurant("먼식당", 38.0, 128.0, owner);
+            createAndSaveRestaurant("먼식당", 38.0, 128.0, "test-owner-id");
 
             double userLat = 37.5;
             double userLon = 127.0;
@@ -111,8 +105,7 @@ class RestaurantDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 예약_가능_날짜의_수용_인원을_감소시킨다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant("식당", owner);
+            Restaurant restaurant = createAndSaveRestaurant("식당", "test-owner-id");
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant, 10);
 
             restaurantDomainService.decreaseAvailableDateCapacity(availableDate, 4);
@@ -125,8 +118,7 @@ class RestaurantDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 수용_인원이_부족하면_예외가_발생한다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant("식당", owner);
+            Restaurant restaurant = createAndSaveRestaurant("식당", "test-owner-id");
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant, 2);
 
             assertThatThrownBy(() -> restaurantDomainService.decreaseAvailableDateCapacity(availableDate, 4))
@@ -140,8 +132,7 @@ class RestaurantDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 예약_가능_날짜의_수용_인원을_증가시킨다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant("식당", owner);
+            Restaurant restaurant = createAndSaveRestaurant("식당", "test-owner-id");
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant, 5);
 
             restaurantDomainService.increaseAvailableDateCapacity(availableDate, 3);
@@ -153,16 +144,11 @@ class RestaurantDomainServiceTest extends BaseRepositoryTest {
         }
     }
 
-    private Owner createAndSaveOwner() {
-        Owner owner = new Owner("owner", "owner@test.com");
-        return ownerRepository.save(owner);
+    private Restaurant createAndSaveRestaurant(String name, String ownerId) {
+        return createAndSaveRestaurant(name, 37.5, 127.0, ownerId);
     }
 
-    private Restaurant createAndSaveRestaurant(String name, Owner owner) {
-        return createAndSaveRestaurant(name, 37.5, 127.0, owner);
-    }
-
-    private Restaurant createAndSaveRestaurant(String name, double lat, double lon, Owner owner) {
+    private Restaurant createAndSaveRestaurant(String name, double lat, double lon, String ownerId) {
         Restaurant restaurant = new Restaurant(
                 UUID.randomUUID().toString(),
                 name,
@@ -170,7 +156,7 @@ class RestaurantDomainServiceTest extends BaseRepositoryTest {
                 lat,
                 lon,
                 "thumbnail",
-                owner
+                ownerId
         );
         return restaurantRepository.save(restaurant);
     }

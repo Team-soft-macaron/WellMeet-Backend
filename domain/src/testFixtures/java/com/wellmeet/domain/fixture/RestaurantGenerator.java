@@ -1,6 +1,5 @@
 package com.wellmeet.domain.fixture;
 
-import com.wellmeet.domain.owner.entity.Owner;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.domain.restaurant.repository.RestaurantRepository;
 import java.util.UUID;
@@ -15,16 +14,16 @@ public class RestaurantGenerator {
         this.restaurantRepository = restaurantRepository;
     }
 
-    public Restaurant generate(String name, Owner owner) {
+    public Restaurant generate(String name, String ownerId) {
         Restaurant restaurant = new Restaurant(UUID.randomUUID().toString(), name, "address", 32.1, 37.1, "thumbnail",
-                owner);
+                ownerId);
         return restaurantRepository.save(restaurant);
     }
 
-    public Restaurant generate(String name, double latitude, double longitude, Owner owner) {
+    public Restaurant generate(String name, double latitude, double longitude, String ownerId) {
         Restaurant restaurant = new Restaurant(UUID.randomUUID().toString(), name, "address", latitude, longitude,
                 "thumbnail",
-                owner);
+                ownerId);
         return restaurantRepository.save(restaurant);
     }
 }

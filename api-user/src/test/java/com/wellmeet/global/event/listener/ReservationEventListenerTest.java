@@ -96,7 +96,7 @@ class ReservationEventListenerTest {
                 37.5,
                 127.0,
                 "thumbnail.jpg",
-                owner
+                owner.getId()
         );
         LocalDateTime dateTime = LocalDateTime.now().plusDays(1);
         AvailableDate availableDate = new AvailableDate(

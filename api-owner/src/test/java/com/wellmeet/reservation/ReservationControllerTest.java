@@ -20,8 +20,8 @@ class ReservationControllerTest extends BaseControllerTest {
         @Test
         void 식당_아이디에_해당하는_예약목록을_불러온다() {
             Owner owner = ownerGenerator.generate("owner1");
-            Restaurant restaurant1 = restaurantGenerator.generate("restaurant1", owner);
-            Restaurant restaurant2 = restaurantGenerator.generate("restaurant2", owner);
+            Restaurant restaurant1 = restaurantGenerator.generate("restaurant$1", owner.getId());
+            Restaurant restaurant2 = restaurantGenerator.generate("restaurant$1", owner.getId());
             AvailableDate availableDate1 = availableDateGenerator.generate(LocalDateTime.now(), 10, restaurant1);
             AvailableDate availableDate2 = availableDateGenerator.generate(LocalDateTime.now().plusDays(1), 10,
                     restaurant2);

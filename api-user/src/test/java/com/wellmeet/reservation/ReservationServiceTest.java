@@ -38,7 +38,7 @@ class ReservationServiceTest extends BaseServiceTest {
         @Test
         void 한_사람이_같은_예약_요청을_동시에_여러번_신청해도_한_번만_처리된다() throws InterruptedException {
             Owner owner1 = ownerGenerator.generate("owner1");
-            Restaurant restaurant1 = restaurantGenerator.generate("restaurant1", owner1);
+            Restaurant restaurant1 = restaurantGenerator.generate("restaurant1", owner1.getId());
             int capacity = 100;
             AvailableDate availableDate = availableDateGenerator.generate(LocalDateTime.now().plusDays(1), capacity,
                     restaurant1);
@@ -61,7 +61,7 @@ class ReservationServiceTest extends BaseServiceTest {
         @Test
         void 여러_사람이_예약_요청을_동시에_신청해도_적절히_처리된다() throws InterruptedException {
             Owner owner1 = ownerGenerator.generate("owner1");
-            Restaurant restaurant1 = restaurantGenerator.generate("restaurant1", owner1);
+            Restaurant restaurant1 = restaurantGenerator.generate("restaurant1", owner1.getId());
             int capacity = 100;
             AvailableDate availableDate = availableDateGenerator.generate(LocalDateTime.now().plusDays(1), capacity,
                     restaurant1);
@@ -92,7 +92,7 @@ class ReservationServiceTest extends BaseServiceTest {
         @Test
         void 같은_예약시간의_인원수를_변경할_수_있다() {
             Owner owner1 = ownerGenerator.generate("owner1");
-            Restaurant restaurant1 = restaurantGenerator.generate("restaurant1", owner1);
+            Restaurant restaurant1 = restaurantGenerator.generate("restaurant1", owner1.getId());
             int capacity = 16;
             AvailableDate availableDate1 = availableDateGenerator.generate(LocalDateTime.now().plusDays(1), capacity,
                     restaurant1);
@@ -122,7 +122,7 @@ class ReservationServiceTest extends BaseServiceTest {
         @Test
         void 한_사람이_업데이트_요청을_동시에_여러개_보내도_한_번만_처리된다() throws InterruptedException {
             Owner owner1 = ownerGenerator.generate("owner1");
-            Restaurant restaurant1 = restaurantGenerator.generate("restaurant1", owner1);
+            Restaurant restaurant1 = restaurantGenerator.generate("restaurant1", owner1.getId());
             int capacity = 50;
             AvailableDate availableDate1 = availableDateGenerator.generate(LocalDateTime.now().plusDays(1), capacity,
                     restaurant1);
@@ -156,7 +156,7 @@ class ReservationServiceTest extends BaseServiceTest {
         @Test
         void 여러_사람이_업데이트_요청을_동시에_여러개_보내도_적절히_처리된다() throws InterruptedException {
             Owner owner1 = ownerGenerator.generate("owner1");
-            Restaurant restaurant1 = restaurantGenerator.generate("restaurant1", owner1);
+            Restaurant restaurant1 = restaurantGenerator.generate("restaurant1", owner1.getId());
             int capacity = 16;
             AvailableDate availableDate1 = availableDateGenerator.generate(LocalDateTime.now().plusDays(1), capacity,
                     restaurant1);

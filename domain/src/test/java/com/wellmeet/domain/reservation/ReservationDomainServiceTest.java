@@ -5,8 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.wellmeet.BaseRepositoryTest;
-import com.wellmeet.domain.owner.entity.Owner;
-import com.wellmeet.domain.owner.repository.OwnerRepository;
+
 import com.wellmeet.domain.reservation.entity.Reservation;
 import com.wellmeet.domain.reservation.exception.ReservationErrorCode;
 import com.wellmeet.domain.reservation.exception.ReservationException;
@@ -39,16 +38,12 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
     @Autowired
     private AvailableDateRepository availableDateRepository;
 
-    @Autowired
-    private OwnerRepository ownerRepository;
-
     @Nested
     class Save {
 
         @Test
         void 예약을_저장한다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant);
 
             Reservation reservation = new Reservation(restaurant, availableDate, "member", 4, "request");
@@ -65,8 +60,7 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 예약을_조회한다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant);
             Reservation reservation = createAndSaveReservation(restaurant, availableDate, "member");
 
@@ -80,8 +74,7 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 다른_회원의_예약_조회_시_예외가_발생한다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant);
             Reservation reservation = createAndSaveReservation(restaurant, availableDate, "member1");
 
@@ -99,8 +92,7 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 회원의_모든_예약을_조회한다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
 
             AvailableDate ad1 = createAndSaveAvailableDate(restaurant);
             AvailableDate ad2 = createAndSaveAvailableDate(restaurant);
@@ -127,8 +119,7 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 이미_예약한_경우_예외가_발생한다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant);
             createAndSaveReservation(restaurant, availableDate, "member");
 
@@ -143,8 +134,7 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 예약하지_않은_경우_예외가_발생하지_않는다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant);
 
             assertThatCode(() -> reservationDomainService.alreadyReserved(
@@ -160,8 +150,7 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 동일한_정보로_수정하면_true를_반환한다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant);
             Reservation reservation = createAndSaveReservation(restaurant, availableDate, "member");
 
@@ -177,8 +166,7 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 다른_정보로_수정하면_false를_반환한다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant);
             Reservation reservation = createAndSaveReservation(restaurant, availableDate, "member");
 
@@ -193,12 +181,7 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
         }
     }
 
-    private Owner createAndSaveOwner() {
-        Owner owner = new Owner("owner", "owner@test.com");
-        return ownerRepository.save(owner);
-    }
-
-    private Restaurant createAndSaveRestaurant(Owner owner) {
+    private Restaurant createAndSaveRestaurant(String ownerId) {
         Restaurant restaurant = new Restaurant(
                 UUID.randomUUID().toString(),
                 "식당",
@@ -206,7 +189,7 @@ class ReservationDomainServiceTest extends BaseRepositoryTest {
                 37.5,
                 127.0,
                 "thumbnail",
-                owner
+                ownerId
         );
         return restaurantRepository.save(restaurant);
     }

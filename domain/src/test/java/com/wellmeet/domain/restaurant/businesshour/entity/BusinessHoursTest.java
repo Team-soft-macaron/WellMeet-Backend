@@ -2,7 +2,6 @@ package com.wellmeet.domain.restaurant.businesshour.entity;
 
 import static org.assertj.core.api.Assertions.*;
 
-import com.wellmeet.domain.owner.entity.Owner;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
 import java.time.LocalTime;
 import java.util.List;
@@ -39,8 +38,8 @@ class BusinessHoursTest {
     }
 
     private Restaurant createRestaurant() {
-        Owner owner = new Owner("owner", "owner@example.com");
-        return new Restaurant("restaurant", "description", "address", 37.5, 127.0, "thumbnail", owner);
+        String ownerId = "test-owner-id";
+        return new Restaurant("restaurant", "description", "address", 37.5, 127.0, "thumbnail", ownerId);
     }
 
     private BusinessHour createBusinessHour(DayOfWeek dayOfWeek, Restaurant restaurant) {

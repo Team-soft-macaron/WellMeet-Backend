@@ -25,7 +25,7 @@ class RestaurantControllerTest extends BaseControllerTest {
         @Test
         void 식당의_운영시간을_불러온다() {
             Owner owner = ownerGenerator.generate("owner1");
-            Restaurant restaurant = restaurantGenerator.generate("restaurant1", owner);
+            Restaurant restaurant = restaurantGenerator.generate("restaurant1", owner.getId());
             businessHourGenerator.generate(DayOfWeek.TUESDAY, restaurant);
             businessHourGenerator.generate(DayOfWeek.WEDNESDAY, restaurant);
             businessHourGenerator.generate(DayOfWeek.MONDAY, restaurant);
@@ -50,7 +50,7 @@ class RestaurantControllerTest extends BaseControllerTest {
         @Test
         void 식당의_운영시간을_업데이트한다() {
             Owner owner = ownerGenerator.generate("owner1");
-            Restaurant restaurant = restaurantGenerator.generate("restaurant1", owner);
+            Restaurant restaurant = restaurantGenerator.generate("restaurant1", owner.getId());
             businessHourGenerator.generate(DayOfWeek.TUESDAY, restaurant);
             businessHourGenerator.generate(DayOfWeek.WEDNESDAY, restaurant);
             businessHourGenerator.generate(DayOfWeek.MONDAY, restaurant);
@@ -99,7 +99,7 @@ class RestaurantControllerTest extends BaseControllerTest {
         @Test
         void 식당_정보를_갱신한다(){
             Owner owner = ownerGenerator.generate("owner1");
-            Restaurant restaurant = restaurantGenerator.generate("restaurant1", owner);
+            Restaurant restaurant = restaurantGenerator.generate("restaurant1", owner.getId());
             String newRestaurantName = "new restaurant";
             UpdateRestaurantRequest request = new UpdateRestaurantRequest(newRestaurantName, "address", 36.5, 128.0, "thumbnail");
             UpdateRestaurantResponse response = given().contentType("application/json")

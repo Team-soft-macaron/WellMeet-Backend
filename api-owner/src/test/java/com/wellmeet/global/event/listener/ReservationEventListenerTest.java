@@ -58,7 +58,7 @@ class ReservationEventListenerTest {
                 37.5,
                 127.0,
                 "thumbnail.jpg",
-                owner
+                owner.getId()
         );
     }
 

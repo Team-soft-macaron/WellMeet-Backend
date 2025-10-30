@@ -3,8 +3,7 @@ package com.wellmeet.domain.restaurant.availabledate.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.wellmeet.BaseRepositoryTest;
-import com.wellmeet.domain.owner.entity.Owner;
-import com.wellmeet.domain.owner.repository.OwnerRepository;
+
 import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.domain.restaurant.repository.RestaurantRepository;
@@ -25,9 +24,6 @@ class AvailableDateRepositoryTest extends BaseRepositoryTest {
     private RestaurantRepository restaurantRepository;
 
     @Autowired
-    private OwnerRepository ownerRepository;
-
-    @Autowired
     private EntityManager entityManager;
 
     @Nested
@@ -35,8 +31,7 @@ class AvailableDateRepositoryTest extends BaseRepositoryTest {
 
         @Test
         void 예약_인원만큼_수용_인원을_감소시킨다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant, 10);
 
             int updated = availableDateRepository.decreaseCapacity(availableDate.getId(), 4);
@@ -52,8 +47,7 @@ class AvailableDateRepositoryTest extends BaseRepositoryTest {
 
         @Test
         void 수용_인원이_0이_되면_예약_불가능_상태로_변경된다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant, 4);
 
             int updated = availableDateRepository.decreaseCapacity(availableDate.getId(), 4);
@@ -69,8 +63,7 @@ class AvailableDateRepositoryTest extends BaseRepositoryTest {
 
         @Test
         void 수용_인원이_부족하면_업데이트하지_않는다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant, 2);
 
             int updated = availableDateRepository.decreaseCapacity(availableDate.getId(), 4);
@@ -87,8 +80,7 @@ class AvailableDateRepositoryTest extends BaseRepositoryTest {
 
         @Test
         void 수용_인원을_증가시키고_예약_가능_상태로_변경한다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant, 2);
 
             availableDateRepository.increaseCapacity(availableDate.getId(), 4);
@@ -102,8 +94,7 @@ class AvailableDateRepositoryTest extends BaseRepositoryTest {
 
         @Test
         void 여러_번_호출하면_누적으로_증가한다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
             AvailableDate availableDate = createAndSaveAvailableDate(restaurant, 10);
 
             availableDateRepository.increaseCapacity(availableDate.getId(), 2);
@@ -118,12 +109,7 @@ class AvailableDateRepositoryTest extends BaseRepositoryTest {
         }
     }
 
-    private Owner createAndSaveOwner() {
-        Owner owner = new Owner("owner", "owner@test.com");
-        return ownerRepository.save(owner);
-    }
-
-    private Restaurant createAndSaveRestaurant(Owner owner) {
+    private Restaurant createAndSaveRestaurant(String ownerId) {
         Restaurant restaurant = new Restaurant(
                 UUID.randomUUID().toString(),
                 "식당",
@@ -131,7 +117,7 @@ class AvailableDateRepositoryTest extends BaseRepositoryTest {
                 37.5,
                 127.0,
                 "thumbnail",
-                owner
+                ownerId
         );
         return restaurantRepository.save(restaurant);
     }
