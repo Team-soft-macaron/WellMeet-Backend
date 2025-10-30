@@ -88,7 +88,7 @@ class ReservationReminderJobConfigTest {
         Owner owner = new Owner("김사장", "010-9999-9999");
         ownerRepository.save(owner);
 
-        restaurant = new Restaurant("rest-123", "맛집", "서울시 강남구", 37.5, 127.0, "thumbnail.jpg", owner);
+        restaurant = new Restaurant("rest-123", "맛집", "서울시 강남구", 37.5, 127.0, "thumbnail.jpg", owner.getId());
         restaurantRepository.save(restaurant);
     }
 

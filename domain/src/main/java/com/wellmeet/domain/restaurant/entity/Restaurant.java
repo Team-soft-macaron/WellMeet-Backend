@@ -1,16 +1,12 @@
 package com.wellmeet.domain.restaurant.entity;
 
 import com.wellmeet.domain.common.BaseEntity;
-import com.wellmeet.domain.owner.entity.Owner;
 import com.wellmeet.domain.restaurant.exception.RestaurantErrorCode;
 import com.wellmeet.domain.restaurant.exception.RestaurantException;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,13 +34,12 @@ public class Restaurant extends BaseEntity {
     private double longitude;
     private String thumbnail;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id")
-    private Owner owner;
+    @NotBlank
+    @Column(name = "owner_id")
+    private String ownerId;
 
     public Restaurant(String id, String name, String address, double latitude, double longitude, String thumbnail,
-                      Owner owner) {
+                      String ownerId) {
         validatePosition(latitude, longitude);
 
         this.id = id;
@@ -53,7 +48,7 @@ public class Restaurant extends BaseEntity {
         this.latitude = latitude;
         this.longitude = longitude;
         this.thumbnail = thumbnail;
-        this.owner = owner;
+        this.ownerId = ownerId;
     }
 
     private void validatePosition(double latitude, double longitude) {
@@ -65,9 +60,9 @@ public class Restaurant extends BaseEntity {
         }
     }
 
-    public void update(String name, String address, double latitude, double longitude, String thumbnail){
+    public void update(String name, String address, double latitude, double longitude, String thumbnail) {
         validatePosition(latitude, longitude);
-        
+
         this.name = name;
         this.address = address;
         this.latitude = latitude;

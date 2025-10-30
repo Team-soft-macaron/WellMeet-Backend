@@ -3,8 +3,7 @@ package com.wellmeet.domain.restaurant.review;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.wellmeet.BaseRepositoryTest;
-import com.wellmeet.domain.owner.entity.Owner;
-import com.wellmeet.domain.owner.repository.OwnerRepository;
+
 import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.domain.restaurant.repository.RestaurantRepository;
 import com.wellmeet.domain.restaurant.review.entity.Review;
@@ -29,16 +28,12 @@ class ReviewDomainServiceTest extends BaseRepositoryTest {
     @Autowired
     private RestaurantRepository restaurantRepository;
 
-    @Autowired
-    private OwnerRepository ownerRepository;
-
     @Nested
     class GetAverageRating {
 
         @Test
         void 식당의_평균_평점을_조회한다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
 
             createAndSaveReview(restaurant, "member1", 5.0);
             createAndSaveReview(restaurant, "member2", 3.0);
@@ -50,8 +45,7 @@ class ReviewDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 리뷰가_없으면_0을_반환한다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
 
             double averageRating = reviewDomainService.getAverageRating(restaurant.getId());
 
@@ -64,8 +58,7 @@ class ReviewDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 식당의_모든_리뷰를_조회한다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
 
             createAndSaveReview(restaurant, "member1", 5.0);
             createAndSaveReview(restaurant, "member2", 4.0);
@@ -77,8 +70,7 @@ class ReviewDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 리뷰가_없으면_빈_리스트를_반환한다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
 
             List<Review> reviews = reviewDomainService.getByRestaurantId(restaurant.getId());
 
@@ -87,9 +79,9 @@ class ReviewDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 다른_식당의_리뷰는_조회되지_않는다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant1 = createAndSaveRestaurant(owner);
-            Restaurant restaurant2 = createAndSaveRestaurant(owner);
+            String ownerId = "test-owner-id";
+            Restaurant restaurant1 = createAndSaveRestaurant(ownerId);
+            Restaurant restaurant2 = createAndSaveRestaurant(ownerId);
 
             createAndSaveReview(restaurant1, "member", 5.0);
             createAndSaveReview(restaurant2, "member", 4.0);
@@ -100,12 +92,7 @@ class ReviewDomainServiceTest extends BaseRepositoryTest {
         }
     }
 
-    private Owner createAndSaveOwner() {
-        Owner owner = new Owner("owner", "owner@test.com");
-        return ownerRepository.save(owner);
-    }
-
-    private Restaurant createAndSaveRestaurant(Owner owner) {
+    private Restaurant createAndSaveRestaurant(String ownerId) {
         Restaurant restaurant = new Restaurant(
                 UUID.randomUUID().toString(),
                 "식당",
@@ -113,7 +100,7 @@ class ReviewDomainServiceTest extends BaseRepositoryTest {
                 37.5,
                 127.0,
                 "thumbnail",
-                owner
+                ownerId
         );
         return restaurantRepository.save(restaurant);
     }

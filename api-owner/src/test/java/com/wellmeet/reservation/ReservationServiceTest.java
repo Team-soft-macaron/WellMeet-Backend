@@ -87,7 +87,8 @@ class ReservationServiceTest {
     }
 
     private Restaurant createRestaurant(String name) {
-        return new Restaurant(name, "description", "address", 32.1, 37.1, "thumbnail", new Owner("name", "email"));
+        Owner owner = new Owner("name", "email");
+        return new Restaurant(name, "description", "address", 32.1, 37.1, "thumbnail", owner.getId());
     }
 
     private AvailableDate createAvailableDate(LocalDateTime dateTime, int capacity, Restaurant restaurant) {

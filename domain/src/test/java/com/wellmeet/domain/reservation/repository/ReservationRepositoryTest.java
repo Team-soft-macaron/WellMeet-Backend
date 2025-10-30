@@ -3,8 +3,7 @@ package com.wellmeet.domain.reservation.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.wellmeet.BaseRepositoryTest;
-import com.wellmeet.domain.owner.entity.Owner;
-import com.wellmeet.domain.owner.repository.OwnerRepository;
+
 import com.wellmeet.domain.reservation.entity.Reservation;
 import com.wellmeet.domain.reservation.entity.ReservationStatus;
 import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
@@ -31,16 +30,12 @@ class ReservationRepositoryTest extends BaseRepositoryTest {
     @Autowired
     private AvailableDateRepository availableDateRepository;
 
-    @Autowired
-    private OwnerRepository ownerRepository;
-
     @Nested
     class FindReservationsForReminderPage {
 
         @Test
         void 지정한_시간_범위_내의_승인된_예약을_조회한다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
 
             LocalDate targetDate = LocalDate.of(2025, 12, 25);
             LocalTime time1 = LocalTime.of(18, 0);
@@ -73,8 +68,7 @@ class ReservationRepositoryTest extends BaseRepositoryTest {
 
         @Test
         void 승인되지_않은_예약은_조회되지_않는다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
 
             LocalDate targetDate = LocalDate.of(2025, 12, 25);
             LocalTime targetTime = LocalTime.of(19, 0);
@@ -99,8 +93,7 @@ class ReservationRepositoryTest extends BaseRepositoryTest {
 
         @Test
         void 시간_범위_밖의_예약은_조회되지_않는다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
 
             LocalDate targetDate = LocalDate.of(2025, 12, 25);
             LocalTime time1 = LocalTime.of(17, 0);
@@ -129,8 +122,7 @@ class ReservationRepositoryTest extends BaseRepositoryTest {
 
         @Test
         void 페이징이_정상적으로_동작한다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
 
             LocalDate targetDate = LocalDate.of(2025, 12, 25);
 
@@ -152,12 +144,7 @@ class ReservationRepositoryTest extends BaseRepositoryTest {
         }
     }
 
-    private Owner createAndSaveOwner() {
-        Owner owner = new Owner("owner", "owner@test.com");
-        return ownerRepository.save(owner);
-    }
-
-    private Restaurant createAndSaveRestaurant(Owner owner) {
+    private Restaurant createAndSaveRestaurant(String ownerId) {
         Restaurant restaurant = new Restaurant(
                 UUID.randomUUID().toString(),
                 "식당",
@@ -165,7 +152,7 @@ class ReservationRepositoryTest extends BaseRepositoryTest {
                 37.5,
                 127.0,
                 "thumbnail",
-                owner
+                ownerId
         );
         return restaurantRepository.save(restaurant);
     }

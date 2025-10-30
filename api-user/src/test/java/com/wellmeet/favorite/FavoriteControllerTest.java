@@ -24,9 +24,9 @@ class FavoriteControllerTest extends BaseControllerTest {
             Owner owner1 = ownerGenerator.generate("Owner1");
             Owner owner2 = ownerGenerator.generate("Owner2");
             Owner owner3 = ownerGenerator.generate("Owner3");
-            Restaurant restaurant1 = restaurantGenerator.generate("Restaurant 1", owner1);
-            Restaurant restaurant2 = restaurantGenerator.generate("Restaurant 2", owner2);
-            Restaurant restaurant3 = restaurantGenerator.generate("Restaurant 3", owner3);
+            Restaurant restaurant1 = restaurantGenerator.generate("Restaurant 1", owner1.getId());
+            Restaurant restaurant2 = restaurantGenerator.generate("Restaurant 2", owner2.getId());
+            Restaurant restaurant3 = restaurantGenerator.generate("Restaurant 3", owner3.getId());
             favoriteRestaurantRepository.save(new FavoriteRestaurant(testUser.getId(), restaurant1.getId()));
             favoriteRestaurantRepository.save(new FavoriteRestaurant(testUser.getId(), restaurant2.getId()));
             favoriteRestaurantRepository.save(new FavoriteRestaurant(anotherUser.getId(), restaurant2.getId()));
@@ -52,7 +52,7 @@ class FavoriteControllerTest extends BaseControllerTest {
         void 즐겨찾기_레스토랑_추가() {
             Member testUser = memberGenerator.generate("testUser");
             Owner owner = ownerGenerator.generate("Test Owner");
-            Restaurant restaurant = restaurantGenerator.generate("Test Restaurant", owner);
+            Restaurant restaurant = restaurantGenerator.generate("Test Restaurant", owner.getId());
 
             FavoriteRestaurantResponse response = given()
                     .contentType("application/json")
@@ -72,7 +72,7 @@ class FavoriteControllerTest extends BaseControllerTest {
         void 즐겨찾기_레스토랑_삭제() {
             Member testUser = memberGenerator.generate("testUser");
             Owner owner = ownerGenerator.generate("Test Owner");
-            Restaurant restaurant = restaurantGenerator.generate("Test Restaurant", owner);
+            Restaurant restaurant = restaurantGenerator.generate("Test Restaurant", owner.getId());
             favoriteRestaurantRepository.save(new FavoriteRestaurant(testUser.getId(), restaurant.getId()));
 
             given()

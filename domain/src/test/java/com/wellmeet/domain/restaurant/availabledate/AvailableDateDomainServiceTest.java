@@ -4,8 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.wellmeet.BaseRepositoryTest;
-import com.wellmeet.domain.owner.entity.Owner;
-import com.wellmeet.domain.owner.repository.OwnerRepository;
+
 import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
 import com.wellmeet.domain.restaurant.availabledate.repository.AvailableDateRepository;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
@@ -35,9 +34,6 @@ class AvailableDateDomainServiceTest extends BaseRepositoryTest {
     private RestaurantRepository restaurantRepository;
 
     @Autowired
-    private OwnerRepository ownerRepository;
-
-    @Autowired
     private EntityManager entityManager;
 
     @Nested
@@ -45,8 +41,7 @@ class AvailableDateDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 식당의_모든_예약_가능_날짜를_조회한다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
 
             createAndSaveAvailableDate(restaurant, LocalDate.of(2025, 12, 25), LocalTime.of(18, 0));
             createAndSaveAvailableDate(restaurant, LocalDate.of(2025, 12, 25), LocalTime.of(19, 0));
@@ -59,8 +54,7 @@ class AvailableDateDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 예약_가능_날짜가_없으면_빈_리스트를_반환한다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
 
             List<AvailableDate> result = availableDateDomainService
                     .getAvailableDatesByRestaurantId(restaurant.getId());
@@ -74,8 +68,7 @@ class AvailableDateDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 예약_가능_날짜를_조회한다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
             AvailableDate availableDate = createAndSaveAvailableDate(
                     restaurant,
                     LocalDate.of(2025, 12, 25),
@@ -90,8 +83,7 @@ class AvailableDateDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 존재하지_않는_예약_가능_날짜_조회_시_예외가_발생한다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
 
             assertThatThrownBy(() -> availableDateDomainService.getByIdAndRestaurantId(999L, restaurant.getId()))
                     .isInstanceOf(RestaurantException.class)
@@ -100,9 +92,9 @@ class AvailableDateDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 다른_식당의_예약_가능_날짜_조회_시_예외가_발생한다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant1 = createAndSaveRestaurant(owner);
-            Restaurant restaurant2 = createAndSaveRestaurant(owner);
+            String ownerId = "test-owner-id";
+            Restaurant restaurant1 = createAndSaveRestaurant(ownerId);
+            Restaurant restaurant2 = createAndSaveRestaurant(ownerId);
             AvailableDate availableDate = createAndSaveAvailableDate(
                     restaurant1,
                     LocalDate.of(2025, 12, 25),
@@ -120,8 +112,7 @@ class AvailableDateDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 수용_인원을_감소시킨다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
             AvailableDate availableDate = createAndSaveAvailableDate(
                     restaurant,
                     LocalDate.of(2025, 12, 25),
@@ -139,8 +130,7 @@ class AvailableDateDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 수용_인원이_부족하면_예외가_발생한다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
             AvailableDate availableDate = createAndSaveAvailableDate(
                     restaurant,
                     LocalDate.of(2025, 12, 25),
@@ -159,8 +149,7 @@ class AvailableDateDomainServiceTest extends BaseRepositoryTest {
 
         @Test
         void 수용_인원을_증가시킨다() {
-            Owner owner = createAndSaveOwner();
-            Restaurant restaurant = createAndSaveRestaurant(owner);
+            Restaurant restaurant = createAndSaveRestaurant("test-owner-id");
             AvailableDate availableDate = createAndSaveAvailableDate(
                     restaurant,
                     LocalDate.of(2025, 12, 25),
@@ -177,12 +166,7 @@ class AvailableDateDomainServiceTest extends BaseRepositoryTest {
         }
     }
 
-    private Owner createAndSaveOwner() {
-        Owner owner = new Owner("owner", "owner@test.com");
-        return ownerRepository.save(owner);
-    }
-
-    private Restaurant createAndSaveRestaurant(Owner owner) {
+    private Restaurant createAndSaveRestaurant(String ownerId) {
         Restaurant restaurant = new Restaurant(
                 UUID.randomUUID().toString(),
                 "식당",
@@ -190,7 +174,7 @@ class AvailableDateDomainServiceTest extends BaseRepositoryTest {
                 37.5,
                 127.0,
                 "thumbnail",
-                owner
+                ownerId
         );
         return restaurantRepository.save(restaurant);
     }

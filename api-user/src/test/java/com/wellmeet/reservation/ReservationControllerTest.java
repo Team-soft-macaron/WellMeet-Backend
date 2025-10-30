@@ -28,7 +28,7 @@ class ReservationControllerTest extends BaseControllerTest {
         void 예약을_생성할_수_있다() {
             Member member = memberGenerator.generate("member");
             Owner owner = ownerGenerator.generate("owner");
-            Restaurant restaurant = restaurantGenerator.generate("restaurant", owner);
+            Restaurant restaurant = restaurantGenerator.generate("restaurant", owner.getId());
             AvailableDate availableDate = availableDateGenerator.generate(LocalDateTime.now().plusDays(1), 10,
                     restaurant);
             int partySize = 4;
@@ -56,7 +56,7 @@ class ReservationControllerTest extends BaseControllerTest {
         @Test
         void 레스토랑_id는_null일_수_없다() {
             Owner owner = ownerGenerator.generate("owner");
-            Restaurant restaurant = restaurantGenerator.generate("restaurant", owner);
+            Restaurant restaurant = restaurantGenerator.generate("restaurant", owner.getId());
             AvailableDate availableDate = availableDateGenerator.generate(LocalDateTime.now().plusDays(1), 10,
                     restaurant);
             Member member = memberGenerator.generate("member");
@@ -75,7 +75,7 @@ class ReservationControllerTest extends BaseControllerTest {
         @Test
         void 예약_가능_시간_id는_null일_수_없다() {
             Owner owner = ownerGenerator.generate("owner");
-            Restaurant restaurant = restaurantGenerator.generate("restaurant", owner);
+            Restaurant restaurant = restaurantGenerator.generate("restaurant", owner.getId());
             availableDateGenerator.generate(LocalDateTime.now().plusDays(1), 10, restaurant);
             Member member = memberGenerator.generate("member");
 
@@ -98,7 +98,7 @@ class ReservationControllerTest extends BaseControllerTest {
         void 멤버의_예약_목록을_조회할_수_있다() {
             Member member = memberGenerator.generate("member");
             Owner owner = ownerGenerator.generate("owner");
-            Restaurant restaurant = restaurantGenerator.generate("restaurant", owner);
+            Restaurant restaurant = restaurantGenerator.generate("restaurant", owner.getId());
             AvailableDate availableDate = availableDateGenerator.generate(LocalDateTime.now().plusDays(1), 10,
                     restaurant);
             AvailableDate availableDate2 = availableDateGenerator.generate(LocalDateTime.now().plusDays(2), 10,
@@ -124,7 +124,7 @@ class ReservationControllerTest extends BaseControllerTest {
         void 예약_상세_내역을_조회할_수_있다() {
             Member member = memberGenerator.generate("member");
             Owner owner = ownerGenerator.generate("owner");
-            Restaurant restaurant = restaurantGenerator.generate("restaurant", owner);
+            Restaurant restaurant = restaurantGenerator.generate("restaurant", owner.getId());
             AvailableDate availableDate = availableDateGenerator.generate(LocalDateTime.now().plusDays(1), 10,
                     restaurant);
             Reservation reservation = reservationGenerator.generate(restaurant, availableDate, member.getId(), 4);
@@ -147,7 +147,7 @@ class ReservationControllerTest extends BaseControllerTest {
         void 예약을_업데이트_할_수_있다() {
             Member member = memberGenerator.generate("member");
             Owner owner = ownerGenerator.generate("owner");
-            Restaurant restaurant = restaurantGenerator.generate("restaurant", owner);
+            Restaurant restaurant = restaurantGenerator.generate("restaurant", owner.getId());
             AvailableDate availableDate = availableDateGenerator.generate(LocalDateTime.now().plusDays(1), 10,
                     restaurant);
             Reservation reservation = reservationGenerator.generate(restaurant, availableDate, member.getId(), 4);
@@ -178,7 +178,7 @@ class ReservationControllerTest extends BaseControllerTest {
         void 예약을_취소할_수_있다() {
             Member member = memberGenerator.generate("member");
             Owner owner = ownerGenerator.generate("owner");
-            Restaurant restaurant = restaurantGenerator.generate("restaurant", owner);
+            Restaurant restaurant = restaurantGenerator.generate("restaurant", owner.getId());
             AvailableDate availableDate = availableDateGenerator.generate(LocalDateTime.now().plusDays(1), 10,
                     restaurant);
             Reservation reservation = reservationGenerator.generate(restaurant, availableDate, member.getId(), 4);

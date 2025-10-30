@@ -26,9 +26,9 @@ class RestaurantControllerTest extends BaseControllerTest {
         @Test
         void 주변_레스토랑_조회() {
             Owner owner = ownerGenerator.generate("owner1");
-            restaurantGenerator.generate("restaurant1", LATITUDE, LONGITUDE, owner);
-            restaurantGenerator.generate("restaurant2", LATITUDE, LONGITUDE, owner);
-            restaurantGenerator.generate("restaurant3", LATITUDE + 5, LONGITUDE - 5, owner);
+            restaurantGenerator.generate("restaurant1", LATITUDE, LONGITUDE, owner.getId());
+            restaurantGenerator.generate("restaurant2", LATITUDE, LONGITUDE, owner.getId());
+            restaurantGenerator.generate("restaurant3", LATITUDE + 5, LONGITUDE - 5, owner.getId());
 
             NearbyRestaurantResponse[] responses = given()
                     .contentType(ContentType.JSON)
@@ -46,7 +46,7 @@ class RestaurantControllerTest extends BaseControllerTest {
         @Test
         void 레스토랑_상세_조회() {
             Owner owner = ownerGenerator.generate("owner1");
-            Restaurant restaurant = restaurantGenerator.generate("restaurant1", owner);
+            Restaurant restaurant = restaurantGenerator.generate("restaurant1", owner.getId());
             menuGenerator.generate("menu1", 10000, restaurant);
             menuGenerator.generate("menu2", 15000, restaurant);
             Member member = memberGenerator.generate("testMember");
@@ -72,7 +72,7 @@ class RestaurantControllerTest extends BaseControllerTest {
         @Test
         void 예약_가능_시간_조회() {
             Owner owner = ownerGenerator.generate("owner1");
-            Restaurant restaurant = restaurantGenerator.generate("restaurant1", owner);
+            Restaurant restaurant = restaurantGenerator.generate("restaurant1", owner.getId());
             availableDateGenerator.generate(LocalDateTime.now().plusDays(1), 10, restaurant);
             availableDateGenerator.generate(LocalDateTime.now().plusDays(2), 20, restaurant);
 

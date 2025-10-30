@@ -170,7 +170,7 @@ class RestaurantServiceTest {
 
     private Restaurant createRestaurant(String id, String name, double lat, double lon) {
         Owner owner = new Owner("owner-name", "owner@email.com");
-        return new Restaurant(id, name, "서울시", lat, lon, "thumbnail.jpg", owner);
+        return new Restaurant(id, name, "서울시", lat, lon, "thumbnail.jpg", owner.getId());
     }
 
     private Review createReview(Restaurant restaurant) {

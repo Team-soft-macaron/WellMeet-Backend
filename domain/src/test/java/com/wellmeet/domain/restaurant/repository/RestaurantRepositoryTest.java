@@ -3,8 +3,7 @@ package com.wellmeet.domain.restaurant.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.wellmeet.BaseRepositoryTest;
-import com.wellmeet.domain.owner.entity.Owner;
-import com.wellmeet.domain.owner.repository.OwnerRepository;
+
 import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.domain.restaurant.model.BoundingBox;
 import java.util.List;
@@ -18,18 +17,15 @@ class RestaurantRepositoryTest extends BaseRepositoryTest {
     @Autowired
     private RestaurantRepository restaurantRepository;
 
-    @Autowired
-    private OwnerRepository ownerRepository;
-
     @Nested
     class FindWithBoundBox {
 
         @Test
         void BoundingBox_내의_식당만_조회한다() {
-            Owner owner = createAndSaveOwner();
-            createAndSaveRestaurant("식당1", 37.5, 127.0, owner);
-            createAndSaveRestaurant("식당2", 37.501, 127.001, owner);
-            createAndSaveRestaurant("식당3", 38.0, 128.0, owner);
+            String ownerId = "test-owner-id";
+            createAndSaveRestaurant("식당1", 37.5, 127.0, ownerId);
+            createAndSaveRestaurant("식당2", 37.501, 127.001, ownerId);
+            createAndSaveRestaurant("식당3", 38.0, 128.0, ownerId);
 
             BoundingBox boundingBox = new BoundingBox(37.5, 127.0);
 
@@ -40,8 +36,8 @@ class RestaurantRepositoryTest extends BaseRepositoryTest {
 
         @Test
         void BoundingBox_밖의_식당은_조회되지_않는다() {
-            Owner owner = createAndSaveOwner();
-            createAndSaveRestaurant("먼_식당", 38.0, 128.0, owner);
+            String ownerId = "test-owner-id";
+            createAndSaveRestaurant("먼_식당", 38.0, 128.0, ownerId);
 
             BoundingBox boundingBox = new BoundingBox(37.5, 127.0);
 
@@ -52,9 +48,9 @@ class RestaurantRepositoryTest extends BaseRepositoryTest {
 
         @Test
         void 중심_좌표로부터_일정_반경_내의_식당을_조회한다() {
-            Owner owner = createAndSaveOwner();
-            createAndSaveRestaurant("가까운_식당", 37.5, 127.0, owner);
-            createAndSaveRestaurant("먼_식당", 38.0, 128.0, owner);
+            String ownerId = "test-owner-id";
+            createAndSaveRestaurant("가까운_식당", 37.5, 127.0, ownerId);
+            createAndSaveRestaurant("먼_식당", 38.0, 128.0, ownerId);
 
             BoundingBox boundingBox = new BoundingBox(37.5, 127.0);
 
@@ -64,12 +60,7 @@ class RestaurantRepositoryTest extends BaseRepositoryTest {
         }
     }
 
-    private Owner createAndSaveOwner() {
-        Owner owner = new Owner("owner", "owner@test.com");
-        return ownerRepository.save(owner);
-    }
-
-    private Restaurant createAndSaveRestaurant(String name, double lat, double lon, Owner owner) {
+    private Restaurant createAndSaveRestaurant(String name, double lat, double lon, String ownerId) {
         Restaurant restaurant = new Restaurant(
                 UUID.randomUUID().toString(),
                 name,
@@ -77,7 +68,7 @@ class RestaurantRepositoryTest extends BaseRepositoryTest {
                 lat,
                 lon,
                 "thumbnail",
-                owner
+                ownerId
         );
         return restaurantRepository.save(restaurant);
     }

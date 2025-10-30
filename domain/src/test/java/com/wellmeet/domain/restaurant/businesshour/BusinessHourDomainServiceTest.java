@@ -3,8 +3,7 @@ package com.wellmeet.domain.restaurant.businesshour;
 import static org.assertj.core.api.Assertions.*;
 
 import com.wellmeet.BaseRepositoryTest;
-import com.wellmeet.domain.owner.entity.Owner;
-import com.wellmeet.domain.owner.repository.OwnerRepository;
+
 import com.wellmeet.domain.restaurant.businesshour.entity.BusinessHour;
 import com.wellmeet.domain.restaurant.businesshour.entity.BusinessHours;
 import com.wellmeet.domain.restaurant.businesshour.entity.DayOfWeek;
@@ -28,9 +27,6 @@ class BusinessHourDomainServiceTest extends BaseRepositoryTest {
 
     @Autowired
     private RestaurantRepository restaurantRepository;
-
-    @Autowired
-    private OwnerRepository ownerRepository;
 
     @Nested
     class GetOperatingHours {
@@ -72,8 +68,8 @@ class BusinessHourDomainServiceTest extends BaseRepositoryTest {
     }
 
     private Restaurant createAndSaveRestaurant(String name) {
-        Owner owner = ownerRepository.save(new Owner("owner", "owner@example.com"));
-        Restaurant restaurant = new Restaurant(name, "description", "address", 37.5, 127.0, "thumbnail", owner);
+        String ownerId = "test-owner-id";
+        Restaurant restaurant = new Restaurant(name, "description", "address", 37.5, 127.0, "thumbnail", ownerId);
         return restaurantRepository.save(restaurant);
     }
 
