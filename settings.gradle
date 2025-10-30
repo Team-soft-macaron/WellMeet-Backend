@@ -9,4 +9,5 @@ include 'api-user'
 include 'infra-redis'
 include 'infra-kafka'
 include 'batch-reminder'
+include 'discovery-server'
 
