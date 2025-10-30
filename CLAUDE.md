@@ -20,7 +20,7 @@
 WellMeet-Backend/
 ├── api-user/          # 사용자 API (REST Controller + Service)
 ├── api-owner/         # 사업자 API (REST Controller + Service)
-├── domain/            # 도메인 로직 (Entity + Domain Service + Repository)
+├── domain-reservation/            # 예약 도메인 로직 (Entity + Domain Service + Repository)
 ├── domain-redis/      # Redis 분산 락 서비스
 ├── kafka/             # Kafka Producer 서비스
 ├── batch-reminder/    # 예약 리마인더 배치
@@ -30,9 +30,9 @@ WellMeet-Backend/
 ### 의존성 관계
 
 ```
-api-user    →  domain, domain-redis, kafka
-api-owner   →  domain, domain-redis, kafka
-batch       →  domain, kafka
+api-user    →  domain-reservation, domain-redis, kafka
+api-owner   →  domain-reservation, domain-redis, kafka
+batch       →  domain-reservation, kafka
 domain-redis → (독립)
 kafka       → (독립)
 ```
@@ -41,11 +41,11 @@ kafka       → (독립)
 
 ## 테스트 레이어별 구성
 
-### 1. Entity Layer (domain 모듈)
+### 1. Entity Layer (domain-reservation 모듈)
 
 **목적**: 도메인 객체의 생성, 검증, 비즈니스 규칙 테스트
 
-**위치**: `domain/src/test/java/com/wellmeet/domain/{aggregate}/entity/`
+**위치**: `domain-reservation/src/test/java/com/wellmeet/domain/{aggregate}/entity/`
 
 **베이스 클래스**: 없음 (순수 단위 테스트)
 
@@ -150,11 +150,11 @@ class RestaurantTest {
 
 ---
 
-### 2. Repository Layer (domain 모듈)
+### 2. Repository Layer (domain-reservation 모듈)
 
 **목적**: @Query 어노테이션으로 직접 작성한 커스텀 쿼리 메소드 테스트
 
-**위치**: `domain/src/test/java/com/wellmeet/domain/{aggregate}/repository/`
+**위치**: `domain-reservation/src/test/java/com/wellmeet/domain/{aggregate}/repository/`
 
 **베이스 클래스**: `BaseRepositoryTest`
 
@@ -257,11 +257,11 @@ public abstract class BaseRepositoryTest {
 
 ---
 
-### 3. Domain Service Layer (domain 모듈)
+### 3. Domain Service Layer (domain-reservation 모듈)
 
 **목적**: 도메인 비즈니스 로직 + Repository 통합 테스트
 
-**위치**: `domain/src/test/java/com/wellmeet/domain/{aggregate}/`
+**위치**: `domain-reservation/src/test/java/com/wellmeet/domain/{aggregate}/`
 
 **베이스 클래스**: `BaseRepositoryTest` (Repository 포함 테스트)
 
@@ -1032,7 +1032,7 @@ class ReservationReminderJobConfigTest {
 
 ## 모듈별 테스트 전략
 
-### domain 모듈
+### domain-reservation 모듈
 
 | Layer          | 테스트 타입 | 베이스 클래스                      | 주요 검증                |
 |----------------|--------|------------------------------|----------------------|
@@ -1290,7 +1290,7 @@ dependencies {
 
 ### 2. 테스트 설정 (application-test.yml)
 
-**domain 모듈** (`domain/src/main/resources/application-domain-test.yml`):
+**domain-reservation 모듈** (`domain-reservation/src/main/resources/application-domain-test.yml`):
 
 ```yaml
 spring:
@@ -1337,7 +1337,7 @@ spring:
 
 ---
 
-### 3. Test Fixtures (domain 모듈)
+### 3. Test Fixtures (domain-reservation 모듈)
 
 **Generator 패턴**:
 
