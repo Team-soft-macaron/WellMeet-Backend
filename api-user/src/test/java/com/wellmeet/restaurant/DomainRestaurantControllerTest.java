@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-class RestaurantControllerTest extends BaseControllerTest {
+class DomainRestaurantControllerTest extends BaseControllerTest {
 
     private static final double LATITUDE = 38.5;
     private static final double LONGITUDE = 128.2;

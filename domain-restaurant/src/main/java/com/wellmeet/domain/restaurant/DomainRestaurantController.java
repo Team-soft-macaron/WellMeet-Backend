@@ -14,23 +14,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/restaurants")
-public class RestaurantController {
+public class DomainRestaurantController {
 
-    private final RestaurantService restaurantService;
+    private final DomainRestaurantService domainRestaurantService;
 
-    public RestaurantController(RestaurantService restaurantService) {
-        this.restaurantService = restaurantService;
+    public DomainRestaurantController(DomainRestaurantService domainRestaurantService) {
+        this.domainRestaurantService = domainRestaurantService;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<RestaurantResponse> getRestaurant(@PathVariable String id) {
-        RestaurantResponse response = restaurantService.getRestaurantById(id);
+        RestaurantResponse response = domainRestaurantService.getRestaurantById(id);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
     public ResponseEntity<List<RestaurantResponse>> getAllRestaurants() {
-        List<RestaurantResponse> restaurants = restaurantService.getAllRestaurants();
+        List<RestaurantResponse> restaurants = domainRestaurantService.getAllRestaurants();
         return ResponseEntity.ok(restaurants);
     }
 
@@ -38,7 +38,7 @@ public class RestaurantController {
     public ResponseEntity<List<RestaurantResponse>> getRestaurantsByIds(
             @Valid @RequestBody RestaurantIdsRequest request
     ) {
-        List<RestaurantResponse> restaurants = restaurantService.getRestaurantsByIds(request.restaurantIds());
+        List<RestaurantResponse> restaurants = domainRestaurantService.getRestaurantsByIds(request.restaurantIds());
         return ResponseEntity.ok(restaurants);
     }
 }

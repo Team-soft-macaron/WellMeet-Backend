@@ -28,7 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class RestaurantServiceTest {
+class DomainRestaurantServiceTest {
 
     @Mock
     private RestaurantDomainService restaurantDomainService;

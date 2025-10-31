@@ -9,15 +9,15 @@ import com.wellmeet.domain.restaurant.businesshour.entity.DayOfWeek;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.restaurant.dto.OperatingHoursResponse;
 import com.wellmeet.restaurant.dto.UpdateOperatingHoursRequest;
+import com.wellmeet.restaurant.dto.UpdateOperatingHoursRequest.DayHours;
 import com.wellmeet.restaurant.dto.UpdateRestaurantRequest;
 import com.wellmeet.restaurant.dto.UpdateRestaurantResponse;
-import com.wellmeet.restaurant.dto.UpdateOperatingHoursRequest.DayHours;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-class RestaurantControllerTest extends BaseControllerTest {
+class DomainRestaurantControllerTest extends BaseControllerTest {
 
     @Nested
     class GetOperatingHours {
@@ -94,17 +94,19 @@ class RestaurantControllerTest extends BaseControllerTest {
     }
 
     @Nested
-    class UpdateRestaurant{
+    class UpdateRestaurant {
 
         @Test
-        void 식당_정보를_갱신한다(){
+        void 식당_정보를_갱신한다() {
             Owner owner = ownerGenerator.generate("owner1");
             Restaurant restaurant = restaurantGenerator.generate("restaurant1", owner.getId());
             String newRestaurantName = "new restaurant";
-            UpdateRestaurantRequest request = new UpdateRestaurantRequest(newRestaurantName, "address", 36.5, 128.0, "thumbnail");
+            UpdateRestaurantRequest request = new UpdateRestaurantRequest(newRestaurantName, "address", 36.5, 128.0,
+                    "thumbnail");
             UpdateRestaurantResponse response = given().contentType("application/json")
-                .pathParam("restaurantId", restaurant.getId()).queryParam("ownerId", owner.getId()).body(request)
-                .when().put("/owner/restaurant/{restaurantId}").then().statusCode(200).extract().as(UpdateRestaurantResponse.class);
+                    .pathParam("restaurantId", restaurant.getId()).queryParam("ownerId", owner.getId()).body(request)
+                    .when().put("/owner/restaurant/{restaurantId}").then().statusCode(200).extract()
+                    .as(UpdateRestaurantResponse.class);
             assertThat(response.getName()).isEqualTo(newRestaurantName);
         }
     }
