@@ -172,17 +172,28 @@ record IncreaseCapacityRequest(int partySize) {}
 
 ### 1.2 Spring Boot Application 활성화
 
-**파일 생성**: `domain-restaurant/src/main/java/com/wellmeet/DomainRestaurantApplication.java`
+**파일 생성**: `domain-restaurant/src/main/java/com/wellmeet/domain/RestaurantServiceApplication.java`
+
+⚠️ **중요**: 빈 스캔 문제로 인해 Application 클래스는 생성만 하고 **전체 주석 처리**
 
 ```java
-@SpringBootApplication
-@EnableEurekaClient
-public class DomainRestaurantApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(DomainRestaurantApplication.class, args);
-    }
-}
+//package com.wellmeet.domain;
+//
+//import org.springframework.boot.SpringApplication;
+//import org.springframework.boot.autoconfigure.SpringBootApplication;
+//
+//@SpringBootApplication
+//public class RestaurantServiceApplication {
+//
+//    public static void main(String[] args) {
+//        SpringApplication.run(RestaurantServiceApplication.class, args);
+//    }
+//}
 ```
+
+**참고**:
+- `@EnableEurekaClient`는 최신 Spring Cloud 버전(2020.0.0+)에서 제거되었으며, `application.yml`의 eureka 설정만으로 자동 등록됨
+- `@EnableJpaAuditing`은 domain-common 모듈에 이미 설정되어 있으므로 별도 설정 불필요
 
 **build.gradle 수정**:
 ```gradle
@@ -294,9 +305,10 @@ Phase 1과 동일한 방식으로 진행:
    - 회원 조회, 생성, 수정 API
    - 즐겨찾기 관련 API
 
-2. **Spring Boot Application**: `DomainMemberApplication`
+2. **Spring Boot Application**: `MemberServiceApplication`
    - 포트: 8082
    - 서비스명: domain-member-service
+   - ⚠️ **전체 주석 처리** (빈 스캔 문제)
 
 3. **Dockerfile 생성**: `domain-member/Dockerfile`
 
@@ -774,6 +786,12 @@ public class AuthenticationFilter implements GlobalFilter {
 **작성자**: Claude (AI Assistant)
 
 ## 변경 이력
+
+**2025-10-31 (v2.1 - 기술 스택 업데이트)**:
+- `@EnableEurekaClient` 제거 (최신 Spring Cloud 버전에서 불필요)
+- `@EnableJpaAuditing`은 domain-common에서 중앙 관리 (각 domain 모듈에서 제거)
+- Application 클래스 빈 스캔 문제로 전체 주석 처리
+- Phase 2 Application 클래스명 수정: `DomainMemberApplication` → `MemberServiceApplication`
 
 **2025-10-31 (v2.0 - 2단계 접근 전략)**:
 - Phase 1-4: domain-* 독립 배포 (api-* 의존성 유지)
