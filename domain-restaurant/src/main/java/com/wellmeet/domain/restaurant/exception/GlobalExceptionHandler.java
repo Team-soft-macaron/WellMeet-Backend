@@ -1,7 +1,6 @@
-package com.wellmeet.domain.restaurant.handler;
+package com.wellmeet.domain.restaurant.exception;
 
 import com.wellmeet.domain.restaurant.dto.ErrorResponse;
-import com.wellmeet.domain.restaurant.exception.RestaurantException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
