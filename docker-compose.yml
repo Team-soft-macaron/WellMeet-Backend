@@ -128,6 +128,32 @@ services:
       start_period: 40s
       retries: 3
 
+  # Member Service
+  member-service:
+    build:
+      context: .
+      dockerfile: domain-member/Dockerfile
+    container_name: member-service
+    depends_on:
+      - mysql-member
+      - discovery-server
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-member:3306/wellmeet_member
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: password
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://discovery-server:8761/eureka/
+    networks:
+      - wellmeet-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
+      interval: 30s
+      timeout: 3s
+      start_period: 40s
+      retries: 3
+
 volumes:
   mysql-reservation-data:
   mysql-member-data:
