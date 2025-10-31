@@ -1,12 +1,14 @@
 package com.wellmeet.domain.member.exception;
 
-import com.wellmeet.domain.common.WellMeetDomainException;
 import lombok.Getter;
 
 @Getter
-public class MemberException extends WellMeetDomainException {
+public class MemberException extends RuntimeException {
+
+    private final int statusCode;
 
     public MemberException(MemberErrorCode errorCode) {
-        super(errorCode.getMessage(), errorCode.getStatusCode());
+        super(errorCode.getMessage());
+        this.statusCode = errorCode.getStatusCode();
     }
 }
