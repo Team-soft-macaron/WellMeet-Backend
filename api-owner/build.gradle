@@ -3,6 +3,7 @@ plugins {
 }
 
 dependencies {
+    implementation project(':domain-common')
     implementation project(':domain-reservation')
     implementation project(':domain-member')
     implementation project(':domain-owner')
