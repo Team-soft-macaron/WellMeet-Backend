@@ -102,6 +102,32 @@ services:
     networks:
       - wellmeet-network
 
+  # Restaurant Service
+  restaurant-service:
+    build:
+      context: .
+      dockerfile: domain-restaurant/Dockerfile
+    container_name: restaurant-service
+    depends_on:
+      - mysql-restaurant
+      - discovery-server
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-restaurant:3306/wellmeet_restaurant
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: password
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://discovery-server:8761/eureka/
+    networks:
+      - wellmeet-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/actuator/health"]
+      interval: 30s
+      timeout: 3s
+      start_period: 40s
+      retries: 3
+
 volumes:
   mysql-reservation-data:
   mysql-member-data:

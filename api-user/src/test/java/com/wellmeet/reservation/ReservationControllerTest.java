@@ -127,7 +127,8 @@ class ReservationControllerTest extends BaseControllerTest {
             Restaurant restaurant = restaurantGenerator.generate("restaurant", owner.getId());
             AvailableDate availableDate = availableDateGenerator.generate(LocalDateTime.now().plusDays(1), 10,
                     restaurant);
-            Reservation reservation = reservationGenerator.generate(restaurant.getId(), availableDate.getId(), member.getId(), 4);
+            Reservation reservation = reservationGenerator.generate(restaurant.getId(), availableDate.getId(),
+                    member.getId(), 4);
 
             ReservationResponse response = given()
                     .contentType("application/json")
@@ -150,7 +151,8 @@ class ReservationControllerTest extends BaseControllerTest {
             Restaurant restaurant = restaurantGenerator.generate("restaurant", owner.getId());
             AvailableDate availableDate = availableDateGenerator.generate(LocalDateTime.now().plusDays(1), 10,
                     restaurant);
-            Reservation reservation = reservationGenerator.generate(restaurant.getId(), availableDate.getId(), member.getId(), 4);
+            Reservation reservation = reservationGenerator.generate(restaurant.getId(), availableDate.getId(),
+                    member.getId(), 4);
 
             CreateReservationRequest request = new CreateReservationRequest(restaurant.getId(), availableDate.getId(),
                     6, "updated request");
@@ -181,7 +183,8 @@ class ReservationControllerTest extends BaseControllerTest {
             Restaurant restaurant = restaurantGenerator.generate("restaurant", owner.getId());
             AvailableDate availableDate = availableDateGenerator.generate(LocalDateTime.now().plusDays(1), 10,
                     restaurant);
-            Reservation reservation = reservationGenerator.generate(restaurant.getId(), availableDate.getId(), member.getId(), 4);
+            Reservation reservation = reservationGenerator.generate(restaurant.getId(), availableDate.getId(),
+                    member.getId(), 4);
 
             given()
                     .contentType("application/json")

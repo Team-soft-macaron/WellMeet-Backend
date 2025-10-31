@@ -1,12 +1,14 @@
 package com.wellmeet.domain.reservation.exception;
 
-import com.wellmeet.domain.common.WellMeetDomainException;
 import lombok.Getter;
 
 @Getter
-public class ReservationException extends WellMeetDomainException {
+public class ReservationException extends RuntimeException {
+
+    private final int statusCode;
 
     public ReservationException(ReservationErrorCode errorCode) {
-        super(errorCode.getMessage(), errorCode.getStatusCode());
+        super(errorCode.getMessage());
+        this.statusCode = errorCode.getStatusCode();
     }
 }
