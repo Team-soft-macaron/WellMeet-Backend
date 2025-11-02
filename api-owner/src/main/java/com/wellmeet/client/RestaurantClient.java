@@ -1,0 +1,29 @@
+package com.wellmeet.client;
+
+import com.wellmeet.client.dto.AvailableDateDTO;
+import com.wellmeet.client.dto.RestaurantDTO;
+import com.wellmeet.client.dto.request.UpdateRestaurantDTO;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+@FeignClient(name = "domain-restaurant-service")
+public interface RestaurantClient {
+
+    @GetMapping("/api/restaurants/{id}")
+    RestaurantDTO getRestaurant(@PathVariable("id") String id);
+
+    @GetMapping("/api/restaurants/{restaurantId}/available-dates/{availableDateId}")
+    AvailableDateDTO getAvailableDate(
+            @PathVariable("restaurantId") String restaurantId,
+            @PathVariable("availableDateId") Long availableDateId
+    );
+
+    @PutMapping("/api/restaurants/{id}")
+    RestaurantDTO updateRestaurant(
+            @PathVariable("id") String id,
+            @RequestBody UpdateRestaurantDTO request
+    );
+}
