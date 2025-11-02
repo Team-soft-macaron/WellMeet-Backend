@@ -2,8 +2,8 @@ spring:
   config:
     import:
       - classpath:application-domain-test.yml
-      - classpath:application-domain-redis-test.yml
-      - classpath:application-kafka-test.yml
+      - classpath:application-infra-redis-test.yml
+      - classpath:application-infra-kafka-test.yml
 
 cors:
   origin: http://localhost:5173

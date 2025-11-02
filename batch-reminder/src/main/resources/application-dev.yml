@@ -3,7 +3,7 @@ spring:
     import:
       - classpath:dev-secret.yml
       - classpath:application-domain-dev.yml
-      - classpath:application-kafka-dev.yml
+      - classpath:application-infra-kafka-dev.yml
 
   batch:
     job:

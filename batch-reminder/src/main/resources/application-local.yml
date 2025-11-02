@@ -2,7 +2,7 @@ spring:
   config:
     import:
       - classpath:application-domain-local.yml
-      - classpath:application-kafka-local.yml
+      - classpath:application-infra-kafka-local.yml
 
   batch:
     job:
