@@ -1,13 +1,13 @@
 server:
-  port: 8082
+  port: 8084
 
 spring:
   application:
-    name: domain-member-service
+    name: domain-owner-service
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3307/wellmeet_member
+    url: jdbc:mysql://localhost:3308/wellmeet_owner
     username: root
     password: password
 

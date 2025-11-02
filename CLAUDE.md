@@ -125,19 +125,23 @@ batch-reminder         →  [HTTP/REST]  →  domain-reservation (Service)
 
 ### 마이그레이션 전략
 
-#### Step 1: API 인터페이스 추가 (Phase 1.5)
+#### Step 1: API 인터페이스 추가 (Phase 1-2 코드 완성)
 
 **Phase 1.5 완료 상태** (2025-10-30):
 - ✅ Service Discovery 인프라 구축 (Eureka Server)
 - ✅ Docker Compose 환경 구성 완료
-- ⏳ 각 domain 모듈에 REST Controller 추가 대기 중
 
-각 domain 모듈에 REST Controller 추가 예정:
+**Phase 1-2 코드 완성 상태** (2025-10-31):
+- ✅ domain-restaurant REST Controller 추가 완료 (DomainRestaurantController, 포트 8083)
+- ✅ domain-member REST Controller 추가 완료 (MemberController, FavoriteRestaurantController, 포트 8082)
+- ⏳ domain-owner REST Controller 추가 대기 중
+- ⏳ domain-reservation REST Controller 추가 대기 중
 
-- `domain-member` → MemberInternalController
-- `domain-owner` → OwnerInternalController
-- `domain-restaurant` → RestaurantInternalController
-- `domain-reservation` → ReservationInternalController
+**알려진 이슈**:
+- ⚠️ domain-restaurant, domain-member 모두 Application 클래스 주석 처리로 독립 실행 검증 보류
+- ⚠️ bootJar 빌드 및 Docker 컨테이너 실행 미검증
+
+**다음 단계 (Phase 3)**: domain-owner 모듈에 REST Controller 추가
 
 **목적**: 기존 의존성을 유지하면서 REST API 엔드포인트 동시 제공
 
@@ -164,6 +168,18 @@ batch-reminder         →  [HTTP/REST]  →  domain-reservation (Service)
 - 각 domain 모듈을 독립 애플리케이션으로 전환
 - Kubernetes 또는 ECS에 개별 서비스 배포
 - Service Mesh 도입 고려 (Istio, Linkerd)
+
+### 도메인 서비스 포트 할당
+
+| 서비스 | 포트 | 현재 상태 |
+|--------|------|---------|
+| discovery-server | 8761 | ✅ 실행 중 |
+| domain-restaurant-service | 8083 | ⚠️ 코드 완성 (실행 검증 보류) |
+| domain-member-service | 8082 | ⚠️ 코드 완성 (실행 검증 보류) |
+| domain-owner-service | 8084 | ⏳ 미구현 (Phase 3 예정) |
+| domain-reservation-service | 8085 | ⏳ 미구현 (Phase 4 예정) |
+| api-user | 8086 | 기존 Monolithic 실행 중 |
+| api-owner | 8087 | 기존 Monolithic 실행 중 |
 
 ### 테스트 전략 변화
 

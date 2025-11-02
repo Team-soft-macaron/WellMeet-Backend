@@ -1,0 +1,57 @@
+package com.wellmeet.domain.owner.controller;
+
+import com.wellmeet.domain.owner.dto.CreateOwnerRequest;
+import com.wellmeet.domain.owner.dto.OwnerIdsRequest;
+import com.wellmeet.domain.owner.dto.OwnerResponse;
+import com.wellmeet.domain.owner.service.OwnerApplicationService;
+import jakarta.validation.Valid;
+import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/owners")
+public class OwnerController {
+
+    private final OwnerApplicationService ownerApplicationService;
+
+    public OwnerController(OwnerApplicationService ownerApplicationService) {
+        this.ownerApplicationService = ownerApplicationService;
+    }
+
+    @PostMapping
+    public ResponseEntity<OwnerResponse> createOwner(@Valid @RequestBody CreateOwnerRequest request) {
+        OwnerResponse response = ownerApplicationService.createOwner(
+                request.name(),
+                request.email()
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<OwnerResponse> getOwner(@PathVariable String id) {
+        OwnerResponse response = ownerApplicationService.getOwnerById(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/batch")
+    public ResponseEntity<List<OwnerResponse>> getOwnersByIds(
+            @Valid @RequestBody OwnerIdsRequest request
+    ) {
+        List<OwnerResponse> responses = ownerApplicationService.getOwnersByIds(request.ownerIds());
+        return ResponseEntity.ok(responses);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteOwner(@PathVariable String id) {
+        ownerApplicationService.deleteOwner(id);
+        return ResponseEntity.noContent().build();
+    }
+}
