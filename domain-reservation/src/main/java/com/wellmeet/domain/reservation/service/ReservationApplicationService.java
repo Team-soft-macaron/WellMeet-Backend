@@ -63,22 +63,18 @@ public class ReservationApplicationService {
     public ReservationResponse updateReservation(Long reservationId, UpdateReservationRequest request) {
         Reservation reservation = reservationDomainService.getById(reservationId);
 
-        if (request.status() != null && reservation.getStatus() != request.status()) {
-            if (request.status() == ReservationStatus.CONFIRMED) {
-                reservation.confirm();
-            } else if (request.status() == ReservationStatus.CANCELED) {
-                reservation.cancel();
-            }
+        if (request.status() == ReservationStatus.CONFIRMED) {
+            reservation.confirm();
+        }
+        if (request.status() == ReservationStatus.CANCELED) {
+            reservation.cancel();
         }
 
-        if (request.partySize() != null || request.specialRequest() != null) {
-            Long availableDateId = reservation.getAvailableDateId();
-            int partySize = request.partySize() != null ? request.partySize() : reservation.getPartySize();
-            String specialRequest = request.specialRequest() != null ? request.specialRequest()
-                    : reservation.getSpecialRequest();
+        Long availableDateId = reservation.getAvailableDateId();
+        int partySize = request.partySize();
+        String specialRequest = request.specialRequest();
 
-            reservation.update(availableDateId, partySize, specialRequest);
-        }
+        reservation.update(availableDateId, partySize, specialRequest);
 
         Reservation saved = reservationDomainService.save(reservation);
         return ReservationResponse.from(saved);
