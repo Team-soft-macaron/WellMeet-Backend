@@ -1,7 +1,6 @@
 package com.wellmeet.domain.reservation.dto;
 
 import com.wellmeet.domain.reservation.entity.ReservationStatus;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 public record UpdateReservationRequest(
@@ -10,7 +9,7 @@ public record UpdateReservationRequest(
 
         String specialRequest,
 
-        @NotEmpty
+        @NotNull
         ReservationStatus status
 ) {
 }
