@@ -1,26 +1,27 @@
-package com.wellmeet.restaurant.dto;
+package com.wellmeet.client.dto.request;
 
-import com.wellmeet.common.DayOfWeek;
 import java.time.LocalTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateOperatingHoursRequest {
+public class UpdateOperatingHoursDTO {
 
-    private List<DayHours> operatingHours;
+    private List<DayHoursDTO> operatingHours;
 
     @Getter
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class DayHours {
-
-        private DayOfWeek dayOfWeek;
-        private boolean operating;
+    public static class DayHoursDTO {
+        private String dayOfWeek;
+        private boolean isOperating;
         private LocalTime open;
         private LocalTime close;
         private LocalTime breakStart;

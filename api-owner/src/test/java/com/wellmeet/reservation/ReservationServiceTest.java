@@ -5,14 +5,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.wellmeet.domain.member.MemberDomainService;
-import com.wellmeet.domain.member.entity.Member;
-import com.wellmeet.domain.owner.entity.Owner;
-import com.wellmeet.domain.reservation.ReservationDomainService;
-import com.wellmeet.domain.reservation.entity.Reservation;
-import com.wellmeet.domain.restaurant.RestaurantDomainService;
-import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
-import com.wellmeet.domain.restaurant.entity.Restaurant;
+import com.wellmeet.client.MemberClient;
+import com.wellmeet.client.ReservationClient;
+import com.wellmeet.client.RestaurantClient;
+import com.wellmeet.client.dto.AvailableDateDTO;
+import com.wellmeet.client.dto.MemberDTO;
+import com.wellmeet.client.dto.ReservationDTO;
+import com.wellmeet.client.dto.RestaurantDTO;
+import com.wellmeet.client.dto.request.MemberIdsRequest;
 import com.wellmeet.global.event.EventPublishService;
 import com.wellmeet.global.event.event.ReservationConfirmedEvent;
 import com.wellmeet.reservation.dto.ReservationResponse;
@@ -29,13 +29,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class ReservationServiceTest {
 
     @Mock
-    private ReservationDomainService reservationDomainService;
+    private ReservationClient reservationClient;
 
     @Mock
-    private MemberDomainService memberDomainService;
+    private MemberClient memberClient;
 
     @Mock
-    private RestaurantDomainService restaurantDomainService;
+    private RestaurantClient restaurantClient;
 
     @Mock
     private EventPublishService eventPublishService;
@@ -48,22 +48,24 @@ class ReservationServiceTest {
 
         @Test
         void 식당_아이디에_해당하는_예약목록을_불러온다() {
-            Restaurant restaurant = createRestaurant("Test Restaurant");
-            AvailableDate availableDate = createAvailableDate(LocalDateTime.now(), 10, restaurant);
-            Member member1 = createMember("Test");
-            Member member2 = createMember("Test2");
-            Reservation reservation1 = createReservation(restaurant, availableDate, member1, 4);
-            Reservation reservation2 = createReservation(restaurant, availableDate, member2, 2);
-            List<Reservation> reservations = List.of(reservation1, reservation2);
+            String restaurantId = "restaurant-1";
+            AvailableDateDTO availableDate = createAvailableDateDTO(1L, LocalDateTime.now(), 10, restaurantId);
+            MemberDTO member1 = createMemberDTO("member-1", "Test");
+            MemberDTO member2 = createMemberDTO("member-2", "Test2");
+            ReservationDTO reservation1 = createReservationDTO(1L, restaurantId, availableDate.getId(), member1.getId(),
+                    4);
+            ReservationDTO reservation2 = createReservationDTO(2L, restaurantId, availableDate.getId(), member2.getId(),
+                    2);
+            List<ReservationDTO> reservations = List.of(reservation1, reservation2);
 
-            when(reservationDomainService.findAllByRestaurantId(restaurant.getId()))
+            when(reservationClient.getReservationsByRestaurant(restaurantId))
                     .thenReturn(reservations);
-            when(memberDomainService.findAllByIds(List.of(member1.getId(), member2.getId())))
+            when(memberClient.getMembersByIds(any(MemberIdsRequest.class)))
                     .thenReturn(List.of(member1, member2));
-            when(restaurantDomainService.getAvailableDate(availableDate.getId(), restaurant.getId()))
+            when(restaurantClient.getAvailableDate(restaurantId, availableDate.getId()))
                     .thenReturn(availableDate);
 
-            List<ReservationResponse> expectedReservations = reservationService.getReservations(restaurant.getId());
+            List<ReservationResponse> expectedReservations = reservationService.getReservations(restaurantId);
 
             assertThat(expectedReservations).hasSize(reservations.size());
         }
@@ -74,43 +76,86 @@ class ReservationServiceTest {
 
         @Test
         void 예약을_확정한다() {
-            Restaurant restaurant = createRestaurant("Test Restaurant");
-            AvailableDate availableDate = createAvailableDate(LocalDateTime.now(), 10, restaurant);
-            Member member = createMember("Test");
-            Reservation reservation = createReservation(restaurant, availableDate, member, 4);
+            Long reservationId = 1L;
+            String restaurantId = "restaurant-1";
+            String memberId = "member-1";
+            Long availableDateId = 1L;
 
-            when(reservationDomainService.getById(reservation.getId()))
+            RestaurantDTO restaurant = createRestaurantDTO(restaurantId, "Test Restaurant");
+            AvailableDateDTO availableDate = createAvailableDateDTO(availableDateId, LocalDateTime.now(), 10,
+                    restaurantId);
+            MemberDTO member = createMemberDTO(memberId, "Test");
+            ReservationDTO reservation = createReservationDTO(reservationId, restaurantId, availableDateId, memberId,
+                    4);
+
+            when(reservationClient.getReservation(reservationId))
                     .thenReturn(reservation);
-            when(memberDomainService.getById(member.getId()))
+            when(memberClient.getMember(memberId))
                     .thenReturn(member);
-            when(restaurantDomainService.getById(restaurant.getId()))
+            when(restaurantClient.getRestaurant(restaurantId))
                     .thenReturn(restaurant);
-            when(restaurantDomainService.getAvailableDate(availableDate.getId(), restaurant.getId()))
+            when(restaurantClient.getAvailableDate(restaurantId, availableDateId))
                     .thenReturn(availableDate);
 
-            reservationService.confirmReservation(reservation.getId());
+            reservationService.confirmReservation(reservationId);
 
+            verify(reservationClient).confirmReservation(reservationId);
             verify(eventPublishService).publishReservationConfirmedEvent(
                     any(ReservationConfirmedEvent.class)
             );
         }
     }
 
-    private Restaurant createRestaurant(String name) {
-        Owner owner = new Owner("name", "email");
-        return new Restaurant(name, "description", "address", 32.1, 37.1, "thumbnail", owner.getId());
+    private RestaurantDTO createRestaurantDTO(String id, String name) {
+        return RestaurantDTO.builder()
+                .id(id)
+                .name(name)
+                .address("address")
+                .latitude(37.5)
+                .longitude(127.0)
+                .thumbnail("thumbnail")
+                .ownerId("owner-1")
+                .build();
     }
 
-    private AvailableDate createAvailableDate(LocalDateTime dateTime, int capacity, Restaurant restaurant) {
-        return new AvailableDate(dateTime.toLocalDate(), dateTime.toLocalTime(), capacity, restaurant);
+    private AvailableDateDTO createAvailableDateDTO(Long id, LocalDateTime dateTime, int capacity,
+                                                    String restaurantId) {
+        return AvailableDateDTO.builder()
+                .id(id)
+                .date(dateTime.toLocalDate())
+                .time(dateTime.toLocalTime())
+                .maxCapacity(capacity)
+                .isAvailable(true)
+                .restaurantId(restaurantId)
+                .build();
     }
 
-    private Member createMember(String name) {
-        return new Member(name, "nickname", "email@email.com", "phone");
+    private MemberDTO createMemberDTO(String id, String name) {
+        return MemberDTO.builder()
+                .id(id)
+                .name(name)
+                .nickname("nickname")
+                .email("email@email.com")
+                .phone("010-1234-5678")
+                .reservationEnabled(true)
+                .remindEnabled(true)
+                .reviewEnabled(true)
+                .isVip(false)
+                .build();
     }
 
-    private Reservation createReservation(Restaurant restaurant, AvailableDate availableDate, Member member,
-                                          int partySize) {
-        return new Reservation(restaurant.getId(), availableDate.getId(), member.getId(), partySize, "request");
+    private ReservationDTO createReservationDTO(Long id, String restaurantId, Long availableDateId, String memberId,
+                                                int partySize) {
+        return ReservationDTO.builder()
+                .id(id)
+                .status("PENDING")
+                .restaurantId(restaurantId)
+                .availableDateId(availableDateId)
+                .memberId(memberId)
+                .partySize(partySize)
+                .specialRequest("request")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
     }
 }

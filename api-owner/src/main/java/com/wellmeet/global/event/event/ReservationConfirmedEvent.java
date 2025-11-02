@@ -1,7 +1,6 @@
 package com.wellmeet.global.event.event;
 
 import com.wellmeet.client.dto.ReservationDTO;
-import com.wellmeet.domain.reservation.entity.Reservation;
 import java.time.LocalDateTime;
 import lombok.Getter;
 
@@ -18,19 +17,6 @@ public class ReservationConfirmedEvent {
     private final String specialRequest;
     private final LocalDateTime dateTime;
     private final LocalDateTime createdAt;
-
-    public ReservationConfirmedEvent(Reservation reservation, String memberName, String restaurantName, LocalDateTime dateTime) {
-        this.reservationId = reservation.getId();
-        this.memberId = reservation.getMemberId();
-        this.memberName = memberName;
-        this.restaurantId = reservation.getRestaurantId();
-        this.restaurantName = restaurantName;
-        this.status = reservation.getStatus().name();
-        this.partySize = reservation.getPartySize();
-        this.specialRequest = reservation.getSpecialRequest();
-        this.dateTime = dateTime;
-        this.createdAt = reservation.getCreatedAt();
-    }
 
     public ReservationConfirmedEvent(ReservationDTO reservation, String memberName, String restaurantName, LocalDateTime dateTime) {
         this.reservationId = reservation.getId();

@@ -1,9 +1,26 @@
 spring:
+  application:
+    name: api-owner-service
+
   config:
     import:
-      - classpath:application-domain-test.yml
       - classpath:application-domain-redis-test.yml
       - classpath:application-kafka-test.yml
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+
+  cloud:
+    discovery:
+      enabled: false
+
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: false
+    fetch-registry: false
 
 cors:
   origin: http://localhost:5173

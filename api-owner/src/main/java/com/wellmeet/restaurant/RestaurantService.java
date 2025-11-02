@@ -1,21 +1,17 @@
 package com.wellmeet.restaurant;
 
 import com.wellmeet.client.RestaurantClient;
+import com.wellmeet.client.dto.BusinessHourDTO;
 import com.wellmeet.client.dto.RestaurantDTO;
+import com.wellmeet.client.dto.request.UpdateOperatingHoursDTO;
 import com.wellmeet.client.dto.request.UpdateRestaurantDTO;
-import com.wellmeet.domain.restaurant.RestaurantDomainService;
-import com.wellmeet.domain.restaurant.businesshour.entity.BusinessHour;
-import com.wellmeet.domain.restaurant.businesshour.entity.BusinessHours;
-import com.wellmeet.domain.restaurant.businesshour.entity.DayOfWeek;
 import com.wellmeet.global.event.EventPublishService;
 import com.wellmeet.global.event.event.RestaurantUpdatedEvent;
 import com.wellmeet.restaurant.dto.OperatingHoursResponse;
 import com.wellmeet.restaurant.dto.UpdateOperatingHoursRequest;
-import com.wellmeet.restaurant.dto.UpdateOperatingHoursRequest.DayHours;
 import com.wellmeet.restaurant.dto.UpdateRestaurantRequest;
 import com.wellmeet.restaurant.dto.UpdateRestaurantResponse;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,13 +21,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class RestaurantService {
 
     private final RestaurantClient restaurantClient;
-    private final RestaurantDomainService restaurantDomainService;
     private final EventPublishService eventPublishService;
 
     @Transactional(readOnly = true)
     public OperatingHoursResponse getOperatingHours(String restaurantId) {
-        BusinessHours operatingHours = restaurantDomainService.getOperatingHours(restaurantId);
-        return new OperatingHoursResponse(operatingHours);
+        List<BusinessHourDTO> businessHours = restaurantClient.getOperatingHours(restaurantId);
+        return new OperatingHoursResponse(businessHours);
     }
 
     @Transactional
@@ -39,23 +34,24 @@ public class RestaurantService {
             String restaurantId,
             UpdateOperatingHoursRequest request
     ) {
-        Map<DayOfWeek, UpdateOperatingHoursRequest.DayHours> dayHours = request.getOperatingHours()
+        List<UpdateOperatingHoursDTO.DayHoursDTO> dayHoursList = request.getOperatingHours()
                 .stream()
-                .collect(Collectors.toMap(DayHours::getDayOfWeek, dayHour -> dayHour));
-        BusinessHours operatingHours = restaurantDomainService.getOperatingHours(restaurantId);
-        operatingHours.getValue()
-                .forEach(hour -> updateOperatingHour(hour, dayHours.get(hour.getDayOfWeek())));
-        return new OperatingHoursResponse(operatingHours);
-    }
+                .map(dayHours -> UpdateOperatingHoursDTO.DayHoursDTO.builder()
+                        .dayOfWeek(dayHours.getDayOfWeek().name())
+                        .isOperating(dayHours.isOperating())
+                        .open(dayHours.getOpen())
+                        .close(dayHours.getClose())
+                        .breakStart(dayHours.getBreakStart())
+                        .breakEnd(dayHours.getBreakEnd())
+                        .build())
+                .toList();
 
-    private void updateOperatingHour(BusinessHour hour, DayHours dayHours) {
-        hour.updateHour(
-                dayHours.isOperating(),
-                dayHours.getOpen(),
-                dayHours.getClose(),
-                dayHours.getBreakStart(),
-                dayHours.getBreakEnd()
-        );
+        UpdateOperatingHoursDTO updateDTO = UpdateOperatingHoursDTO.builder()
+                .operatingHours(dayHoursList)
+                .build();
+
+        List<BusinessHourDTO> businessHours = restaurantClient.updateOperatingHours(restaurantId, updateDTO);
+        return new OperatingHoursResponse(businessHours);
     }
 
     @Transactional
