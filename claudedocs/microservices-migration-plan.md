@@ -285,11 +285,23 @@ dependencies {
 ```
 
 **Phase 1 완료 기준**:
-- [ ] domain-restaurant가 독립 서버로 실행됨 (포트 8081)
-- [ ] Eureka에 정상 등록됨
-- [ ] `/internal/restaurants/*` REST API 응답 확인
-- [ ] Health check 정상 작동
-- [ ] **api-* 모듈은 여전히 직접 의존성 사용** (변경 없음)
+
+**코드 구현 (완료)**:
+- [x] domain-restaurant REST API Controller 생성 (DomainRestaurantController)
+- [x] Application Service 및 DTO 레이어 구현 (DomainRestaurantService)
+- [x] Dockerfile 및 docker-compose.yml 설정 (포트 8083)
+- [x] build.gradle 의존성 설정 완료
+- [x] **api-* 모듈은 여전히 직접 의존성 사용** (변경 없음)
+
+**실행 검증 (미완료)**:
+- [ ] ⚠️ Application 클래스 주석 해제 및 빈 스캔 문제 해결
+- [ ] ⚠️ bootJar 빌드 성공
+- [ ] ⚠️ domain-restaurant가 독립 서버로 실행됨 (포트 8083)
+- [ ] ⚠️ Eureka에 정상 등록됨
+- [ ] ⚠️ `/api/restaurants/*` REST API 응답 확인
+- [ ] ⚠️ Health check 정상 작동
+
+**완료도**: 80% (코드 완성, 실행 검증 보류)
 
 ---
 
@@ -358,19 +370,36 @@ Phase 1 패턴을 동일하게 적용하여 완료:
 9. **중요**: api-* 모듈의 `implementation project(':domain-member')` **유지** ✅
 
 **Phase 2 완료 기준**:
-- [x] domain-member REST API Controller 생성
-- [x] Application Service 및 DTO 레이어 구현
-- [x] 예외 처리 구현
-- [x] Spring Boot Application 및 설정 파일 생성
+
+**코드 구현 (완료)**:
+- [x] domain-member REST API Controller 생성 (MemberController, FavoriteRestaurantController)
+- [x] Application Service 및 DTO 레이어 구현 (@Valid 검증 패턴 포함)
+- [x] 예외 처리 구현 (MemberExceptionHandler)
+- [x] Spring Boot Application 및 설정 파일 생성 (application.yml)
 - [x] build.gradle 의존성 설정
-- [x] Dockerfile 생성
-- [x] docker-compose.yml 업데이트
+- [x] Dockerfile 생성 (Multi-stage build)
+- [x] docker-compose.yml 업데이트 (member-service, 포트 8082)
 - [x] api-* 모듈 직접 의존성 유지
 
+**실행 검증 (미완료)**:
+- [ ] ⚠️ Application 클래스 주석 해제 및 빈 스캔 문제 해결
+- [ ] ⚠️ bootJar 빌드 성공
+- [ ] ⚠️ domain-member가 독립 서버로 실행됨 (포트 8082)
+- [ ] ⚠️ Eureka에 정상 등록됨
+- [ ] ⚠️ REST API 정상 응답 확인
+
+**완료도**: 80% (코드 완성, 실행 검증 보류)
+
 **알려진 이슈**:
-- ⚠️ Application 클래스가 주석 처리되어 있어 bootJar 빌드 불가
-- ⚠️ Docker 컨테이너 실행 검증 보류 (Application 클래스 활성화 필요)
+- ⚠️ **Phase 1 & Phase 2 공통**: Application 클래스가 주석 처리되어 있어 bootJar 빌드 불가
+  - domain-restaurant: `RestaurantServiceApplication.java` 전체 주석 처리
+  - domain-member: `MemberServiceApplication.java` 전체 주석 처리
+- ⚠️ **빈 스캔 문제**: @SpringBootApplication의 basePackages 또는 @ComponentScan 설정 필요 가능성
+- ⚠️ **Docker 컨테이너 실행 검증 보류**: Application 클래스 활성화 후 독립 실행 필요
+- ⚠️ **Eureka 등록 검증 미완료**: 독립 실행 후 http://localhost:8761 확인 필요
+- ⚠️ **REST API 테스트 미완료**: 독립 실행 후 각 엔드포인트 검증 필요
 - ✅ 코드 구조 및 패턴은 domain-restaurant와 100% 일치
+- ✅ DTO, Controller, ApplicationService 레이어 구조 일관성 유지
 
 ---
 
@@ -741,16 +770,18 @@ public class AuthenticationFilter implements GlobalFilter {
 
 ## 도메인 서비스 포트 할당
 
-| 서비스 | 포트 | 순서 |
-|--------|------|------|
-| discovery-server | 8761 | - |
-| domain-restaurant-service | 8081 | 1 |
-| domain-member-service | 8082 | 2 |
-| domain-owner-service | 8083 | 3 |
-| domain-reservation-service | 8084 | 4 |
-| api-gateway | 8080 | 최종 |
-| api-user | 8085 | BFF |
-| api-owner | 8086 | BFF |
+| 서비스 | 포트 | 순서 | 현재 상태 |
+|--------|------|------|---------|
+| discovery-server | 8761 | - | ✅ 실행 중 |
+| domain-restaurant-service | 8083 | 1 | ⚠️ 코드 완성 (실행 검증 보류) |
+| domain-member-service | 8082 | 2 | ⚠️ 코드 완성 (실행 검증 보류) |
+| domain-owner-service | 8084 | 3 | ⏳ 미구현 (Phase 3 예정) |
+| domain-reservation-service | 8085 | 4 | ⏳ 미구현 (Phase 4 예정) |
+| api-gateway | 8080 | 최종 | ⏳ 미구현 (Phase 7 예정) |
+| api-user | 8086 | BFF | 기존 Monolithic 실행 중 |
+| api-owner | 8087 | BFF | 기존 Monolithic 실행 중 |
+
+**주의**: domain-restaurant-service는 당초 계획의 8081이 아닌 8083 포트 사용
 
 ---
 
