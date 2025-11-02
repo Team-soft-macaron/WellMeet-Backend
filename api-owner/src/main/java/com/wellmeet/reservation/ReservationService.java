@@ -1,10 +1,13 @@
 package com.wellmeet.reservation;
 
-import com.wellmeet.domain.member.MemberDomainService;
-import com.wellmeet.domain.member.entity.Member;
-import com.wellmeet.domain.reservation.ReservationDomainService;
-import com.wellmeet.domain.reservation.entity.Reservation;
-import com.wellmeet.domain.restaurant.RestaurantDomainService;
+import com.wellmeet.client.MemberClient;
+import com.wellmeet.client.ReservationClient;
+import com.wellmeet.client.RestaurantClient;
+import com.wellmeet.client.dto.AvailableDateDTO;
+import com.wellmeet.client.dto.MemberDTO;
+import com.wellmeet.client.dto.ReservationDTO;
+import com.wellmeet.client.dto.RestaurantDTO;
+import com.wellmeet.client.dto.request.MemberIdsRequest;
 import com.wellmeet.global.event.EventPublishService;
 import com.wellmeet.global.event.event.ReservationConfirmedEvent;
 import com.wellmeet.reservation.dto.ReservationResponse;
@@ -21,30 +24,32 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ReservationService {
 
-    private final ReservationDomainService reservationDomainService;
-    private final MemberDomainService memberDomainService;
-    private final RestaurantDomainService restaurantDomainService;
+    private final ReservationClient reservationClient;
+    private final MemberClient memberClient;
+    private final RestaurantClient restaurantClient;
     private final EventPublishService eventPublishService;
 
     @Transactional(readOnly = true)
     public List<ReservationResponse> getReservations(String restaurantId) {
-        List<Reservation> reservations = reservationDomainService.findAllByRestaurantId(restaurantId);
+        List<ReservationDTO> reservations = reservationClient.getReservationsByRestaurant(restaurantId);
         if (reservations.isEmpty()) {
             return List.of();
         }
 
         List<String> memberIds = reservations.stream()
-                .map(Reservation::getMemberId)
+                .map(ReservationDTO::getMemberId)
                 .distinct()
                 .toList();
-        Map<String, Member> membersById = memberDomainService.findAllByIds(memberIds).stream()
-                .collect(Collectors.toMap(Member::getId, Function.identity()));
+        Map<String, MemberDTO> membersById = memberClient.getMembersByIds(
+                        MemberIdsRequest.builder().memberIds(memberIds).build())
+                .stream()
+                .collect(Collectors.toMap(MemberDTO::getId, Function.identity()));
 
         return reservations.stream()
                 .map(reservation -> {
-                    Member member = membersById.get(reservation.getMemberId());
-                    var availableDate = restaurantDomainService.getAvailableDate(
-                            reservation.getAvailableDateId(), reservation.getRestaurantId());
+                    MemberDTO member = membersById.get(reservation.getMemberId());
+                    AvailableDateDTO availableDate = restaurantClient.getAvailableDate(
+                            reservation.getRestaurantId(), reservation.getAvailableDateId());
                     return new ReservationResponse(
                             reservation,
                             availableDate,
@@ -59,13 +64,13 @@ public class ReservationService {
 
     @Transactional
     public void confirmReservation(Long reservationId) {
-        Reservation reservation = reservationDomainService.getById(reservationId);
-        reservation.confirm();
+        reservationClient.confirmReservation(reservationId);
 
-        Member member = memberDomainService.getById(reservation.getMemberId());
-        var restaurant = restaurantDomainService.getById(reservation.getRestaurantId());
-        var availableDate = restaurantDomainService.getAvailableDate(
-                reservation.getAvailableDateId(), reservation.getRestaurantId());
+        ReservationDTO reservation = reservationClient.getReservation(reservationId);
+        MemberDTO member = memberClient.getMember(reservation.getMemberId());
+        RestaurantDTO restaurant = restaurantClient.getRestaurant(reservation.getRestaurantId());
+        AvailableDateDTO availableDate = restaurantClient.getAvailableDate(
+                reservation.getRestaurantId(), reservation.getAvailableDateId());
         LocalDateTime dateTime = LocalDateTime.of(availableDate.getDate(), availableDate.getTime());
         ReservationConfirmedEvent event = new ReservationConfirmedEvent(
                 reservation, member.getName(), restaurant.getName(), dateTime);

@@ -1,5 +1,7 @@
 package com.wellmeet.reservation.dto;
 
+import com.wellmeet.client.dto.AvailableDateDTO;
+import com.wellmeet.client.dto.ReservationDTO;
 import com.wellmeet.domain.reservation.entity.Reservation;
 import com.wellmeet.domain.reservation.entity.ReservationStatus;
 import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
@@ -38,6 +40,26 @@ public class ReservationResponse {
         this.time = availableDate.getTime();
         this.party = reservation.getPartySize();
         this.status = reservation.getStatus();
+        this.note = reservation.getSpecialRequest();
+        this.createdAt = reservation.getCreatedAt();
+        this.updatedAt = reservation.getUpdatedAt();
+    }
+
+    public ReservationResponse(ReservationDTO reservation, AvailableDateDTO availableDate, String memberName, String memberPhone, String memberEmail, boolean memberVip) {
+        CustomerSummaryResponse customerResponse = new CustomerSummaryResponse(
+                reservation.getMemberId(),
+                memberName,
+                memberPhone,
+                memberEmail,
+                memberVip
+        );
+
+        this.id = reservation.getId();
+        this.customer = customerResponse;
+        this.date = availableDate.getDate();
+        this.time = availableDate.getTime();
+        this.party = reservation.getPartySize();
+        this.status = ReservationStatus.valueOf(reservation.getStatus());
         this.note = reservation.getSpecialRequest();
         this.createdAt = reservation.getCreatedAt();
         this.updatedAt = reservation.getUpdatedAt();

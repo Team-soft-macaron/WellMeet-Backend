@@ -1,10 +1,12 @@
 package com.wellmeet.restaurant;
 
+import com.wellmeet.client.RestaurantClient;
+import com.wellmeet.client.dto.RestaurantDTO;
+import com.wellmeet.client.dto.request.UpdateRestaurantDTO;
 import com.wellmeet.domain.restaurant.RestaurantDomainService;
 import com.wellmeet.domain.restaurant.businesshour.entity.BusinessHour;
 import com.wellmeet.domain.restaurant.businesshour.entity.BusinessHours;
 import com.wellmeet.domain.restaurant.businesshour.entity.DayOfWeek;
-import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.global.event.EventPublishService;
 import com.wellmeet.global.event.event.RestaurantUpdatedEvent;
 import com.wellmeet.restaurant.dto.OperatingHoursResponse;
@@ -22,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class RestaurantService {
 
+    private final RestaurantClient restaurantClient;
     private final RestaurantDomainService restaurantDomainService;
     private final EventPublishService eventPublishService;
 
@@ -57,9 +60,15 @@ public class RestaurantService {
 
     @Transactional
     public UpdateRestaurantResponse updateRestaurant(String restaurantId, UpdateRestaurantRequest request) {
-        Restaurant restaurant = restaurantDomainService.getById(restaurantId);
-        restaurant.update(request.getName(), request.getAddress(), request.getLatitude(), request.getLongitude(),
-                request.getThumbnail());
+        UpdateRestaurantDTO updateDTO = UpdateRestaurantDTO.builder()
+                .name(request.getName())
+                .address(request.getAddress())
+                .latitude(request.getLatitude())
+                .longitude(request.getLongitude())
+                .thumbnail(request.getThumbnail())
+                .build();
+
+        RestaurantDTO restaurant = restaurantClient.updateRestaurant(restaurantId, updateDTO);
         eventPublishService.publishRestaurantUpdatedEvent(new RestaurantUpdatedEvent(restaurantId));
         return new UpdateRestaurantResponse(restaurant.getName(), restaurant.getAddress(), restaurant.getLatitude(),
                 restaurant.getLongitude(), restaurant.getThumbnail());
