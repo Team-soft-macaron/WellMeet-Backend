@@ -436,36 +436,314 @@ Phase 1 패턴을 동일하게 적용하여 완료:
 
 **목표**: domain-reservation을 독립 서버로 배포하되, **api-* 모듈은 직접 의존성 유지**
 
-**특징**: 가장 복잡한 모듈 (모든 도메인과 연관)
+**특징**: 가장 복잡한 모듈이지만, **단순 CRUD + 도메인 검증만** 제공
 
-### 4.1 동일한 패턴 반복
+**핵심 원칙**:
+- ✅ Reservation 엔티티 CRUD만 제공
+- ✅ 도메인 검증 로직 (중복 체크, 상태 관리)
+- ❌ 다른 domain 서버 호출 금지
+- ❌ Redis 분산 락 없음 (BFF가 처리)
+- ❌ 데이터 조합 없음 (BFF가 처리)
 
-1. **REST API Controller 생성**: `ReservationInternalController`
-   - 예약 조회, 생성, 수정, 취소 API
-   - 가장 많은 API 엔드포인트
+### 4.1 REST API Controller 생성
 
-2. **Spring Boot Application**: `DomainReservationApplication`
-   - 포트: 8084
-   - 서비스명: domain-reservation-service
+**파일**: `domain-reservation/src/main/java/com/wellmeet/domain/reservation/api/DomainReservationController.java`
 
-3. **Dockerfile 생성**: `domain-reservation/Dockerfile`
+**엔드포인트**:
+- POST `/api/reservations` - 예약 생성 (저장만)
+- GET `/api/reservations/member/{memberId}` - 회원별 예약 조회
+- GET `/api/reservations/restaurant/{restaurantId}` - 식당별 예약 조회
+- GET `/api/reservations/{id}` - 예약 단건 조회
+- PUT `/api/reservations/{id}` - 예약 수정
+- PATCH `/api/reservations/{id}/cancel` - 예약 취소
+- PATCH `/api/reservations/{id}/confirm` - 예약 확정
+- GET `/api/reservations/check-duplicate` - 중복 예약 체크
 
-4. **docker-compose.yml 업데이트**: domain-reservation-service 추가
+```java
+@RestController
+@RequestMapping("/api/reservations")
+@RequiredArgsConstructor
+public class DomainReservationController {
 
-5. **추가 고려사항**:
-   - Flyway 마이그레이션 유지
-   - 예약 생성 로직 복잡 → 신중한 테스트 필요
-   - Redis 분산 락 통합 확인
+    private final DomainReservationService domainReservationService;
 
-6. **중요**: api-* 모듈의 `implementation project(':domain-reservation')` **유지**
+    // 예약 생성 (저장만)
+    @PostMapping
+    public ReservationResponse createReservation(@Valid @RequestBody CreateReservationRequest request) {
+        Reservation reservation = domainReservationService.createReservation(request);
+        return ReservationResponse.from(reservation);
+    }
+
+    // 회원별 조회
+    @GetMapping("/member/{memberId}")
+    public List<ReservationResponse> getReservationsByMember(@PathVariable String memberId) {
+        return domainReservationService.findAllByMemberId(memberId).stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
+    // ... 나머지 엔드포인트
+}
+```
+
+### 4.2 Domain Service (검증 로직만)
+
+**책임**:
+- Reservation 생성/수정/취소/확정
+- 도메인 검증 (중복 체크, partySize 검증)
+- 다른 domain 서비스 호출 없음
+
+```java
+@Service
+@Transactional
+@RequiredArgsConstructor
+public class DomainReservationService {
+
+    private final ReservationRepository reservationRepository;
+
+    public Reservation createReservation(CreateReservationRequest request) {
+        // 1. 중복 체크
+        if (alreadyReserved(request.memberId(), request.restaurantId(), request.availableDateId())) {
+            throw new ReservationException(ALREADY_RESERVED);
+        }
+
+        // 2. 예약 생성 (엔티티 내부 검증)
+        Reservation reservation = Reservation.builder()
+                .restaurantId(request.restaurantId())
+                .availableDateId(request.availableDateId())
+                .memberId(request.memberId())
+                .partySize(request.partySize())
+                .specialRequest(request.specialRequest())
+                .status(ReservationStatus.PENDING)
+                .build();
+
+        return reservationRepository.save(reservation);
+    }
+
+    public boolean alreadyReserved(String memberId, String restaurantId, Long availableDateId) {
+        return reservationRepository.existsByMemberIdAndRestaurantIdAndAvailableDateId(
+            memberId, restaurantId, availableDateId
+        );
+    }
+}
+```
+
+### 4.3 DTO 클래스
+
+```java
+// Request
+public record CreateReservationRequest(
+    @NotBlank String memberId,
+    @NotBlank String restaurantId,
+    @NotNull Long availableDateId,
+    @Min(1) int partySize,
+    @Size(max = 255) String specialRequest
+) {}
+
+// Response (단순 Reservation 필드만)
+public record ReservationResponse(
+    Long id,
+    String memberId,
+    String restaurantId,
+    Long availableDateId,
+    int partySize,
+    String specialRequest,
+    ReservationStatus status,
+    LocalDateTime createdAt
+) {
+    public static ReservationResponse from(Reservation reservation) {
+        return new ReservationResponse(
+            reservation.getId(),
+            reservation.getMemberId(),
+            reservation.getRestaurantId(),
+            reservation.getAvailableDateId(),
+            reservation.getPartySize(),
+            reservation.getSpecialRequest(),
+            reservation.getStatus(),
+            reservation.getCreatedAt()
+        );
+    }
+}
+```
+
+### 4.4 Spring Boot Application
+
+**파일**: `domain-reservation/src/main/java/com/wellmeet/domain/ReservationServiceApplication.java`
+
+⚠️ **전체 주석 처리** (Phase 1-3와 동일)
+
+**application.yml**:
+
+```yaml
+spring:
+  application:
+    name: domain-reservation-service
+  datasource:
+    url: jdbc:mysql://mysql-reservation:3306/wellmeet_reservation
+    username: root
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: validate  # Flyway 사용
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+server:
+  port: 8085
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery-server:8761/eureka/
+
+# ❌ Redis 설정 없음 (domain-reservation은 Redis 사용 안 함)
+```
+
+### 4.5 build.gradle
+
+```gradle
+dependencies {
+    // Web & Validation
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // Data & Database
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // Flyway
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-mysql'
+
+    // Service Discovery
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+    // Actuator
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // Domain Common
+    implementation project(':domain-common')
+
+    // ❌ infra-redis 의존성 없음 (BFF가 사용)
+    // ❌ domain-restaurant, domain-member 의존성 없음
+
+    // Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+```
+
+### 4.6 Dockerfile & docker-compose.yml
+
+**Dockerfile**: `domain-reservation/Dockerfile`
+
+```dockerfile
+FROM gradle:8.5-jdk21 AS build
+WORKDIR /app
+COPY . .
+RUN gradle :domain-reservation:bootJar --no-daemon
+
+FROM openjdk:21-jdk-slim
+WORKDIR /app
+COPY --from=build /app/domain-reservation/build/libs/*.jar app.jar
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s \
+  CMD curl -f http://localhost:8085/actuator/health || exit 1
+
+EXPOSE 8085
+ENTRYPOINT ["java", "-jar", "app.jar"]
+```
+
+**docker-compose.yml 추가**:
+
+```yaml
+services:
+  domain-reservation-service:
+    build:
+      context: .
+      dockerfile: domain-reservation/Dockerfile
+    ports:
+      - "8085:8085"
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-reservation:3306/wellmeet_reservation
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: password
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://discovery-server:8761/eureka/
+    depends_on:
+      mysql-reservation:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
+    networks:
+      - wellmeet-network
+    # ❌ Redis 의존성 없음
+```
+
+### 4.7 복잡한 로직은 BFF(api-*)에서 처리
+
+**api-user/ReservationService.java** (참고):
+
+```java
+@Service
+@Transactional
+@RequiredArgsConstructor
+public class ReservationService {
+
+    // Phase 4: 직접 의존성
+    private final ReservationDomainService reservationDomainService;
+    private final RestaurantDomainService restaurantDomainService;
+    private final MemberDomainService memberDomainService;
+    private final ReservationRedisService redisService;  // BFF가 Redis 관리
+
+    public CreateReservationResponse reserve(String memberId, CreateReservationRequest request) {
+        // 1. BFF가 Redis 분산 락 획득
+        if (!redisService.isReserving(memberId, request.restaurantId(), request.availableDateId())) {
+            throw new AlreadyReservingException();
+        }
+
+        // 2. BFF가 Member 확인 (domain-member)
+        Member member = memberDomainService.getById(memberId);
+
+        // 3. BFF가 Capacity 감소 (domain-restaurant)
+        restaurantDomainService.decreaseCapacity(request.availableDateId(), request.partySize());
+
+        // 4. BFF가 Reservation 생성 (domain-reservation)
+        Reservation reservation = reservationDomainService.createReservation(request);
+
+        // 5. BFF가 응답 조합
+        return buildResponse(reservation, member, ...);
+    }
+}
+```
 
 **Phase 4 완료 기준**:
-- [ ] domain-reservation 독립 서버 실행 (포트 8084)
-- [ ] Eureka 등록 확인
-- [ ] REST API 정상 응답
-- [ ] Flyway 마이그레이션 정상 작동
-- [ ] Redis 분산 락 정상 작동
-- [ ] api-* 모듈 직접 의존성 유지
+
+**코드 구현 (완료)**:
+- [x] REST API Controller (DomainReservationController)
+- [x] Domain Service (DomainReservationService)
+- [x] DTO 클래스 (Request/Response)
+- [x] application.yml (Redis 설정 없음)
+- [x] build.gradle (infra-redis 의존성 없음)
+- [x] Dockerfile
+- [x] docker-compose.yml
+
+**실행 검증 (미완료)**:
+- [ ] ⚠️ Application 클래스 주석 해제 및 빈 스캔 문제 해결
+- [ ] ⚠️ bootJar 빌드 성공
+- [ ] ⚠️ domain-reservation 독립 서버 실행 (포트 8085)
+- [ ] ⚠️ Eureka 등록 확인
+- [ ] ⚠️ Flyway 마이그레이션 성공
+- [ ] ⚠️ REST API 응답 확인
+- [ ] ⚠️ api-* 모듈 직접 의존성 유지
+
+**완료도**: 80% (코드 완성, 실행 검증 보류)
+
+**중요**:
+- ✅ domain-reservation은 다른 domain 서버를 호출하지 않음
+- ✅ BFF(api-*)가 모든 오케스트레이션 담당
+- ✅ Redis 락은 BFF에서만 사용
+- ✅ domain-reservation은 단순 CRUD + 도메인 검증만
 
 ---
 
