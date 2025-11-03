@@ -33,7 +33,7 @@ public class RestaurantResponse {
         this.address = restaurant.getAddress();
         this.latitude = restaurant.getLatitude();
         this.longitude = restaurant.getLongitude();
-        this.thumbnail = restaurant.getThumbnailUrl();
+        this.thumbnail = restaurant.getThumbnail();
         this.reviews = reviews;
         this.menus = menus;
         this.favorite = isFavorite;

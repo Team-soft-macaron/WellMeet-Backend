@@ -54,7 +54,7 @@ public class RestaurantService {
 
     public RestaurantResponse getRestaurant(String restaurantId, String memberId) {
         Boolean isFavorite = favoriteRestaurantClient.isFavorite(memberId, restaurantId);
-        boolean isFavoriteValue = (isFavorite != null) ? isFavorite : false;
+        boolean isFavoriteValue = Boolean.TRUE.equals(isFavorite);
 
         RestaurantDTO restaurant = restaurantClient.getRestaurant(restaurantId);
 

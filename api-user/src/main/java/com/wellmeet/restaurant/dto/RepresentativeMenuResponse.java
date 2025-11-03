@@ -12,7 +12,7 @@ public class RepresentativeMenuResponse {
     private int price;
 
     public RepresentativeMenuResponse(MenuDTO menu) {
-        this.name = menu.getName();
-        this.price = menu.getPrice();
+        this.name = menu.name();
+        this.price = menu.price();
     }
 }

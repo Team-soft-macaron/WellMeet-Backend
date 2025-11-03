@@ -1,4 +1,4 @@
 package com.wellmeet.client.dto.request;
 
-public record IncreaseCapacityRequest(int partySize) {
+public record IncreaseCapacityRequest(Long availableDateId, int partySize) {
 }

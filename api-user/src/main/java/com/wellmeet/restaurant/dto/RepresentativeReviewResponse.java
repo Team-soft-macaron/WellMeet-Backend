@@ -10,11 +10,9 @@ public class RepresentativeReviewResponse {
 
     private String situation;
     private String content;
-    private String logo;
 
     public RepresentativeReviewResponse(ReviewDTO review) {
-        this.situation = review.getSituation();
-        this.content = review.getContent();
-        this.logo = review.getSituationLogo();
+        this.situation = review.situation();
+        this.content = review.content();
     }
 }
