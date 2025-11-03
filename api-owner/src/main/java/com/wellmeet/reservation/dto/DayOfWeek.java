@@ -1,4 +1,4 @@
-package com.wellmeet.common;
+package com.wellmeet.reservation.dto;
 
 public enum DayOfWeek {
 

@@ -5,8 +5,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import com.wellmeet.BaseControllerTest;
-import com.wellmeet.common.ReservationStatus;
 import com.wellmeet.reservation.dto.ReservationResponse;
+import com.wellmeet.restaurant.dto.ReservationStatus;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;

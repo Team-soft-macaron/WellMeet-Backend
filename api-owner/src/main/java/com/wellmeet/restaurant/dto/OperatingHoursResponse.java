@@ -1,7 +1,7 @@
 package com.wellmeet.restaurant.dto;
 
 import com.wellmeet.client.dto.BusinessHourDTO;
-import com.wellmeet.common.DayOfWeek;
+import com.wellmeet.reservation.dto.DayOfWeek;
 import java.time.LocalTime;
 import java.util.List;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.wellmeet.common;
+package com.wellmeet.restaurant.dto;
 
 public enum ReservationStatus {
 

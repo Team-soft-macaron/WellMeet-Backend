@@ -11,9 +11,9 @@ import com.wellmeet.client.dto.BusinessHourDTO;
 import com.wellmeet.client.dto.RestaurantDTO;
 import com.wellmeet.client.dto.request.UpdateOperatingHoursDTO;
 import com.wellmeet.client.dto.request.UpdateRestaurantDTO;
-import com.wellmeet.common.DayOfWeek;
 import com.wellmeet.global.event.EventPublishService;
 import com.wellmeet.global.event.event.RestaurantUpdatedEvent;
+import com.wellmeet.reservation.dto.DayOfWeek;
 import com.wellmeet.restaurant.dto.OperatingHoursResponse;
 import com.wellmeet.restaurant.dto.UpdateOperatingHoursRequest;
 import com.wellmeet.restaurant.dto.UpdateOperatingHoursRequest.DayHours;
@@ -46,7 +46,7 @@ class RestaurantServiceTest {
         @Test
         void 영업시간을_조회한다() {
             String restaurantId = "restaurant-1";
-            List<BusinessHourDTO> businessHours = createBusinessHourDTOList(restaurantId);
+            List<BusinessHourDTO> businessHours = createBusinessHourDTOList();
 
             when(restaurantClient.getOperatingHours(restaurantId))
                     .thenReturn(businessHours);
@@ -64,7 +64,7 @@ class RestaurantServiceTest {
         @Test
         void 영업시간을_수정한다() {
             String restaurantId = "restaurant-1";
-            List<BusinessHourDTO> businessHours = createBusinessHourDTOList(restaurantId);
+            List<BusinessHourDTO> businessHours = createBusinessHourDTOList();
 
             List<DayHours> dayHoursList = List.of(
                     new DayHours(DayOfWeek.MONDAY, true,
@@ -167,7 +167,7 @@ class RestaurantServiceTest {
         }
     }
 
-    private List<BusinessHourDTO> createBusinessHourDTOList(String restaurantId) {
+    private List<BusinessHourDTO> createBusinessHourDTOList() {
         return List.of(
                 BusinessHourDTO.builder()
                         .id(1L)

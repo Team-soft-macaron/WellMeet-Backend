@@ -3,7 +3,6 @@ plugins {
 }
 
 dependencies {
-    // Spring Cloud OpenFeign
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
@@ -14,10 +13,5 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-    // testFixtures 제거 (Phase 5-1)
-    // testImplementation(testFixtures(project(':domain-reservation')))
-    // testImplementation(testFixtures(project(':domain-member')))
-    // testImplementation(testFixtures(project(':domain-owner')))
-    // testImplementation(testFixtures(project(':domain-restaurant')))
     testImplementation 'io.rest-assured:rest-assured'
 }

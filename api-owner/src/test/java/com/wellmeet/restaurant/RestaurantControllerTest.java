@@ -6,7 +6,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import com.wellmeet.BaseControllerTest;
-import com.wellmeet.common.DayOfWeek;
+import com.wellmeet.reservation.dto.DayOfWeek;
 import com.wellmeet.restaurant.dto.OperatingHoursResponse;
 import com.wellmeet.restaurant.dto.UpdateOperatingHoursRequest;
 import com.wellmeet.restaurant.dto.UpdateOperatingHoursRequest.DayHours;

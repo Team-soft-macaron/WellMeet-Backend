@@ -2,7 +2,7 @@ package com.wellmeet.reservation.dto;
 
 import com.wellmeet.client.dto.AvailableDateDTO;
 import com.wellmeet.client.dto.ReservationDTO;
-import com.wellmeet.common.ReservationStatus;
+import com.wellmeet.restaurant.dto.ReservationStatus;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -25,7 +25,8 @@ public class ReservationResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public ReservationResponse(ReservationDTO reservation, AvailableDateDTO availableDate, String memberName, String memberPhone, String memberEmail, boolean memberVip) {
+    public ReservationResponse(ReservationDTO reservation, AvailableDateDTO availableDate, String memberName,
+                               String memberPhone, String memberEmail, boolean memberVip) {
         CustomerSummaryResponse customerResponse = new CustomerSummaryResponse(
                 reservation.getMemberId(),
                 memberName,
