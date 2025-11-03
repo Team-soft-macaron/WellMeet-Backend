@@ -2,7 +2,7 @@ spring:
   config:
     import:
       - classpath:application-domain-test.yml
-      - classpath:application-kafka-test.yml
+      - classpath:application-infra-kafka-test.yml
 
   main:
     allow-bean-definition-overriding: true

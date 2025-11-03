@@ -1,8 +1,7 @@
 package com.wellmeet.restaurant.dto;
 
-import com.wellmeet.domain.restaurant.businesshour.entity.BusinessHour;
-import com.wellmeet.domain.restaurant.businesshour.entity.BusinessHours;
-import com.wellmeet.domain.restaurant.businesshour.entity.DayOfWeek;
+import com.wellmeet.client.dto.BusinessHourDTO;
+import com.wellmeet.reservation.dto.DayOfWeek;
 import java.time.LocalTime;
 import java.util.List;
 import lombok.Getter;
@@ -14,9 +13,8 @@ public class OperatingHoursResponse {
 
     private List<DayHours> operatingHours;
 
-    public OperatingHoursResponse(BusinessHours operatingHours) {
-        this.operatingHours = operatingHours.getValue()
-                .stream()
+    public OperatingHoursResponse(List<BusinessHourDTO> businessHours) {
+        this.operatingHours = businessHours.stream()
                 .map(DayHours::new)
                 .toList();
     }
@@ -31,12 +29,12 @@ public class OperatingHoursResponse {
         private boolean operating;
         private BreakTime breakTime;
 
-        public DayHours(BusinessHour businessHour) {
-            this.dayOfWeek = businessHour.getDayOfWeek();
-            this.open = businessHour.getOpenTime();
-            this.close = businessHour.getCloseTime();
-            this.operating = businessHour.isOpen();
-            this.breakTime = new BreakTime(businessHour);
+        public DayHours(BusinessHourDTO dto) {
+            this.dayOfWeek = DayOfWeek.valueOf(dto.getDayOfWeek());
+            this.open = dto.getOpen();
+            this.close = dto.getClose();
+            this.operating = dto.isOperating();
+            this.breakTime = new BreakTime(dto);
         }
     }
 
@@ -47,9 +45,9 @@ public class OperatingHoursResponse {
         private LocalTime start;
         private LocalTime end;
 
-        public BreakTime(BusinessHour businessHour) {
-            this.start = businessHour.getBreakStartTime();
-            this.end = businessHour.getBreakEndTime();
+        public BreakTime(BusinessHourDTO dto) {
+            this.start = dto.getBreakStart();
+            this.end = dto.getBreakEnd();
         }
     }
 }

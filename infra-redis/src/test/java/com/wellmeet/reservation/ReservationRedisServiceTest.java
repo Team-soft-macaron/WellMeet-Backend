@@ -1,6 +1,8 @@
 package com.wellmeet.reservation;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.wellmeet.reservation.exception.ReservationException;
 import java.util.concurrent.CountDownLatch;
@@ -15,7 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-@ActiveProfiles("domain-redis-test")
+@ActiveProfiles("infra-redis-test")
 class ReservationRedisServiceTest {
 
     @Autowired
