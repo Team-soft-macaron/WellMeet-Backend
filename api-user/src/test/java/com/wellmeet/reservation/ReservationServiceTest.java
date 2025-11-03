@@ -1,88 +1,210 @@
 package com.wellmeet.reservation;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import com.wellmeet.BaseServiceTest;
-import com.wellmeet.domain.member.entity.Member;
-import com.wellmeet.domain.owner.entity.Owner;
-import com.wellmeet.domain.reservation.entity.Reservation;
-import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
-import com.wellmeet.domain.restaurant.entity.Restaurant;
+import com.wellmeet.client.AvailableDateClient;
+import com.wellmeet.client.MemberClient;
+import com.wellmeet.client.ReservationClient;
+import com.wellmeet.client.RestaurantClient;
+import com.wellmeet.client.dto.AvailableDateDTO;
+import com.wellmeet.client.dto.MemberDTO;
+import com.wellmeet.client.dto.ReservationDTO;
+import com.wellmeet.client.dto.RestaurantDTO;
+import com.wellmeet.client.dto.request.CreateReservationDTO;
+import com.wellmeet.client.dto.request.DecreaseCapacityRequest;
+import com.wellmeet.client.dto.request.UpdateReservationDTO;
+import com.wellmeet.global.event.EventPublishService;
 import com.wellmeet.reservation.dto.CreateReservationRequest;
 import com.wellmeet.reservation.dto.CreateReservationResponse;
+import com.wellmeet.reservation.dto.ReservationResponse;
+import com.wellmeet.reservation.dto.SummaryReservationResponse;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.time.LocalTime;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-class ReservationServiceTest extends BaseServiceTest {
+@ExtendWith(MockitoExtension.class)
+class ReservationServiceTest {
 
-    @Autowired
-    private ReservationService reservationService;
+    @Mock
+    private ReservationClient reservationClient;
 
-    @Autowired
+    @Mock
+    private MemberClient memberClient;
+
+    @Mock
+    private RestaurantClient restaurantClient;
+
+    @Mock
+    private AvailableDateClient availableDateClient;
+
+    @Mock
     private ReservationRedisService reservationRedisService;
 
-    @BeforeEach
-    void setUp() {
-        reservationRedisService.deleteReservationLock();
-    }
+    @Mock
+    private EventPublishService eventPublishService;
+
+    @InjectMocks
+    private ReservationService reservationService;
 
     @Nested
     class Reserve {
 
         @Test
-        void 한_사람이_같은_예약_요청을_동시에_여러번_신청해도_한_번만_처리된다() throws InterruptedException {
-            Owner owner1 = ownerGenerator.generate("owner1");
-            Restaurant restaurant1 = restaurantGenerator.generate("restaurant1", owner1.getId());
-            int capacity = 100;
-            AvailableDate availableDate = availableDateGenerator.generate(LocalDateTime.now().plusDays(1), capacity,
-                    restaurant1);
-            int partySize = 4;
+        void 예약을_생성한다() {
+            String memberId = "member-1";
             CreateReservationRequest request = new CreateReservationRequest(
-                    restaurant1.getId(), availableDate.getId(), partySize, "request"
+                    "restaurant-1", 1L, 4, "창가 자리 부탁드립니다"
             );
-            Member member = memberGenerator.generate("test");
 
-            runAtSameTime(500, () -> reservationService.reserve(member.getId(), request));
-            List<Reservation> reservations = reservationRepository.findAll();
-            AvailableDate foundAvailableDate = availableDateRepository.findById(availableDate.getId()).get();
-
-            assertAll(
-                    () -> assertThat(reservations).hasSize(1),
-                    () -> assertThat(foundAvailableDate.getMaxCapacity()).isEqualTo(capacity - partySize)
+            MemberDTO member = createMemberDTO(memberId, "홍길동");
+            RestaurantDTO restaurant = createRestaurantDTO("restaurant-1", "맛집");
+            AvailableDateDTO availableDate = createAvailableDateDTO(
+                    1L, LocalDate.now().plusDays(1), LocalTime.of(18, 0), 10
             );
+            ReservationDTO createdReservation = createReservationDTO(
+                    1L, memberId, "restaurant-1", 1L, 4, "PENDING"
+            );
+
+            when(reservationClient.getReservationsByMember(memberId)).thenReturn(List.of());
+            when(memberClient.getMember(memberId)).thenReturn(member);
+            when(restaurantClient.getRestaurant("restaurant-1")).thenReturn(restaurant);
+            when(restaurantClient.getAvailableDate("restaurant-1", 1L)).thenReturn(availableDate);
+            when(reservationClient.createReservation(any(CreateReservationDTO.class)))
+                    .thenReturn(createdReservation);
+
+            CreateReservationResponse response = reservationService.reserve(memberId, request);
+
+            assertThat(response.getId()).isEqualTo(1L);
+            assertThat(response.getRestaurantName()).isEqualTo("맛집");
+            assertThat(response.getPartySize()).isEqualTo(4);
+            verify(availableDateClient).decreaseCapacity(any(DecreaseCapacityRequest.class));
+            verify(eventPublishService).publishReservationCreatedEvent(any());
         }
 
         @Test
-        void 여러_사람이_예약_요청을_동시에_신청해도_적절히_처리된다() throws InterruptedException {
-            Owner owner1 = ownerGenerator.generate("owner1");
-            Restaurant restaurant1 = restaurantGenerator.generate("restaurant1", owner1.getId());
-            int capacity = 100;
-            AvailableDate availableDate = availableDateGenerator.generate(LocalDateTime.now().plusDays(1), capacity,
-                    restaurant1);
-            int partySize = 2;
+        void 이미_예약된_날짜는_중복_예약할_수_없다() {
+            String memberId = "member-1";
             CreateReservationRequest request = new CreateReservationRequest(
-                    restaurant1.getId(), availableDate.getId(), partySize, "request"
+                    "restaurant-1", 1L, 4, "창가 자리 부탁드립니다"
             );
-            List<Runnable> tasks = new ArrayList<>();
-            for (int i = 0; i < 500; i++) {
-                Member member = memberGenerator.generate("member" + i);
-                tasks.add(() -> reservationService.reserve(member.getId(), request));
-            }
 
-            runAtSameTime(tasks);
-            List<Reservation> reservations = reservationRepository.findAll();
-            AvailableDate foundAvailableDate = availableDateRepository.findById(availableDate.getId()).get();
-
-            assertAll(
-                    () -> assertThat(reservations).hasSize(50),
-                    () -> assertThat(foundAvailableDate.getMaxCapacity()).isZero()
+            ReservationDTO existingReservation = createReservationDTO(
+                    1L, memberId, "restaurant-1", 1L, 2, "CONFIRMED"
             );
+
+            when(reservationClient.getReservationsByMember(memberId))
+                    .thenReturn(List.of(existingReservation));
+
+            assertThatThrownBy(() -> reservationService.reserve(memberId, request))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("이미 예약된 날짜입니다.");
+
+            verify(availableDateClient, never()).decreaseCapacity(any());
+            verify(reservationClient, never()).createReservation(any());
+        }
+    }
+
+    @Nested
+    class GetReservations {
+
+        @Test
+        void 회원의_예약_목록을_조회한다() {
+            String memberId = "member-1";
+            ReservationDTO reservation1 = createReservationDTO(
+                    1L, memberId, "restaurant-1", 1L, 4, "CONFIRMED"
+            );
+            ReservationDTO reservation2 = createReservationDTO(
+                    2L, memberId, "restaurant-2", 2L, 2, "PENDING"
+            );
+
+            RestaurantDTO restaurant1 = createRestaurantDTO("restaurant-1", "식당1");
+            RestaurantDTO restaurant2 = createRestaurantDTO("restaurant-2", "식당2");
+            AvailableDateDTO availableDate1 = createAvailableDateDTO(
+                    1L, LocalDate.now().plusDays(1), LocalTime.of(18, 0), 10
+            );
+            AvailableDateDTO availableDate2 = createAvailableDateDTO(
+                    2L, LocalDate.now().plusDays(2), LocalTime.of(19, 0), 10
+            );
+
+            when(reservationClient.getReservationsByMember(memberId))
+                    .thenReturn(List.of(reservation1, reservation2));
+            when(restaurantClient.getRestaurantsByIds(any()))
+                    .thenReturn(List.of(restaurant1, restaurant2));
+            when(restaurantClient.getAvailableDate("restaurant-1", 1L)).thenReturn(availableDate1);
+            when(restaurantClient.getAvailableDate("restaurant-2", 2L)).thenReturn(availableDate2);
+
+            List<SummaryReservationResponse> result = reservationService.getReservations(memberId);
+
+            assertThat(result).hasSize(2);
+            assertThat(result.get(0).getId()).isEqualTo(1L);
+            assertThat(result.get(1).getId()).isEqualTo(2L);
+        }
+
+        @Test
+        void 예약이_없으면_빈_리스트를_반환한다() {
+            String memberId = "member-1";
+
+            when(reservationClient.getReservationsByMember(memberId)).thenReturn(List.of());
+
+            List<SummaryReservationResponse> result = reservationService.getReservations(memberId);
+
+            assertThat(result).isEmpty();
+        }
+    }
+
+    @Nested
+    class GetReservation {
+
+        @Test
+        void 예약_상세_정보를_조회한다() {
+            Long reservationId = 1L;
+            String memberId = "member-1";
+            ReservationDTO reservation = createReservationDTO(
+                    reservationId, memberId, "restaurant-1", 1L, 4, "CONFIRMED"
+            );
+            RestaurantDTO restaurant = createRestaurantDTO("restaurant-1", "맛집");
+            AvailableDateDTO availableDate = createAvailableDateDTO(
+                    1L, LocalDate.now().plusDays(1), LocalTime.of(18, 0), 10
+            );
+
+            when(reservationClient.getReservation(reservationId)).thenReturn(reservation);
+            when(restaurantClient.getRestaurant("restaurant-1")).thenReturn(restaurant);
+            when(restaurantClient.getAvailableDate("restaurant-1", 1L)).thenReturn(availableDate);
+            when(restaurantClient.getAverageRating("restaurant-1")).thenReturn(4.5);
+
+            ReservationResponse response = reservationService.getReservation(reservationId, memberId);
+
+            assertThat(response.getId()).isEqualTo(reservationId);
+            assertThat(response.getRestaurantName()).isEqualTo("맛집");
+            assertThat(response.getRestaurantRating()).isEqualTo(4.5);
+        }
+
+        @Test
+        void 본인의_예약이_아니면_조회할_수_없다() {
+            Long reservationId = 1L;
+            String memberId = "member-1";
+            String otherMemberId = "member-2";
+            ReservationDTO reservation = createReservationDTO(
+                    reservationId, otherMemberId, "restaurant-1", 1L, 4, "CONFIRMED"
+            );
+
+            when(reservationClient.getReservation(reservationId)).thenReturn(reservation);
+
+            assertThatThrownBy(() -> reservationService.getReservation(reservationId, memberId))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("권한이 없습니다.");
         }
     }
 
@@ -90,118 +212,141 @@ class ReservationServiceTest extends BaseServiceTest {
     class UpdateReservation {
 
         @Test
-        void 같은_예약시간의_인원수를_변경할_수_있다() {
-            Owner owner1 = ownerGenerator.generate("owner1");
-            Restaurant restaurant1 = restaurantGenerator.generate("restaurant1", owner1.getId());
-            int capacity = 16;
-            AvailableDate availableDate1 = availableDateGenerator.generate(LocalDateTime.now().plusDays(1), capacity,
-                    restaurant1);
-            int partySize = 4;
-            Member member1 = memberGenerator.generate("member1");
-            CreateReservationRequest createRequest1 = new CreateReservationRequest(
-                    restaurant1.getId(), availableDate1.getId(), partySize, "request"
-            );
-            CreateReservationResponse reserve1 = reservationService.reserve(member1.getId(), createRequest1);
-            int changePartySize = 7;
-            CreateReservationRequest request1 = new CreateReservationRequest(
-                    restaurant1.getId(), availableDate1.getId(), changePartySize, "request"
+        void 예약을_수정한다() {
+            Long reservationId = 1L;
+            String memberId = "member-1";
+            CreateReservationRequest request = new CreateReservationRequest(
+                    "restaurant-1", 2L, 6, "수정된 요청사항"
             );
 
-            reservationService.updateReservation(
-                    reserve1.getId(), member1.getId(), request1
+            ReservationDTO existingReservation = createReservationDTO(
+                    reservationId, memberId, "restaurant-1", 1L, 4, "CONFIRMED"
             );
-            List<Reservation> reservations = reservationRepository.findAll();
-            AvailableDate foundAvailableDate1 = availableDateRepository.findById(availableDate1.getId()).get();
+            AvailableDateDTO oldAvailableDate = createAvailableDateDTO(
+                    1L, LocalDate.now().plusDays(1), LocalTime.of(18, 0), 10
+            );
+            AvailableDateDTO newAvailableDate = createAvailableDateDTO(
+                    2L, LocalDate.now().plusDays(2), LocalTime.of(19, 0), 10
+            );
+            ReservationDTO updatedReservation = createReservationDTO(
+                    reservationId, memberId, "restaurant-1", 2L, 6, "CONFIRMED"
+            );
+            MemberDTO member = createMemberDTO(memberId, "홍길동");
+            RestaurantDTO restaurant = createRestaurantDTO("restaurant-1", "맛집");
 
-            assertAll(
-                    () -> assertThat(reservations).hasSize(1),
-                    () -> assertThat(foundAvailableDate1.getMaxCapacity()).isEqualTo(capacity - changePartySize)
+            when(reservationClient.getReservation(reservationId)).thenReturn(existingReservation);
+            when(restaurantClient.getAvailableDate("restaurant-1", 2L)).thenReturn(newAvailableDate);
+            when(restaurantClient.getAvailableDate("restaurant-1", 1L)).thenReturn(oldAvailableDate);
+            when(reservationClient.updateReservation(any(Long.class), any(UpdateReservationDTO.class)))
+                    .thenReturn(updatedReservation);
+            when(memberClient.getMember(memberId)).thenReturn(member);
+            when(restaurantClient.getRestaurant("restaurant-1")).thenReturn(restaurant);
+
+            CreateReservationResponse response = reservationService.updateReservation(
+                    reservationId, memberId, request
             );
+
+            assertThat(response.getId()).isEqualTo(reservationId);
+            assertThat(response.getPartySize()).isEqualTo(6);
+            verify(availableDateClient).increaseCapacity(any());
+            verify(availableDateClient).decreaseCapacity(any());
+            verify(eventPublishService).publishReservationUpdatedEvent(any());
+        }
+    }
+
+    @Nested
+    class Cancel {
+
+        @Test
+        void 예약을_취소한다() {
+            Long reservationId = 1L;
+            String memberId = "member-1";
+            ReservationDTO reservation = createReservationDTO(
+                    reservationId, memberId, "restaurant-1", 1L, 4, "CONFIRMED"
+            );
+            AvailableDateDTO availableDate = createAvailableDateDTO(
+                    1L, LocalDate.now().plusDays(1), LocalTime.of(18, 0), 10
+            );
+            MemberDTO member = createMemberDTO(memberId, "홍길동");
+            RestaurantDTO restaurant = createRestaurantDTO("restaurant-1", "맛집");
+
+            when(reservationClient.getReservation(reservationId)).thenReturn(reservation);
+            when(restaurantClient.getAvailableDate("restaurant-1", 1L)).thenReturn(availableDate);
+            when(memberClient.getMember(memberId)).thenReturn(member);
+            when(restaurantClient.getRestaurant("restaurant-1")).thenReturn(restaurant);
+
+            reservationService.cancel(reservationId, memberId);
+
+            verify(availableDateClient).increaseCapacity(any());
+            verify(reservationClient).cancelReservation(reservationId);
+            verify(eventPublishService).publishReservationCanceledEvent(any());
         }
 
         @Test
-        void 한_사람이_업데이트_요청을_동시에_여러개_보내도_한_번만_처리된다() throws InterruptedException {
-            Owner owner1 = ownerGenerator.generate("owner1");
-            Restaurant restaurant1 = restaurantGenerator.generate("restaurant1", owner1.getId());
-            int capacity = 50;
-            AvailableDate availableDate1 = availableDateGenerator.generate(LocalDateTime.now().plusDays(1), capacity,
-                    restaurant1);
-            AvailableDate availableDate2 = availableDateGenerator.generate(LocalDateTime.now().plusDays(2), capacity,
-                    restaurant1);
-            int partySize = 4;
-            Member member1 = memberGenerator.generate("member1");
-            CreateReservationRequest createRequest1 = new CreateReservationRequest(
-                    restaurant1.getId(), availableDate1.getId(), partySize, "request"
-            );
-            CreateReservationResponse reserve1 = reservationService.reserve(member1.getId(), createRequest1);
-            int changePartySize = 7;
-            CreateReservationRequest request1 = new CreateReservationRequest(
-                    restaurant1.getId(), availableDate2.getId(), changePartySize, "request"
+        void 본인의_예약이_아니면_취소할_수_없다() {
+            Long reservationId = 1L;
+            String memberId = "member-1";
+            String otherMemberId = "member-2";
+            ReservationDTO reservation = createReservationDTO(
+                    reservationId, otherMemberId, "restaurant-1", 1L, 4, "CONFIRMED"
             );
 
-            runAtSameTime(2, () -> reservationService.updateReservation(
-                    reserve1.getId(), member1.getId(), request1
-            ));
-            List<Reservation> reservations = reservationRepository.findAll();
-            AvailableDate foundAvailableDate1 = availableDateRepository.findById(availableDate1.getId()).get();
-            AvailableDate foundAvailableDate2 = availableDateRepository.findById(availableDate2.getId()).get();
+            when(reservationClient.getReservation(reservationId)).thenReturn(reservation);
 
-            assertAll(
-                    () -> assertThat(reservations).hasSize(1),
-                    () -> assertThat(foundAvailableDate1.getMaxCapacity()).isEqualTo(capacity),
-                    () -> assertThat(foundAvailableDate2.getMaxCapacity()).isEqualTo(capacity - changePartySize)
-            );
+            assertThatThrownBy(() -> reservationService.cancel(reservationId, memberId))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("권한이 없습니다.");
+
+            verify(availableDateClient, never()).increaseCapacity(any());
+            verify(reservationClient, never()).cancelReservation(any());
         }
+    }
 
-        @Test
-        void 여러_사람이_업데이트_요청을_동시에_여러개_보내도_적절히_처리된다() throws InterruptedException {
-            Owner owner1 = ownerGenerator.generate("owner1");
-            Restaurant restaurant1 = restaurantGenerator.generate("restaurant1", owner1.getId());
-            int capacity = 16;
-            AvailableDate availableDate1 = availableDateGenerator.generate(LocalDateTime.now().plusDays(1), capacity,
-                    restaurant1);
-            AvailableDate availableDate2 = availableDateGenerator.generate(LocalDateTime.now().plusDays(2), capacity,
-                    restaurant1);
-            AvailableDate availableDate3 = availableDateGenerator.generate(LocalDateTime.now().plusDays(3), capacity,
-                    restaurant1);
-            int partySize = 4;
-            Member member1 = memberGenerator.generate("member1");
-            Member member2 = memberGenerator.generate("member2");
-            CreateReservationRequest createRequest1 = new CreateReservationRequest(
-                    restaurant1.getId(), availableDate1.getId(), partySize, "request"
-            );
-            CreateReservationRequest createRequest2 = new CreateReservationRequest(
-                    restaurant1.getId(), availableDate2.getId(), partySize, "request"
-            );
-            CreateReservationResponse reserve1 = reservationService.reserve(member1.getId(), createRequest1);
-            CreateReservationResponse reserve2 = reservationService.reserve(member2.getId(), createRequest2);
-            int changePartySize = 7;
-            CreateReservationRequest request1 = new CreateReservationRequest(
-                    restaurant1.getId(), availableDate3.getId(), changePartySize, "request"
-            );
-            CreateReservationRequest request2 = new CreateReservationRequest(
-                    restaurant1.getId(), availableDate3.getId(), changePartySize, "request"
-            );
-            List<Runnable> tasks = new ArrayList<>();
-            tasks.add(() -> reservationService.updateReservation(
-                    reserve1.getId(), member1.getId(), request1
-            ));
-            tasks.add(() -> reservationService.updateReservation(
-                    reserve2.getId(), member2.getId(), request2
-            ));
+    private MemberDTO createMemberDTO(String id, String name) {
+        return MemberDTO.builder()
+                .id(id)
+                .name(name)
+                .nickname(name + "_nick")
+                .email(name + "@test.com")
+                .phone("010-1234-5678")
+                .build();
+    }
 
-            runAtSameTime(tasks);
-            List<Reservation> reservations = reservationRepository.findAll();
-            AvailableDate foundAvailableDate1 = availableDateRepository.findById(availableDate1.getId()).get();
-            AvailableDate foundAvailableDate2 = availableDateRepository.findById(availableDate2.getId()).get();
-            AvailableDate foundAvailableDate3 = availableDateRepository.findById(availableDate3.getId()).get();
+    private RestaurantDTO createRestaurantDTO(String id, String name) {
+        return RestaurantDTO.builder()
+                .id(id)
+                .name(name)
+                .address("서울시 강남구")
+                .latitude(37.5)
+                .longitude(127.0)
+                .thumbnail("thumbnail.jpg")
+                .ownerId("owner-1")
+                .build();
+    }
 
-            assertAll(
-                    () -> assertThat(reservations).hasSize(2),
-                    () -> assertThat(foundAvailableDate1.getMaxCapacity()).isEqualTo(capacity),
-                    () -> assertThat(foundAvailableDate2.getMaxCapacity()).isEqualTo(capacity),
-                    () -> assertThat(foundAvailableDate3.getMaxCapacity()).isEqualTo(capacity - changePartySize * 2)
-            );
-        }
+    private AvailableDateDTO createAvailableDateDTO(Long id, LocalDate date, LocalTime time, int capacity) {
+        return AvailableDateDTO.builder()
+                .id(id)
+                .date(date)
+                .time(time)
+                .maxCapacity(capacity)
+                .restaurantId("restaurant-1")
+                .build();
+    }
+
+    private ReservationDTO createReservationDTO(
+            Long id, String memberId, String restaurantId, Long availableDateId, int partySize, String status
+    ) {
+        return ReservationDTO.builder()
+                .id(id)
+                .memberId(memberId)
+                .restaurantId(restaurantId)
+                .availableDateId(availableDateId)
+                .partySize(partySize)
+                .specialRequest("요청사항")
+                .status(status)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
     }
 }

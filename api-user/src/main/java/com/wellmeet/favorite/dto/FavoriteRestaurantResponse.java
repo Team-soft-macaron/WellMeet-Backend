@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
+@lombok.Builder
+@lombok.AllArgsConstructor
 public class FavoriteRestaurantResponse {
 
     private String id;

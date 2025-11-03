@@ -2,13 +2,14 @@ package com.wellmeet.reservation.dto;
 
 import com.wellmeet.client.dto.AvailableDateDTO;
 import com.wellmeet.client.dto.ReservationDTO;
-import com.wellmeet.domain.reservation.entity.ReservationStatus;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
+@lombok.Builder
+@lombok.AllArgsConstructor
 public class CreateReservationResponse {
 
     private Long id;

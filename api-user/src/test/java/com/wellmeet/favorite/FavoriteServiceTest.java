@@ -6,13 +6,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.wellmeet.domain.member.FavoriteRestaurantDomainService;
-import com.wellmeet.domain.member.entity.FavoriteRestaurant;
-import com.wellmeet.domain.member.entity.Member;
-import com.wellmeet.domain.owner.entity.Owner;
-import com.wellmeet.domain.restaurant.RestaurantDomainService;
-import com.wellmeet.domain.restaurant.entity.Restaurant;
-import com.wellmeet.domain.restaurant.review.ReviewDomainService;
+import com.wellmeet.client.FavoriteRestaurantClient;
+import com.wellmeet.client.RestaurantClient;
+import com.wellmeet.client.dto.FavoriteRestaurantDTO;
+import com.wellmeet.client.dto.RestaurantDTO;
 import com.wellmeet.favorite.dto.FavoriteRestaurantResponse;
 import java.util.List;
 import org.junit.jupiter.api.Nested;
@@ -26,13 +23,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class FavoriteServiceTest {
 
     @Mock
-    private FavoriteRestaurantDomainService favoriteRestaurantDomainService;
+    private FavoriteRestaurantClient favoriteRestaurantClient;
 
     @Mock
-    private ReviewDomainService reviewDomainService;
-
-    @Mock
-    private RestaurantDomainService restaurantDomainService;
+    private RestaurantClient restaurantClient;
 
     @InjectMocks
     private FavoriteService favoriteService;
@@ -42,21 +36,22 @@ class FavoriteServiceTest {
 
         @Test
         void 즐겨찾기_식당_목록을_조회한다() {
-            Member member = createMember();
-            Restaurant restaurant1 = createRestaurant("restaurant-1", "식당1");
-            Restaurant restaurant2 = createRestaurant("restaurant-2", "식당2");
-            FavoriteRestaurant favorite1 = new FavoriteRestaurant(member.getId(), restaurant1.getId());
-            FavoriteRestaurant favorite2 = new FavoriteRestaurant(member.getId(), restaurant2.getId());
-            List<FavoriteRestaurant> favorites = List.of(favorite1, favorite2);
+            String memberId = "member-1";
+            FavoriteRestaurantDTO favorite1 = createFavoriteRestaurantDTO(memberId, "restaurant-1");
+            FavoriteRestaurantDTO favorite2 = createFavoriteRestaurantDTO(memberId, "restaurant-2");
+            List<FavoriteRestaurantDTO> favorites = List.of(favorite1, favorite2);
 
-            when(favoriteRestaurantDomainService.findAllByMemberId(member.getId()))
+            RestaurantDTO restaurant1 = createRestaurantDTO("restaurant-1", "식당1");
+            RestaurantDTO restaurant2 = createRestaurantDTO("restaurant-2", "식당2");
+
+            when(favoriteRestaurantClient.getFavoritesByMemberId(memberId))
                     .thenReturn(favorites);
-            when(reviewDomainService.getAverageRating("restaurant-1")).thenReturn(4.5);
-            when(reviewDomainService.getAverageRating("restaurant-2")).thenReturn(3.8);
-            when(restaurantDomainService.findAllByIds(List.of(restaurant1.getId(), restaurant2.getId())))
+            when(restaurantClient.getAverageRating("restaurant-1")).thenReturn(4.5);
+            when(restaurantClient.getAverageRating("restaurant-2")).thenReturn(3.8);
+            when(restaurantClient.getRestaurantsByIds(any()))
                     .thenReturn(List.of(restaurant1, restaurant2));
 
-            List<FavoriteRestaurantResponse> result = favoriteService.getFavoriteRestaurants(member.getId());
+            List<FavoriteRestaurantResponse> result = favoriteService.getFavoriteRestaurants(memberId);
 
             assertThat(result).hasSize(2);
             assertThat(result)
@@ -71,7 +66,7 @@ class FavoriteServiceTest {
         void 즐겨찾기가_없으면_빈_리스트를_반환한다() {
             String memberId = "member-1";
 
-            when(favoriteRestaurantDomainService.findAllByMemberId(memberId))
+            when(favoriteRestaurantClient.getFavoritesByMemberId(memberId))
                     .thenReturn(List.of());
 
             List<FavoriteRestaurantResponse> result = favoriteService.getFavoriteRestaurants(memberId);
@@ -85,23 +80,22 @@ class FavoriteServiceTest {
 
         @Test
         void 즐겨찾기_식당을_추가한다() {
-            Member member = createMember();
-            Restaurant restaurant = createRestaurant("restaurant-1", "맛집");
+            String memberId = "member-1";
+            String restaurantId = "restaurant-1";
+            RestaurantDTO restaurant = createRestaurantDTO(restaurantId, "맛집");
 
-            when(restaurantDomainService.getById(restaurant.getId())).thenReturn(restaurant);
-            when(reviewDomainService.getAverageRating(restaurant.getId())).thenReturn(4.2);
+            when(restaurantClient.getRestaurant(restaurantId)).thenReturn(restaurant);
+            when(restaurantClient.getAverageRating(restaurantId)).thenReturn(4.2);
 
             FavoriteRestaurantResponse result = favoriteService.addFavoriteRestaurant(
-                    member.getId(),
-                    restaurant.getId()
+                    memberId,
+                    restaurantId
             );
 
-            assertThat(result.getId()).isEqualTo(restaurant.getId());
+            assertThat(result.getId()).isEqualTo(restaurantId);
             assertThat(result.getName()).isEqualTo("맛집");
             assertThat(result.getRating()).isEqualTo(4.2);
-            verify(favoriteRestaurantDomainService).save(
-                    any(FavoriteRestaurant.class)
-            );
+            verify(favoriteRestaurantClient).addFavorite(memberId, restaurantId);
         }
     }
 
@@ -110,35 +104,28 @@ class FavoriteServiceTest {
 
         @Test
         void 즐겨찾기_식당을_삭제한다() {
-            Member member = createMember();
-            Restaurant restaurant = createRestaurant("restaurant-1", "식당");
-            FavoriteRestaurant favoriteRestaurant = new FavoriteRestaurant(member.getId(), restaurant.getId());
+            String memberId = "member-1";
+            String restaurantId = "restaurant-1";
 
-            when(favoriteRestaurantDomainService.getByMemberIdAndRestaurantId(
-                    member.getId(),
-                    restaurant.getId()
-            )).thenReturn(favoriteRestaurant);
+            favoriteService.removeFavoriteRestaurant(memberId, restaurantId);
 
-            favoriteService.removeFavoriteRestaurant(member.getId(), restaurant.getId());
-
-            verify(favoriteRestaurantDomainService).delete(favoriteRestaurant);
+            verify(favoriteRestaurantClient).removeFavorite(memberId, restaurantId);
         }
     }
 
-    private Member createMember() {
-        return new Member("member", "nickname", "email@test.com", "010-1234-5678");
+    private FavoriteRestaurantDTO createFavoriteRestaurantDTO(String memberId, String restaurantId) {
+        return new FavoriteRestaurantDTO(1L, memberId, restaurantId);
     }
 
-    private Restaurant createRestaurant(String id, String name) {
-        Owner owner = new Owner("owner", "owner@test.com");
-        return new Restaurant(
-                id,
-                name,
-                "서울시 강남구",
-                37.5,
-                127.0,
-                "thumbnail.jpg",
-                owner.getId()
-        );
+    private RestaurantDTO createRestaurantDTO(String id, String name) {
+        return RestaurantDTO.builder()
+                .id(id)
+                .name(name)
+                .address("서울시 강남구")
+                .latitude(37.5)
+                .longitude(127.0)
+                .thumbnail("thumbnail.jpg")
+                .ownerId("owner-1")
+                .build();
     }
 }

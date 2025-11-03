@@ -1,47 +1,56 @@
 package com.wellmeet.favorite;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.wellmeet.BaseControllerTest;
-import com.wellmeet.domain.member.entity.FavoriteRestaurant;
-import com.wellmeet.domain.member.entity.Member;
-import com.wellmeet.domain.owner.entity.Owner;
-import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.favorite.dto.FavoriteRestaurantResponse;
+import java.util.List;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 
-class FavoriteControllerTest extends BaseControllerTest {
+@WebMvcTest(FavoriteController.class)
+class FavoriteControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockitoBean
+    private FavoriteService favoriteService;
 
     @Nested
     class GetFavoriteRestaurants {
 
         @Test
-        void 즐겨찾기_레스토랑_조회() {
-            Member testUser = memberGenerator.generate("test");
-            Member anotherUser = memberGenerator.generate("another");
-            Owner owner1 = ownerGenerator.generate("Owner1");
-            Owner owner2 = ownerGenerator.generate("Owner2");
-            Owner owner3 = ownerGenerator.generate("Owner3");
-            Restaurant restaurant1 = restaurantGenerator.generate("Restaurant 1", owner1.getId());
-            Restaurant restaurant2 = restaurantGenerator.generate("Restaurant 2", owner2.getId());
-            Restaurant restaurant3 = restaurantGenerator.generate("Restaurant 3", owner3.getId());
-            favoriteRestaurantRepository.save(new FavoriteRestaurant(testUser.getId(), restaurant1.getId()));
-            favoriteRestaurantRepository.save(new FavoriteRestaurant(testUser.getId(), restaurant2.getId()));
-            favoriteRestaurantRepository.save(new FavoriteRestaurant(anotherUser.getId(), restaurant2.getId()));
-            favoriteRestaurantRepository.save(new FavoriteRestaurant(anotherUser.getId(), restaurant3.getId()));
+        void 즐겨찾기_레스토랑_조회() throws Exception {
+            String memberId = "member-1";
+            FavoriteRestaurantResponse response1 = createFavoriteRestaurantResponse("restaurant-1", "식당1", 4.5);
+            FavoriteRestaurantResponse response2 = createFavoriteRestaurantResponse("restaurant-2", "식당2", 3.8);
 
-            FavoriteRestaurantResponse[] responses = given()
-                    .contentType("application/json")
-                    .queryParam("memberId", testUser.getId())
-                    .when().get("/user/favorite/restaurant/list")
-                    .then().statusCode(HttpStatus.OK.value())
-                    .extract().as(FavoriteRestaurantResponse[].class);
+            when(favoriteService.getFavoriteRestaurants(memberId))
+                    .thenReturn(List.of(response1, response2));
 
-            assertThat(responses).hasSize(2);
-            assertThat(responses[0].getId()).isEqualTo(restaurant1.getId());
-            assertThat(responses[1].getId()).isEqualTo(restaurant2.getId());
+            mockMvc.perform(get("/user/favorite/restaurant/list")
+                            .queryParam("memberId", memberId)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$").isArray())
+                    .andExpect(jsonPath("$.length()").value(2))
+                    .andExpect(jsonPath("$[0].id").value("restaurant-1"))
+                    .andExpect(jsonPath("$[0].name").value("식당1"))
+                    .andExpect(jsonPath("$[1].id").value("restaurant-2"))
+                    .andExpect(jsonPath("$[1].name").value("식당2"));
+
+            verify(favoriteService).getFavoriteRestaurants(memberId);
         }
     }
 
@@ -49,19 +58,23 @@ class FavoriteControllerTest extends BaseControllerTest {
     class AddFavoriteRestaurant {
 
         @Test
-        void 즐겨찾기_레스토랑_추가() {
-            Member testUser = memberGenerator.generate("testUser");
-            Owner owner = ownerGenerator.generate("Test Owner");
-            Restaurant restaurant = restaurantGenerator.generate("Test Restaurant", owner.getId());
+        void 즐겨찾기_레스토랑_추가() throws Exception {
+            String memberId = "member-1";
+            String restaurantId = "restaurant-1";
+            FavoriteRestaurantResponse response = createFavoriteRestaurantResponse(restaurantId, "맛집", 4.2);
 
-            FavoriteRestaurantResponse response = given()
-                    .contentType("application/json")
-                    .queryParam("memberId", testUser.getId())
-                    .when().post("/user/favorite/restaurant/{restaurantId}", restaurant.getId())
-                    .then().statusCode(HttpStatus.CREATED.value())
-                    .extract().as(FavoriteRestaurantResponse.class);
+            when(favoriteService.addFavoriteRestaurant(memberId, restaurantId))
+                    .thenReturn(response);
 
-            assertThat(response.getId()).isEqualTo(restaurant.getId());
+            mockMvc.perform(post("/user/favorite/restaurant/{restaurantId}", restaurantId)
+                            .queryParam("memberId", memberId)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.id").value(restaurantId))
+                    .andExpect(jsonPath("$.name").value("맛집"))
+                    .andExpect(jsonPath("$.rating").value(4.2));
+
+            verify(favoriteService).addFavoriteRestaurant(memberId, restaurantId);
         }
     }
 
@@ -69,17 +82,26 @@ class FavoriteControllerTest extends BaseControllerTest {
     class RemoveFavoriteRestaurant {
 
         @Test
-        void 즐겨찾기_레스토랑_삭제() {
-            Member testUser = memberGenerator.generate("testUser");
-            Owner owner = ownerGenerator.generate("Test Owner");
-            Restaurant restaurant = restaurantGenerator.generate("Test Restaurant", owner.getId());
-            favoriteRestaurantRepository.save(new FavoriteRestaurant(testUser.getId(), restaurant.getId()));
+        void 즐겨찾기_레스토랑_삭제() throws Exception {
+            String memberId = "member-1";
+            String restaurantId = "restaurant-1";
 
-            given()
-                    .contentType("application/json")
-                    .queryParam("memberId", testUser.getId())
-                    .when().delete("/user/favorite/restaurant/{restaurantId}", restaurant.getId())
-                    .then().statusCode(HttpStatus.NO_CONTENT.value());
+            mockMvc.perform(delete("/user/favorite/restaurant/{restaurantId}", restaurantId)
+                            .queryParam("memberId", memberId)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNoContent());
+
+            verify(favoriteService).removeFavoriteRestaurant(memberId, restaurantId);
         }
+    }
+
+    private FavoriteRestaurantResponse createFavoriteRestaurantResponse(String id, String name, double rating) {
+        return FavoriteRestaurantResponse.builder()
+                .id(id)
+                .name(name)
+                .address("서울시 강남구")
+                .thumbnail("thumbnail.jpg")
+                .rating(rating)
+                .build();
     }
 }
