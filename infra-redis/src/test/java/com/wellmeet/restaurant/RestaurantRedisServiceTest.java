@@ -1,6 +1,7 @@
 package com.wellmeet.restaurant;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -14,7 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-@ActiveProfiles("domain-redis-test")
+@ActiveProfiles("infra-redis-test")
 class RestaurantRedisServiceTest {
 
     @Autowired
