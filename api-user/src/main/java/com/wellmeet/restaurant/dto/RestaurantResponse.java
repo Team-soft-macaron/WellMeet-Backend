@@ -1,6 +1,6 @@
 package com.wellmeet.restaurant.dto;
 
-import com.wellmeet.domain.restaurant.entity.Restaurant;
+import com.wellmeet.client.dto.RestaurantDTO;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +22,7 @@ public class RestaurantResponse {
     private List<RepresentativeReviewResponse> reviews;
 
     public RestaurantResponse(
-            Restaurant restaurant,
+            RestaurantDTO restaurant,
             List<RepresentativeReviewResponse> reviews,
             List<RepresentativeMenuResponse> menus,
             boolean isFavorite,
@@ -33,7 +33,7 @@ public class RestaurantResponse {
         this.address = restaurant.getAddress();
         this.latitude = restaurant.getLatitude();
         this.longitude = restaurant.getLongitude();
-        this.thumbnail = restaurant.getThumbnail();
+        this.thumbnail = restaurant.getThumbnailUrl();
         this.reviews = reviews;
         this.menus = menus;
         this.favorite = isFavorite;

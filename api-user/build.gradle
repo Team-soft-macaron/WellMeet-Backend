@@ -3,23 +3,34 @@ plugins {
 }
 
 dependencies {
+    // Spring Cloud OpenFeign 추가
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+    // 기존 유지
     implementation project(':domain-common')
+    implementation project(':infra-redis')
+    implementation project(':infra-kafka')
+
+    // 프로덕션 의존성 - 단계적 제거 예정
     implementation project(':domain-reservation')
     implementation project(':domain-member')
     implementation project(':domain-owner')
     implementation project(':domain-restaurant')
-    implementation project(':infra-redis')
-    implementation project(':infra-kafka')
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-    testImplementation(testFixtures(project(':domain-reservation')))
-    testImplementation(testFixtures(project(':domain-member')))
-    testImplementation(testFixtures(project(':domain-owner')))
-    testImplementation(testFixtures(project(':domain-restaurant')))
+    // ❌ testFixtures 제거 (완전 삭제)
+    // testImplementation(testFixtures(project(':domain-reservation')))
+    // testImplementation(testFixtures(project(':domain-member')))
+    // testImplementation(testFixtures(project(':domain-owner')))
+    // testImplementation(testFixtures(project(':domain-restaurant')))
+
+    // 테스트 의존성
     testImplementation 'io.rest-assured:rest-assured'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 tasks.named('test') {

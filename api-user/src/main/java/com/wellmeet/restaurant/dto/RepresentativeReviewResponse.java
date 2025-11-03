@@ -1,6 +1,6 @@
 package com.wellmeet.restaurant.dto;
 
-import com.wellmeet.domain.restaurant.review.entity.Review;
+import com.wellmeet.client.dto.ReviewDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,9 +12,9 @@ public class RepresentativeReviewResponse {
     private String content;
     private String logo;
 
-    public RepresentativeReviewResponse(Review review) {
-        this.situation = review.getSituation().getName();
+    public RepresentativeReviewResponse(ReviewDTO review) {
+        this.situation = review.getSituation();
         this.content = review.getContent();
-        this.logo = review.getSituation().getLogo();
+        this.logo = review.getSituationLogo();
     }
 }
