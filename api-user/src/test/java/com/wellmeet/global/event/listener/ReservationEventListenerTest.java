@@ -43,7 +43,7 @@ class ReservationEventListenerTest {
             reservationEventListener.handleReservationCreated(event);
 
             verify(kafkaProducerService).sendNotificationMessage(
-                    eq(reservation.getMemberId()),
+                    eq(reservation.getRestaurantId()),
                     any(ReservationCreatedPayload.class)
             );
         }
@@ -63,7 +63,7 @@ class ReservationEventListenerTest {
             reservationEventListener.handleReservationUpdated(event);
 
             verify(kafkaProducerService).sendNotificationMessage(
-                    eq(reservation.getMemberId()),
+                    eq(reservation.getRestaurantId()),
                     any(ReservationUpdatedPayload.class)
             );
         }
@@ -83,7 +83,7 @@ class ReservationEventListenerTest {
             reservationEventListener.handleReservationCanceled(event);
 
             verify(kafkaProducerService).sendNotificationMessage(
-                    eq(reservation.getMemberId()),
+                    eq(reservation.getRestaurantId()),
                     any(ReservationCanceledPayload.class)
             );
         }

@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RestaurantService {
 
-    private static final double SEARCH_RADIUS_KM = 5.0;
+    private static final double SEARCH_RADIUS_M = 5000.0;
 
     private final RestaurantClient restaurantClient;
     private final FavoriteRestaurantClient favoriteRestaurantClient;
@@ -35,7 +35,7 @@ public class RestaurantService {
                             latitude, longitude,
                             restaurant.getLatitude(), restaurant.getLongitude()
                     );
-                    return distance <= SEARCH_RADIUS_KM;
+                    return distance <= SEARCH_RADIUS_M;
                 })
                 .map(restaurant -> getNearbyRestaurantResponse(restaurant, latitude, longitude))
                 .toList();
