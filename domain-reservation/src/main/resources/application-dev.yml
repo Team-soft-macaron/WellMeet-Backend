@@ -28,12 +28,9 @@ server:
   port: 8085
   shutdown: graceful
 
-# Eureka Client 설정
-# Phase 4: Application 클래스가 주석 처리되어 있어 사용 안 됨
-# Phase 5: Application 클래스 주석 해제 후 활성화
 eureka:
   client:
-    enabled: false  # Phase 4에서는 비활성화
+    enabled: true
     service-url:
       defaultZone: http://localhost:8761/eureka/
     register-with-eureka: true
@@ -44,7 +41,6 @@ eureka:
     lease-renewal-interval-in-seconds: 30
     lease-expiration-duration-in-seconds: 90
 
-# Actuator 설정
 management:
   endpoints:
     web:
@@ -58,7 +54,6 @@ management:
       prometheus:
         enabled: true
 
-# 로깅 설정
 logging:
   level:
     root: INFO
@@ -69,51 +64,3 @@ logging:
     org.springframework.cloud: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
-
----
-# 테스트 프로파일
-spring:
-  config:
-    activate:
-      on-profile: test
-
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/wellmeet_reservation_test?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: root
-    password:
-
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-    show-sql: true
-
-  flyway:
-    enabled: false  # 테스트 환경에서는 JPA가 스키마 생성
-
-eureka:
-  client:
-    enabled: false
-
-logging:
-  level:
-    root: INFO
-    com.wellmeet: DEBUG
-
----
-# Docker 프로파일
-spring:
-  config:
-    activate:
-      on-profile: docker
-
-  datasource:
-    url: jdbc:mysql://mysql-reservation:3306/wellmeet_reservation?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: root
-    password: ${DB_PASSWORD:wellmeet123}
-
-eureka:
-  client:
-    enabled: true  # Docker 환경에서는 Eureka 활성화 (Phase 5 이후)
-    service-url:
-      defaultZone: http://discovery-server:8761/eureka/
