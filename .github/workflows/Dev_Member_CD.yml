@@ -1,17 +1,15 @@
-name: dev-user-cd
+name: dev-member-cd
 
 on:
   push:
     branches:
       - "develop"
     paths:
-      - 'api-user/**'
+      - 'domain-member/**'
       - 'domain-common/**'
-      - 'infra-redis/**'
-      - 'infra-kafka/**'
       - 'build.gradle'
       - 'settings.gradle'
-      - '.github/workflows/Dev_User_CD.yml'
+      - '.github/workflows/Dev_Member_CD.yml'
 
 permissions:
   contents: read
@@ -31,10 +29,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setting dev-secret.yml
-        run: |
-          echo "${{ secrets.DEV_SECRET_YML }}" > ./api-user/src/main/resources/dev-secret.yml
-
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
@@ -45,16 +39,16 @@ jobs:
         run: chmod +x gradlew
 
       - name: bootJar with Gradle
-        run: ./gradlew :api-user:bootJar --info
+        run: ./gradlew :domain-member:bootJar --info
 
       - name: Change artifact file name
-        run: mv api-user/build/libs/*.jar api-user/build/libs/app.jar
+        run: mv domain-member/build/libs/*.jar domain-member/build/libs/app.jar
 
       - name: Upload artifact file
         uses: actions/upload-artifact@v4
         with:
           name: app-artifact
-          path: ./api-user/build/libs/app.jar
+          path: ./domain-member/build/libs/app.jar
           if-no-files-found: error
 
       - name: Upload deploy scripts
@@ -66,7 +60,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: dev-user
+    runs-on: dev-member
 
     steps:
       - name: Download artifact file

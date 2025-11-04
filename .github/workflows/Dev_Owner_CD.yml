@@ -6,8 +6,9 @@ on:
       - "develop"
     paths:
       - 'api-owner/**'
-      - 'domain/**'
-      - 'domain-redis/**'
+      - 'domain-common/**'
+      - 'infra-redis/**'
+      - 'infra-kafka/**'
       - 'build.gradle'
       - 'settings.gradle'
       - '.github/workflows/Dev_Owner_CD.yml'
