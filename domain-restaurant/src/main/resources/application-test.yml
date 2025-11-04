@@ -4,9 +4,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3309/restaurant_test
+    url: jdbc:mysql://localhost:3309/wellmeet_restaurant
     username: root
-    password:
+    password: password
 
   jpa:
     hibernate:
