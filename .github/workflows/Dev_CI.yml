@@ -19,20 +19,58 @@ jobs:
       TEST_REPORT: true
 
     services:
-      mysql:
+      mysql-reservation:
         image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: ""
-          MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-          MYSQL_DATABASE: test
+          MYSQL_DATABASE: wellmeet_reservation
+          MYSQL_ROOT_PASSWORD: password
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping"
+          --health-cmd="mysqladmin ping -ppassword"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
-      
+
+      mysql-member:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: wellmeet_member
+          MYSQL_ROOT_PASSWORD: password
+        ports:
+          - 3307:3306
+        options: >-
+          --health-cmd="mysqladmin ping -ppassword"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+      mysql-owner:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: wellmeet_owner
+          MYSQL_ROOT_PASSWORD: password
+        ports:
+          - 3308:3306
+        options: >-
+          --health-cmd="mysqladmin ping -ppassword"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+      mysql-restaurant:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: wellmeet_restaurant
+          MYSQL_ROOT_PASSWORD: password
+        ports:
+          - 3309:3306
+        options: >-
+          --health-cmd="mysqladmin ping -ppassword"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
       redis:
         image: redis:7-alpine
         ports:
