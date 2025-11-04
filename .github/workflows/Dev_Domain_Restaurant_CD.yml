@@ -9,7 +9,7 @@ on:
       - 'domain-common/**'
       - 'build.gradle'
       - 'settings.gradle'
-      - '.github/workflows/Dev_Restaurant_CD.yml'
+      - 'Dev_Domain_Restaurant_CD.yml'
 
 permissions:
   contents: read
@@ -60,7 +60,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: dev-restaurant
+    runs-on: dev-domain-restaurant
 
     steps:
       - name: Download artifact file

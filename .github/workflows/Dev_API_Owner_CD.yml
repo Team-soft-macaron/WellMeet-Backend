@@ -11,7 +11,7 @@ on:
       - 'infra-kafka/**'
       - 'build.gradle'
       - 'settings.gradle'
-      - '.github/workflows/Dev_Owner_CD.yml'
+      - 'Dev_API_Owner_CD.yml'
 
 permissions:
   contents: read
@@ -66,7 +66,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: dev-owner
+    runs-on: dev-api-owner
 
     steps:
       - name: Download artifact file

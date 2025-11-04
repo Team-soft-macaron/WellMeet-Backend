@@ -1,15 +1,15 @@
-name: dev-reservation-cd
+name: dev-member-cd
 
 on:
   push:
     branches:
       - "develop"
     paths:
-      - 'domain-reservation/**'
+      - 'domain-member/**'
       - 'domain-common/**'
       - 'build.gradle'
       - 'settings.gradle'
-      - '.github/workflows/Dev_Reservation_CD.yml'
+      - 'Dev_Domain_Member_CD.yml'
 
 permissions:
   contents: read
@@ -39,16 +39,16 @@ jobs:
         run: chmod +x gradlew
 
       - name: bootJar with Gradle
-        run: ./gradlew :domain-reservation:bootJar --info
+        run: ./gradlew :domain-member:bootJar --info
 
       - name: Change artifact file name
-        run: mv domain-reservation/build/libs/*.jar domain-reservation/build/libs/app.jar
+        run: mv domain-member/build/libs/*.jar domain-member/build/libs/app.jar
 
       - name: Upload artifact file
         uses: actions/upload-artifact@v4
         with:
           name: app-artifact
-          path: ./domain-reservation/build/libs/app.jar
+          path: ./domain-member/build/libs/app.jar
           if-no-files-found: error
 
       - name: Upload deploy scripts
@@ -60,7 +60,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: dev-reservation
+    runs-on: dev-domain-member
 
     steps:
       - name: Download artifact file

@@ -9,7 +9,7 @@ on:
       - 'domain-common/**'
       - 'build.gradle'
       - 'settings.gradle'
-      - '.github/workflows/Dev_Owner_Domain_CD.yml'
+      - 'Dev_Domain_Owner_CD.yml'
 
 permissions:
   contents: read
@@ -60,7 +60,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: dev-owner-domain
+    runs-on: dev-domain-owner
 
     steps:
       - name: Download artifact file
