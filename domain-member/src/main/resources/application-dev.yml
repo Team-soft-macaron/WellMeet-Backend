@@ -1,12 +1,15 @@
 spring:
   application:
     name: domain-member-service
+  config:
+    import:
+      - classpath:dev-secret.yml
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3307/wellmeet_member
-    username: root
-    password: password
+    url: ${secret.database.url}
+    username: ${secret.database.username}
+    password: ${secret.database.password}
 
   jpa:
     hibernate:
@@ -23,7 +26,7 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${secret.eureka.server-url}
     register-with-eureka: true
     fetch-registry: true
   instance:

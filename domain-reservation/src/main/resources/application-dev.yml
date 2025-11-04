@@ -1,12 +1,15 @@
 spring:
   application:
     name: domain-reservation-service
+  config:
+    import:
+      - classpath:dev-secret.yml
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/wellmeet_reservation?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: root
-    password: ${DB_PASSWORD:}
+    url: ${secret.database.url}
+    username: ${secret.database.username}
+    password: ${secret.database.password}
 
   jpa:
     hibernate:
@@ -32,7 +35,7 @@ eureka:
   client:
     enabled: true
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${secret.eureka.server-url}
     register-with-eureka: true
     fetch-registry: true
   instance:
