@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "domain-restaurant-service", path = "/api/available-dates")
+@FeignClient(name = "domain-restaurant-service", contextId = "availableDateClient", path = "/api/available-dates")
 public interface AvailableDateClient {
 
     @GetMapping("/restaurant/{restaurantId}")

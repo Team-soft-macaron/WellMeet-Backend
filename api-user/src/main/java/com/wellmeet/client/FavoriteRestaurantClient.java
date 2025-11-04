@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "domain-member-service", path = "/api/favorites")
+@FeignClient(name = "domain-member-service", contextId = "favoriteRestaurantClient", path = "/api/favorites")
 public interface FavoriteRestaurantClient {
 
     @GetMapping("/check")

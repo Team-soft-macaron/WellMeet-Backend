@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "domain-restaurant-service")
+@FeignClient(name = "domain-restaurant-service", contextId = "restaurantClient")
 public interface RestaurantClient {
 
     @GetMapping("/api/restaurants/{id}")
