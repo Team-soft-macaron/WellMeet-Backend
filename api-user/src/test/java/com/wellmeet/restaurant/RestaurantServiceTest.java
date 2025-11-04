@@ -4,15 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.Mockito.when;
 
-import com.wellmeet.domain.member.FavoriteRestaurantDomainService;
-import com.wellmeet.domain.member.entity.Member;
-import com.wellmeet.domain.owner.entity.Owner;
-import com.wellmeet.domain.restaurant.RestaurantDomainService;
-import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
-import com.wellmeet.domain.restaurant.entity.Restaurant;
-import com.wellmeet.domain.restaurant.menu.entity.Menu;
-import com.wellmeet.domain.restaurant.review.entity.Review;
-import com.wellmeet.domain.restaurant.review.entity.Situation;
+import com.wellmeet.client.AvailableDateClient;
+import com.wellmeet.client.FavoriteRestaurantClient;
+import com.wellmeet.client.RestaurantClient;
+import com.wellmeet.client.dto.AvailableDateDTO;
+import com.wellmeet.client.dto.MenuDTO;
+import com.wellmeet.client.dto.RestaurantDTO;
+import com.wellmeet.client.dto.ReviewDTO;
 import com.wellmeet.restaurant.dto.AvailableDateResponse;
 import com.wellmeet.restaurant.dto.NearbyRestaurantResponse;
 import com.wellmeet.restaurant.dto.RestaurantResponse;
@@ -27,13 +25,16 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class DomainRestaurantServiceTest {
+class RestaurantServiceTest {
 
     @Mock
-    private RestaurantDomainService restaurantDomainService;
+    private RestaurantClient restaurantClient;
 
     @Mock
-    private FavoriteRestaurantDomainService favoriteRestaurantDomainService;
+    private FavoriteRestaurantClient favoriteRestaurantClient;
+
+    @Mock
+    private AvailableDateClient availableDateClient;
 
     @InjectMocks
     private RestaurantService restaurantService;
@@ -45,15 +46,31 @@ class DomainRestaurantServiceTest {
         void 주변_식당을_조회한다() {
             double latitude = 37.5;
             double longitude = 127.0;
-            Restaurant restaurant1 = createRestaurant("restaurant-1", "식당1", 37.501, 127.001);
-            Restaurant restaurant2 = createRestaurant("restaurant-2", "식당2", 37.502, 127.002);
-            List<Restaurant> restaurants = List.of(restaurant1, restaurant2);
+            RestaurantDTO restaurant1 = RestaurantDTO.builder()
+                    .id("restaurant-1")
+                    .name("식당1")
+                    .address("서울시")
+                    .latitude(37.501)
+                    .longitude(127.001)
+                    .thumbnail("thumbnail.jpg")
+                    .ownerId("owner-1")
+                    .build();
+            RestaurantDTO restaurant2 = RestaurantDTO.builder()
+                    .id("restaurant-2")
+                    .name("식당2")
+                    .address("서울시")
+                    .latitude(37.502)
+                    .longitude(127.002)
+                    .thumbnail("thumbnail.jpg")
+                    .ownerId("owner-1")
+                    .build();
+            List<RestaurantDTO> restaurants = List.of(restaurant1, restaurant2);
 
-            when(restaurantDomainService.findWithBoundBox(latitude, longitude))
+            when(restaurantClient.getAllRestaurants())
                     .thenReturn(restaurants);
-            when(restaurantDomainService.getAverageRating("restaurant-1"))
+            when(restaurantClient.getAverageRating("restaurant-1"))
                     .thenReturn(4.5);
-            when(restaurantDomainService.getAverageRating("restaurant-2"))
+            when(restaurantClient.getAverageRating("restaurant-2"))
                     .thenReturn(4.0);
 
             List<NearbyRestaurantResponse> responses = restaurantService.findWithNearbyRestaurant(latitude, longitude);
@@ -72,7 +89,7 @@ class DomainRestaurantServiceTest {
             double latitude = 37.5;
             double longitude = 127.0;
 
-            when(restaurantDomainService.findWithBoundBox(latitude, longitude))
+            when(restaurantClient.getAllRestaurants())
                     .thenReturn(List.of());
 
             List<NearbyRestaurantResponse> responses = restaurantService.findWithNearbyRestaurant(latitude, longitude);
@@ -88,19 +105,27 @@ class DomainRestaurantServiceTest {
         void 식당_상세_정보를_조회한다() {
             String restaurantId = "restaurant-1";
             String memberId = "member-1";
-            Restaurant restaurant = createRestaurant(restaurantId, "식당1", 37.5, 127.0);
-            Review review = createReview(restaurant);
-            Menu menu = createMenu(restaurant);
+            RestaurantDTO restaurant = RestaurantDTO.builder()
+                    .id(restaurantId)
+                    .name("식당1")
+                    .address("서울시")
+                    .latitude(37.5)
+                    .longitude(127.0)
+                    .thumbnail("thumbnail.jpg")
+                    .ownerId("owner-1")
+                    .build();
+            ReviewDTO review = new ReviewDTO(1L, "맛있어요", 4.5, "DATE", restaurantId, memberId);
+            MenuDTO menu = new MenuDTO(1L, "메뉴1", "맛있는 메뉴", 10000, restaurantId);
 
-            when(favoriteRestaurantDomainService.isFavorite(memberId, restaurantId))
+            when(favoriteRestaurantClient.isFavorite(memberId, restaurantId))
                     .thenReturn(true);
-            when(restaurantDomainService.getById(restaurantId))
+            when(restaurantClient.getRestaurant(restaurantId))
                     .thenReturn(restaurant);
-            when(restaurantDomainService.getReviewByRestaurantId(restaurantId))
+            when(restaurantClient.getReviewsByRestaurant(restaurantId))
                     .thenReturn(List.of(review));
-            when(restaurantDomainService.getMenuByRestaurantId(restaurantId))
+            when(restaurantClient.getMenusByRestaurant(restaurantId))
                     .thenReturn(List.of(menu));
-            when(restaurantDomainService.getAverageRating(restaurantId))
+            when(restaurantClient.getAverageRating(restaurantId))
                     .thenReturn(4.5);
 
             RestaurantResponse response = restaurantService.getRestaurant(restaurantId, memberId);
@@ -116,17 +141,25 @@ class DomainRestaurantServiceTest {
         void 즐겨찾기하지_않은_식당을_조회한다() {
             String restaurantId = "restaurant-1";
             String memberId = "member-1";
-            Restaurant restaurant = createRestaurant(restaurantId, "식당1", 37.5, 127.0);
+            RestaurantDTO restaurant = RestaurantDTO.builder()
+                    .id(restaurantId)
+                    .name("식당1")
+                    .address("서울시")
+                    .latitude(37.5)
+                    .longitude(127.0)
+                    .thumbnail("thumbnail.jpg")
+                    .ownerId("owner-1")
+                    .build();
 
-            when(favoriteRestaurantDomainService.isFavorite(memberId, restaurantId))
+            when(favoriteRestaurantClient.isFavorite(memberId, restaurantId))
                     .thenReturn(false);
-            when(restaurantDomainService.getById(restaurantId))
+            when(restaurantClient.getRestaurant(restaurantId))
                     .thenReturn(restaurant);
-            when(restaurantDomainService.getReviewByRestaurantId(restaurantId))
+            when(restaurantClient.getReviewsByRestaurant(restaurantId))
                     .thenReturn(List.of());
-            when(restaurantDomainService.getMenuByRestaurantId(restaurantId))
+            when(restaurantClient.getMenusByRestaurant(restaurantId))
                     .thenReturn(List.of());
-            when(restaurantDomainService.getAverageRating(restaurantId))
+            when(restaurantClient.getAverageRating(restaurantId))
                     .thenReturn(0.0);
 
             RestaurantResponse response = restaurantService.getRestaurant(restaurantId, memberId);
@@ -141,13 +174,24 @@ class DomainRestaurantServiceTest {
         @Test
         void 식당의_예약_가능한_날짜를_조회한다() {
             String restaurantId = "restaurant-1";
-            Restaurant restaurant = createRestaurant(restaurantId, "식당1", 37.5, 127.0);
-            AvailableDate availableDate1 = createAvailableDate(LocalDate.now().plusDays(1), LocalTime.of(18, 0), 10,
-                    restaurant);
-            AvailableDate availableDate2 = createAvailableDate(LocalDate.now().plusDays(2), LocalTime.of(19, 0), 5,
-                    restaurant);
+            AvailableDateDTO availableDate1 = AvailableDateDTO.builder()
+                    .id(1L)
+                    .date(LocalDate.now().plusDays(1))
+                    .time(LocalTime.of(18, 0))
+                    .maxCapacity(10)
+                    .isAvailable(true)
+                    .restaurantId(restaurantId)
+                    .build();
+            AvailableDateDTO availableDate2 = AvailableDateDTO.builder()
+                    .id(2L)
+                    .date(LocalDate.now().plusDays(2))
+                    .time(LocalTime.of(19, 0))
+                    .maxCapacity(5)
+                    .isAvailable(true)
+                    .restaurantId(restaurantId)
+                    .build();
 
-            when(restaurantDomainService.getRestaurantAvailableDates(restaurantId))
+            when(availableDateClient.getAvailableDatesByRestaurant(restaurantId))
                     .thenReturn(List.of(availableDate1, availableDate2));
 
             List<AvailableDateResponse> responses = restaurantService.getRestaurantAvailableDates(restaurantId);
@@ -159,30 +203,12 @@ class DomainRestaurantServiceTest {
         void 예약_가능한_날짜가_없으면_빈_리스트를_반환한다() {
             String restaurantId = "restaurant-1";
 
-            when(restaurantDomainService.getRestaurantAvailableDates(restaurantId))
+            when(availableDateClient.getAvailableDatesByRestaurant(restaurantId))
                     .thenReturn(List.of());
 
             List<AvailableDateResponse> responses = restaurantService.getRestaurantAvailableDates(restaurantId);
 
             assertThat(responses).isEmpty();
         }
-    }
-
-    private Restaurant createRestaurant(String id, String name, double lat, double lon) {
-        Owner owner = new Owner("owner-name", "owner@email.com");
-        return new Restaurant(id, name, "서울시", lat, lon, "thumbnail.jpg", owner.getId());
-    }
-
-    private Review createReview(Restaurant restaurant) {
-        Member member = new Member("member", "nickname", "email@test.com", "010-1234-5678");
-        return new Review("맛있어요", 4.5, Situation.DATE, restaurant, member.getId());
-    }
-
-    private Menu createMenu(Restaurant restaurant) {
-        return new Menu("메뉴1", "맛있는 메뉴", 10000, restaurant);
-    }
-
-    private AvailableDate createAvailableDate(LocalDate date, LocalTime time, int capacity, Restaurant restaurant) {
-        return new AvailableDate(date, time, capacity, restaurant);
     }
 }
