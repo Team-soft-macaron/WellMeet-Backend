@@ -4,6 +4,7 @@ plugins {
 }
 
 dependencies {
+    implementation project(':common-client')
     implementation project(':domain-common')
 
     implementation 'org.flywaydb:flyway-core'

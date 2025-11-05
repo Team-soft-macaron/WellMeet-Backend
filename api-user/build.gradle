@@ -3,6 +3,9 @@ plugins {
 }
 
 dependencies {
+    // Common Client (record DTOs)
+    implementation project(':common-client')
+
     // Spring Cloud OpenFeign 추가
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
