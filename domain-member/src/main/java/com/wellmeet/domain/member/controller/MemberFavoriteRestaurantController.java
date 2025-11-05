@@ -1,6 +1,6 @@
 package com.wellmeet.domain.member.controller;
 
-import com.wellmeet.domain.member.dto.FavoriteRestaurantResponse;
+import com.wellmeet.common.dto.FavoriteRestaurantDTO;
 import com.wellmeet.domain.member.service.MemberFavoriteRestaurantApplicationService;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -33,20 +33,20 @@ public class MemberFavoriteRestaurantController {
     }
 
     @GetMapping("/members/{memberId}")
-    public ResponseEntity<List<FavoriteRestaurantResponse>> getFavoritesByMemberId(
+    public ResponseEntity<List<FavoriteRestaurantDTO>> getFavoritesByMemberId(
             @PathVariable String memberId
     ) {
-        List<FavoriteRestaurantResponse> responses =
+        List<FavoriteRestaurantDTO> responses =
                 favoriteRestaurantApplicationService.getFavoritesByMemberId(memberId);
         return ResponseEntity.ok(responses);
     }
 
     @PostMapping
-    public ResponseEntity<FavoriteRestaurantResponse> addFavorite(
+    public ResponseEntity<FavoriteRestaurantDTO> addFavorite(
             @RequestParam String memberId,
             @RequestParam String restaurantId
     ) {
-        FavoriteRestaurantResponse response =
+        FavoriteRestaurantDTO response =
                 favoriteRestaurantApplicationService.addFavorite(memberId, restaurantId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

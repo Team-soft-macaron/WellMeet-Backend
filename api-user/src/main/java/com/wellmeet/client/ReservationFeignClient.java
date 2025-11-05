@@ -1,8 +1,8 @@
 package com.wellmeet.client;
 
-import com.wellmeet.client.dto.ReservationDTO;
-import com.wellmeet.client.dto.request.CreateReservationDTO;
 import com.wellmeet.client.dto.request.UpdateReservationDTO;
+import com.wellmeet.common.dto.ReservationDTO;
+import com.wellmeet.common.dto.request.CreateReservationDTO;
 import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

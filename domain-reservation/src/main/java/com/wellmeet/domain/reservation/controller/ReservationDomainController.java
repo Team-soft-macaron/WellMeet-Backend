@@ -1,7 +1,7 @@
 package com.wellmeet.domain.reservation.controller;
 
+import com.wellmeet.common.dto.ReservationDTO;
 import com.wellmeet.domain.reservation.dto.CreateReservationRequest;
-import com.wellmeet.domain.reservation.dto.ReservationResponse;
 import com.wellmeet.domain.reservation.dto.UpdateReservationRequest;
 import com.wellmeet.domain.reservation.service.ReservationApplicationService;
 import jakarta.validation.Valid;
@@ -28,43 +28,43 @@ public class ReservationDomainController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(
+    public ResponseEntity<ReservationDTO> createReservation(
             @Valid @RequestBody CreateReservationRequest request
     ) {
-        ReservationResponse response = reservationApplicationService.createReservation(request);
+        ReservationDTO response = reservationApplicationService.createReservation(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ReservationResponse> getReservation(@PathVariable Long id) {
-        ReservationResponse response = reservationApplicationService.getReservation(id);
+    public ResponseEntity<ReservationDTO> getReservation(@PathVariable Long id) {
+        ReservationDTO response = reservationApplicationService.getReservation(id);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/restaurant/{restaurantId}")
-    public ResponseEntity<List<ReservationResponse>> getReservationsByRestaurant(
+    public ResponseEntity<List<ReservationDTO>> getReservationsByRestaurant(
             @PathVariable String restaurantId
     ) {
-        List<ReservationResponse> responses = reservationApplicationService
+        List<ReservationDTO> responses = reservationApplicationService
                 .getReservationsByRestaurant(restaurantId);
         return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/member/{memberId}")
-    public ResponseEntity<List<ReservationResponse>> getReservationsByMember(
+    public ResponseEntity<List<ReservationDTO>> getReservationsByMember(
             @PathVariable String memberId
     ) {
-        List<ReservationResponse> responses = reservationApplicationService
+        List<ReservationDTO> responses = reservationApplicationService
                 .getReservationsByMember(memberId);
         return ResponseEntity.ok(responses);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ReservationResponse> updateReservation(
+    public ResponseEntity<ReservationDTO> updateReservation(
             @PathVariable Long id,
             @Valid @RequestBody UpdateReservationRequest request
     ) {
-        ReservationResponse response = reservationApplicationService.updateReservation(id, request);
+        ReservationDTO response = reservationApplicationService.updateReservation(id, request);
         return ResponseEntity.ok(response);
     }
 

@@ -1,10 +1,10 @@
 package com.wellmeet.client;
 
-import com.wellmeet.client.dto.AvailableDateDTO;
-import com.wellmeet.client.dto.BusinessHourDTO;
-import com.wellmeet.client.dto.RestaurantDTO;
-import com.wellmeet.client.dto.request.UpdateOperatingHoursDTO;
-import com.wellmeet.client.dto.request.UpdateRestaurantDTO;
+import com.wellmeet.common.dto.AvailableDateDTO;
+import com.wellmeet.common.dto.BusinessHourDTO;
+import com.wellmeet.common.dto.RestaurantDTO;
+import com.wellmeet.common.dto.request.UpdateOperatingHoursDTO;
+import com.wellmeet.common.dto.request.UpdateRestaurantDTO;
 import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

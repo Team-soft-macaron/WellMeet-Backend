@@ -1,6 +1,6 @@
 package com.wellmeet.client;
 
-import com.wellmeet.client.dto.OwnerDTO;
+import com.wellmeet.common.dto.OwnerDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

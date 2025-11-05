@@ -1,8 +1,8 @@
 package com.wellmeet.domain.member.controller;
 
+import com.wellmeet.common.dto.MemberDTO;
 import com.wellmeet.domain.member.dto.CreateMemberRequest;
 import com.wellmeet.domain.member.dto.MemberIdsRequest;
-import com.wellmeet.domain.member.dto.MemberResponse;
 import com.wellmeet.domain.member.service.MemberApplicationService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -27,8 +27,8 @@ public class MemberDomainController {
     }
 
     @PostMapping
-    public ResponseEntity<MemberResponse> createMember(@Valid @RequestBody CreateMemberRequest request) {
-        MemberResponse response = memberApplicationService.createMember(
+    public ResponseEntity<MemberDTO> createMember(@Valid @RequestBody CreateMemberRequest request) {
+        MemberDTO response = memberApplicationService.createMember(
                 request.name(),
                 request.nickname(),
                 request.email(),
@@ -38,16 +38,16 @@ public class MemberDomainController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MemberResponse> getMember(@PathVariable String id) {
-        MemberResponse response = memberApplicationService.getMemberById(id);
+    public ResponseEntity<MemberDTO> getMember(@PathVariable String id) {
+        MemberDTO response = memberApplicationService.getMemberById(id);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/batch")
-    public ResponseEntity<List<MemberResponse>> getMembersByIds(
+    public ResponseEntity<List<MemberDTO>> getMembersByIds(
             @Valid @RequestBody MemberIdsRequest request
     ) {
-        List<MemberResponse> responses = memberApplicationService.getMembersByIds(request.memberIds());
+        List<MemberDTO> responses = memberApplicationService.getMembersByIds(request.memberIds());
         return ResponseEntity.ok(responses);
     }
 

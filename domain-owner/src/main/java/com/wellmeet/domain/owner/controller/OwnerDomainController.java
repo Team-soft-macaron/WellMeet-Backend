@@ -1,8 +1,8 @@
 package com.wellmeet.domain.owner.controller;
 
+import com.wellmeet.common.dto.OwnerDTO;
 import com.wellmeet.domain.owner.dto.CreateOwnerRequest;
 import com.wellmeet.domain.owner.dto.OwnerIdsRequest;
-import com.wellmeet.domain.owner.dto.OwnerResponse;
 import com.wellmeet.domain.owner.service.OwnerApplicationService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -27,8 +27,8 @@ public class OwnerDomainController {
     }
 
     @PostMapping
-    public ResponseEntity<OwnerResponse> createOwner(@Valid @RequestBody CreateOwnerRequest request) {
-        OwnerResponse response = ownerApplicationService.createOwner(
+    public ResponseEntity<OwnerDTO> createOwner(@Valid @RequestBody CreateOwnerRequest request) {
+        OwnerDTO response = ownerApplicationService.createOwner(
                 request.name(),
                 request.email()
         );
@@ -36,16 +36,16 @@ public class OwnerDomainController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OwnerResponse> getOwner(@PathVariable String id) {
-        OwnerResponse response = ownerApplicationService.getOwnerById(id);
+    public ResponseEntity<OwnerDTO> getOwner(@PathVariable String id) {
+        OwnerDTO response = ownerApplicationService.getOwnerById(id);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/batch")
-    public ResponseEntity<List<OwnerResponse>> getOwnersByIds(
+    public ResponseEntity<List<OwnerDTO>> getOwnersByIds(
             @Valid @RequestBody OwnerIdsRequest request
     ) {
-        List<OwnerResponse> responses = ownerApplicationService.getOwnersByIds(request.ownerIds());
+        List<OwnerDTO> responses = ownerApplicationService.getOwnersByIds(request.ownerIds());
         return ResponseEntity.ok(responses);
     }
 

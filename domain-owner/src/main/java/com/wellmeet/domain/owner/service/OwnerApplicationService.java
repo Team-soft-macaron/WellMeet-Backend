@@ -1,7 +1,7 @@
 package com.wellmeet.domain.owner.service;
 
+import com.wellmeet.common.dto.OwnerDTO;
 import com.wellmeet.domain.owner.OwnerDomainService;
-import com.wellmeet.domain.owner.dto.OwnerResponse;
 import com.wellmeet.domain.owner.entity.Owner;
 import com.wellmeet.domain.owner.repository.OwnerRepository;
 import java.util.List;
@@ -18,20 +18,20 @@ public class OwnerApplicationService {
     private final OwnerRepository ownerRepository;
 
     @Transactional
-    public OwnerResponse createOwner(String name, String email) {
+    public OwnerDTO createOwner(String name, String email) {
         Owner owner = new Owner(name, email);
         Owner saved = ownerRepository.save(owner);
-        return OwnerResponse.from(saved);
+        return toDTO(saved);
     }
 
-    public OwnerResponse getOwnerById(String ownerId) {
+    public OwnerDTO getOwnerById(String ownerId) {
         Owner owner = ownerDomainService.getById(ownerId);
-        return OwnerResponse.from(owner);
+        return toDTO(owner);
     }
 
-    public List<OwnerResponse> getOwnersByIds(List<String> ownerIds) {
+    public List<OwnerDTO> getOwnersByIds(List<String> ownerIds) {
         return ownerDomainService.findAllByIds(ownerIds).stream()
-                .map(OwnerResponse::from)
+                .map(this::toDTO)
                 .toList();
     }
 
@@ -39,5 +39,15 @@ public class OwnerApplicationService {
     public void deleteOwner(String ownerId) {
         Owner owner = ownerDomainService.getById(ownerId);
         ownerRepository.delete(owner);
+    }
+
+    private OwnerDTO toDTO(Owner owner) {
+        return new OwnerDTO(
+                owner.getId(),
+                owner.getName(),
+                owner.getEmail(),
+                owner.isReservationEnabled(),
+                owner.isReviewEnabled()
+        );
     }
 }

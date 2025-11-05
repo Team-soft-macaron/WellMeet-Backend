@@ -1,7 +1,7 @@
 package com.wellmeet.domain.restaurant.controller;
 
+import com.wellmeet.common.dto.AvailableDateDTO;
 import com.wellmeet.domain.restaurant.dto.AvailableDateIdsRequest;
-import com.wellmeet.domain.restaurant.dto.AvailableDateResponse;
 import com.wellmeet.domain.restaurant.dto.DecreaseCapacityRequest;
 import com.wellmeet.domain.restaurant.dto.IncreaseCapacityRequest;
 import com.wellmeet.domain.restaurant.service.RestaurantAvailableDateApplicationService;
@@ -27,20 +27,20 @@ public class RestaurantAvailableDateController {
     }
 
     @GetMapping("/restaurant/{restaurantId}")
-    public ResponseEntity<List<AvailableDateResponse>> getAvailableDatesByRestaurant(
+    public ResponseEntity<List<AvailableDateDTO>> getAvailableDatesByRestaurant(
             @PathVariable String restaurantId
     ) {
-        List<AvailableDateResponse> availableDates = availableDateService
+        List<AvailableDateDTO> availableDates = availableDateService
                 .getAvailableDatesByRestaurantId(restaurantId);
 
         return ResponseEntity.ok(availableDates);
     }
 
     @PostMapping("/batch")
-    public ResponseEntity<List<AvailableDateResponse>> getAvailableDatesByIds(
+    public ResponseEntity<List<AvailableDateDTO>> getAvailableDatesByIds(
             @Valid @RequestBody AvailableDateIdsRequest request
     ) {
-        List<AvailableDateResponse> availableDates = availableDateService
+        List<AvailableDateDTO> availableDates = availableDateService
                 .getAvailableDatesByIds(request.availableDateIds());
 
         return ResponseEntity.ok(availableDates);

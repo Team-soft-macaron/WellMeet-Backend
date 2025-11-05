@@ -1,10 +1,10 @@
 package com.wellmeet.restaurant;
 
 import com.wellmeet.client.RestaurantFeignClient;
-import com.wellmeet.client.dto.BusinessHourDTO;
-import com.wellmeet.client.dto.RestaurantDTO;
-import com.wellmeet.client.dto.request.UpdateOperatingHoursDTO;
-import com.wellmeet.client.dto.request.UpdateRestaurantDTO;
+import com.wellmeet.common.dto.BusinessHourDTO;
+import com.wellmeet.common.dto.RestaurantDTO;
+import com.wellmeet.common.dto.request.UpdateOperatingHoursDTO;
+import com.wellmeet.common.dto.request.UpdateRestaurantDTO;
 import com.wellmeet.global.event.OwnerEventPublishBffService;
 import com.wellmeet.global.event.event.RestaurantUpdatedEvent;
 import com.wellmeet.restaurant.dto.OperatingHoursResponse;
@@ -36,19 +36,17 @@ public class OwnerRestaurantBffService {
     ) {
         List<UpdateOperatingHoursDTO.DayHoursDTO> dayHoursList = request.getOperatingHours()
                 .stream()
-                .map(dayHours -> UpdateOperatingHoursDTO.DayHoursDTO.builder()
-                        .dayOfWeek(dayHours.getDayOfWeek().name())
-                        .isOperating(dayHours.isOperating())
-                        .open(dayHours.getOpen())
-                        .close(dayHours.getClose())
-                        .breakStart(dayHours.getBreakStart())
-                        .breakEnd(dayHours.getBreakEnd())
-                        .build())
+                .map(dayHours -> new UpdateOperatingHoursDTO.DayHoursDTO(
+                        dayHours.getDayOfWeek().name(),
+                        dayHours.isOperating(),
+                        dayHours.getOpen(),
+                        dayHours.getClose(),
+                        dayHours.getBreakStart(),
+                        dayHours.getBreakEnd()
+                ))
                 .toList();
 
-        UpdateOperatingHoursDTO updateDTO = UpdateOperatingHoursDTO.builder()
-                .operatingHours(dayHoursList)
-                .build();
+        UpdateOperatingHoursDTO updateDTO = new UpdateOperatingHoursDTO(dayHoursList);
 
         List<BusinessHourDTO> businessHours = restaurantClient.updateOperatingHours(restaurantId, updateDTO);
         return new OperatingHoursResponse(businessHours);
@@ -56,17 +54,17 @@ public class OwnerRestaurantBffService {
 
     @Transactional
     public UpdateRestaurantResponse updateRestaurant(String restaurantId, UpdateRestaurantRequest request) {
-        UpdateRestaurantDTO updateDTO = UpdateRestaurantDTO.builder()
-                .name(request.getName())
-                .address(request.getAddress())
-                .latitude(request.getLatitude())
-                .longitude(request.getLongitude())
-                .thumbnail(request.getThumbnail())
-                .build();
+        UpdateRestaurantDTO updateDTO = new UpdateRestaurantDTO(
+                request.getName(),
+                request.getAddress(),
+                request.getLatitude(),
+                request.getLongitude(),
+                request.getThumbnail()
+        );
 
         RestaurantDTO restaurant = restaurantClient.updateRestaurant(restaurantId, updateDTO);
         eventPublishService.publishRestaurantUpdatedEvent(new RestaurantUpdatedEvent(restaurantId));
-        return new UpdateRestaurantResponse(restaurant.getName(), restaurant.getAddress(), restaurant.getLatitude(),
-                restaurant.getLongitude(), restaurant.getThumbnail());
+        return new UpdateRestaurantResponse(restaurant.name(), restaurant.address(), restaurant.latitude(),
+                restaurant.longitude(), restaurant.thumbnail());
     }
 }

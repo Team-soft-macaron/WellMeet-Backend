@@ -1,8 +1,8 @@
 package com.wellmeet.domain.reservation.service;
 
+import com.wellmeet.common.dto.ReservationDTO;
 import com.wellmeet.domain.reservation.ReservationDomainService;
 import com.wellmeet.domain.reservation.dto.CreateReservationRequest;
-import com.wellmeet.domain.reservation.dto.ReservationResponse;
 import com.wellmeet.domain.reservation.dto.UpdateReservationRequest;
 import com.wellmeet.domain.reservation.entity.Reservation;
 import com.wellmeet.domain.reservation.entity.ReservationStatus;
@@ -21,7 +21,7 @@ public class ReservationApplicationService {
     }
 
     @Transactional
-    public ReservationResponse createReservation(CreateReservationRequest request) {
+    public ReservationDTO createReservation(CreateReservationRequest request) {
         reservationDomainService.alreadyReserved(
                 request.memberId(),
                 request.restaurantId(),
@@ -37,30 +37,30 @@ public class ReservationApplicationService {
         );
 
         Reservation saved = reservationDomainService.save(reservation);
-        return ReservationResponse.from(saved);
+        return toDTO(saved);
     }
 
-    public ReservationResponse getReservation(Long reservationId) {
+    public ReservationDTO getReservation(Long reservationId) {
         Reservation reservation = reservationDomainService.getById(reservationId);
-        return ReservationResponse.from(reservation);
+        return toDTO(reservation);
     }
 
-    public List<ReservationResponse> getReservationsByRestaurant(String restaurantId) {
+    public List<ReservationDTO> getReservationsByRestaurant(String restaurantId) {
         List<Reservation> reservations = reservationDomainService.findAllByRestaurantId(restaurantId);
         return reservations.stream()
-                .map(ReservationResponse::from)
+                .map(this::toDTO)
                 .toList();
     }
 
-    public List<ReservationResponse> getReservationsByMember(String memberId) {
+    public List<ReservationDTO> getReservationsByMember(String memberId) {
         List<Reservation> reservations = reservationDomainService.findAllByMemberId(memberId);
         return reservations.stream()
-                .map(ReservationResponse::from)
+                .map(this::toDTO)
                 .toList();
     }
 
     @Transactional
-    public ReservationResponse updateReservation(Long reservationId, UpdateReservationRequest request) {
+    public ReservationDTO updateReservation(Long reservationId, UpdateReservationRequest request) {
         Reservation reservation = reservationDomainService.getById(reservationId);
 
         if (request.status() == ReservationStatus.CONFIRMED) {
@@ -77,7 +77,7 @@ public class ReservationApplicationService {
         reservation.update(availableDateId, partySize, specialRequest);
 
         Reservation saved = reservationDomainService.save(reservation);
-        return ReservationResponse.from(saved);
+        return toDTO(saved);
     }
 
     @Transactional
@@ -85,5 +85,29 @@ public class ReservationApplicationService {
         Reservation reservation = reservationDomainService.getById(reservationId);
         reservation.cancel();
         reservationDomainService.save(reservation);
+    }
+
+    private ReservationDTO toDTO(Reservation reservation) {
+        return new ReservationDTO(
+                reservation.getId(),
+                convertReservationStatus(reservation.getStatus()),
+                reservation.getRestaurantId(),
+                reservation.getMemberId(),
+                reservation.getAvailableDateId(),
+                reservation.getPartySize(),
+                reservation.getSpecialRequest(),
+                reservation.getCreatedAt(),
+                reservation.getUpdatedAt()
+        );
+    }
+
+    private com.wellmeet.common.dto.ReservationStatus convertReservationStatus(
+            ReservationStatus status
+    ) {
+        return switch (status) {
+            case PENDING -> com.wellmeet.common.dto.ReservationStatus.PENDING;
+            case CONFIRMED -> com.wellmeet.common.dto.ReservationStatus.CONFIRMED;
+            case CANCELED -> com.wellmeet.common.dto.ReservationStatus.CANCELLED;
+        };
     }
 }

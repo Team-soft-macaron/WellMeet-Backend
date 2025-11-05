@@ -1,6 +1,6 @@
 package com.wellmeet.domain.restaurant;
 
-import com.wellmeet.domain.restaurant.dto.RestaurantResponse;
+import com.wellmeet.common.dto.RestaurantDTO;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.domain.restaurant.exception.RestaurantErrorCode;
 import com.wellmeet.domain.restaurant.exception.RestaurantException;
@@ -19,24 +19,38 @@ public class RestaurantApplicationService {
         this.restaurantRepository = restaurantRepository;
     }
 
-    public RestaurantResponse getRestaurantById(String id) {
+    public RestaurantDTO getRestaurantById(String id) {
         Restaurant restaurant = restaurantRepository.findById(id)
                 .orElseThrow(() -> new RestaurantException(RestaurantErrorCode.RESTAURANT_NOT_FOUND));
 
-        return RestaurantResponse.from(restaurant);
+        return toDTO(restaurant);
     }
 
-    public List<RestaurantResponse> getAllRestaurants() {
+    public List<RestaurantDTO> getAllRestaurants() {
         return restaurantRepository.findAll()
                 .stream()
-                .map(RestaurantResponse::from)
+                .map(this::toDTO)
                 .toList();
     }
 
-    public List<RestaurantResponse> getRestaurantsByIds(List<String> restaurantIds) {
+    public List<RestaurantDTO> getRestaurantsByIds(List<String> restaurantIds) {
         return restaurantRepository.findAllByIdIn(restaurantIds)
                 .stream()
-                .map(RestaurantResponse::from)
+                .map(this::toDTO)
                 .toList();
+    }
+
+    private RestaurantDTO toDTO(Restaurant restaurant) {
+        return new RestaurantDTO(
+                restaurant.getId(),
+                restaurant.getName(),
+                restaurant.getAddress(),
+                restaurant.getLatitude(),
+                restaurant.getLongitude(),
+                restaurant.getThumbnail(),
+                restaurant.getOwnerId(),
+                restaurant.getCreatedAt(),
+                restaurant.getUpdatedAt()
+        );
     }
 }

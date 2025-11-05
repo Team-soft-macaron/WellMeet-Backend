@@ -2,9 +2,9 @@ package com.wellmeet.favorite;
 
 import com.wellmeet.client.MemberFavoriteRestaurantFeignClient;
 import com.wellmeet.client.RestaurantFeignClient;
-import com.wellmeet.client.dto.FavoriteRestaurantDTO;
-import com.wellmeet.client.dto.RestaurantDTO;
 import com.wellmeet.client.dto.request.RestaurantIdsRequest;
+import com.wellmeet.common.dto.FavoriteRestaurantDTO;
+import com.wellmeet.common.dto.RestaurantDTO;
 import com.wellmeet.favorite.dto.FavoriteRestaurantResponse;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +33,7 @@ public class UserFavoriteRestaurantBffService {
         Map<String, RestaurantDTO> restaurantsById = restaurantClient
                 .getRestaurantsByIds(new RestaurantIdsRequest(restaurantIds))
                 .stream()
-                .collect(Collectors.toMap(RestaurantDTO::getId, Function.identity()));
+                .collect(Collectors.toMap(RestaurantDTO::id, Function.identity()));
 
         return favoriteRestaurants.stream()
                 .map(favoriteRestaurant -> {
@@ -44,7 +44,7 @@ public class UserFavoriteRestaurantBffService {
     }
 
     private FavoriteRestaurantResponse getFavoriteRestaurantResponse(RestaurantDTO restaurant) {
-        Double rating = restaurantClient.getAverageRating(restaurant.getId());
+        Double rating = restaurantClient.getAverageRating(restaurant.id());
         double ratingValue = (rating != null) ? rating : 0.0;
         return new FavoriteRestaurantResponse(restaurant, ratingValue);
     }

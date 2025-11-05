@@ -1,6 +1,6 @@
 package com.wellmeet.client;
 
-import com.wellmeet.client.dto.FavoriteRestaurantDTO;
+import com.wellmeet.common.dto.FavoriteRestaurantDTO;
 import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.DeleteMapping;

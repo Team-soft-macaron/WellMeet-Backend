@@ -1,8 +1,8 @@
 package com.wellmeet.client;
 
-import com.wellmeet.client.dto.AvailableDateDTO;
 import com.wellmeet.client.dto.request.DecreaseCapacityRequest;
 import com.wellmeet.client.dto.request.IncreaseCapacityRequest;
+import com.wellmeet.common.dto.AvailableDateDTO;
 import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

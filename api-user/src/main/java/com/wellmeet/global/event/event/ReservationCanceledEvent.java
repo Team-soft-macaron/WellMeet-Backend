@@ -1,6 +1,6 @@
 package com.wellmeet.global.event.event;
 
-import com.wellmeet.client.dto.ReservationDTO;
+import com.wellmeet.common.dto.ReservationDTO;
 import java.time.LocalDateTime;
 import lombok.Getter;
 
@@ -19,15 +19,15 @@ public class ReservationCanceledEvent {
     private final LocalDateTime createdAt;
 
     public ReservationCanceledEvent(ReservationDTO reservation, String memberName, String restaurantName, LocalDateTime dateTime) {
-        this.reservationId = reservation.getId();
-        this.memberId = reservation.getMemberId();
+        this.reservationId = reservation.id();
+        this.memberId = reservation.memberId();
         this.memberName = memberName;
-        this.restaurantId = reservation.getRestaurantId();
+        this.restaurantId = reservation.restaurantId();
         this.restaurantName = restaurantName;
-        this.status = reservation.getStatus();
-        this.partySize = reservation.getPartySize();
-        this.specialRequest = reservation.getSpecialRequest();
+        this.status = reservation.status().name();
+        this.partySize = reservation.partySize();
+        this.specialRequest = reservation.specialRequest();
         this.dateTime = dateTime;
-        this.createdAt = reservation.getCreatedAt();
+        this.createdAt = reservation.createdAt();
     }
 }

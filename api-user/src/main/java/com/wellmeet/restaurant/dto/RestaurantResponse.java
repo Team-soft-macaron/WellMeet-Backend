@@ -1,6 +1,6 @@
 package com.wellmeet.restaurant.dto;
 
-import com.wellmeet.client.dto.RestaurantDTO;
+import com.wellmeet.common.dto.RestaurantDTO;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,12 +28,12 @@ public class RestaurantResponse {
             boolean isFavorite,
             double rating
     ) {
-        this.id = restaurant.getId();
-        this.name = restaurant.getName();
-        this.address = restaurant.getAddress();
-        this.latitude = restaurant.getLatitude();
-        this.longitude = restaurant.getLongitude();
-        this.thumbnail = restaurant.getThumbnail();
+        this.id = restaurant.id();
+        this.name = restaurant.name();
+        this.address = restaurant.address();
+        this.latitude = restaurant.latitude();
+        this.longitude = restaurant.longitude();
+        this.thumbnail = restaurant.thumbnail();
         this.reviews = reviews;
         this.menus = menus;
         this.favorite = isFavorite;

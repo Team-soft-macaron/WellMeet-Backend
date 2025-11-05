@@ -1,7 +1,7 @@
 package com.wellmeet.client;
 
-import com.wellmeet.client.dto.MemberDTO;
-import com.wellmeet.client.dto.request.MemberIdsRequest;
+import com.wellmeet.common.dto.MemberDTO;
+import com.wellmeet.common.dto.request.MemberIdsRequest;
 import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

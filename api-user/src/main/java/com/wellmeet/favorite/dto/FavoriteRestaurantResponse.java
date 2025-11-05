@@ -1,6 +1,6 @@
 package com.wellmeet.favorite.dto;
 
-import com.wellmeet.client.dto.RestaurantDTO;
+import com.wellmeet.common.dto.RestaurantDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -17,10 +17,10 @@ public class FavoriteRestaurantResponse {
     private String thumbnail;
 
     public FavoriteRestaurantResponse(RestaurantDTO restaurant, double rating) {
-        this.id = restaurant.getId();
-        this.name = restaurant.getName();
-        this.address = restaurant.getAddress();
+        this.id = restaurant.id();
+        this.name = restaurant.name();
+        this.address = restaurant.address();
         this.rating = rating;
-        this.thumbnail = restaurant.getThumbnail();
+        this.thumbnail = restaurant.thumbnail();
     }
 }

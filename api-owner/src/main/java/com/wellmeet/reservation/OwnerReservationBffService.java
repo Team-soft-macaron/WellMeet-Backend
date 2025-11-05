@@ -3,11 +3,11 @@ package com.wellmeet.reservation;
 import com.wellmeet.client.MemberFeignClient;
 import com.wellmeet.client.ReservationFeignClient;
 import com.wellmeet.client.RestaurantFeignClient;
-import com.wellmeet.client.dto.AvailableDateDTO;
-import com.wellmeet.client.dto.MemberDTO;
-import com.wellmeet.client.dto.ReservationDTO;
-import com.wellmeet.client.dto.RestaurantDTO;
-import com.wellmeet.client.dto.request.MemberIdsRequest;
+import com.wellmeet.common.dto.AvailableDateDTO;
+import com.wellmeet.common.dto.MemberDTO;
+import com.wellmeet.common.dto.ReservationDTO;
+import com.wellmeet.common.dto.RestaurantDTO;
+import com.wellmeet.common.dto.request.MemberIdsRequest;
 import com.wellmeet.global.event.OwnerEventPublishBffService;
 import com.wellmeet.global.event.event.ReservationConfirmedEvent;
 import com.wellmeet.reservation.dto.ReservationResponse;
@@ -37,25 +37,25 @@ public class OwnerReservationBffService {
         }
 
         List<String> memberIds = reservations.stream()
-                .map(ReservationDTO::getMemberId)
+                .map(ReservationDTO::memberId)
                 .distinct()
                 .toList();
         Map<String, MemberDTO> membersById = memberClient.getMembersByIds(
-                        MemberIdsRequest.builder().memberIds(memberIds).build())
+                        new MemberIdsRequest(memberIds))
                 .stream()
-                .collect(Collectors.toMap(MemberDTO::getId, Function.identity()));
+                .collect(Collectors.toMap(MemberDTO::id, Function.identity()));
 
         return reservations.stream()
                 .map(reservation -> {
-                    MemberDTO member = membersById.get(reservation.getMemberId());
+                    MemberDTO member = membersById.get(reservation.memberId());
                     AvailableDateDTO availableDate = restaurantClient.getAvailableDate(
-                            reservation.getRestaurantId(), reservation.getAvailableDateId());
+                            reservation.restaurantId(), reservation.availableDateId());
                     return new ReservationResponse(
                             reservation,
                             availableDate,
-                            member.getName(),
-                            member.getPhone(),
-                            member.getEmail(),
+                            member.name(),
+                            member.phone(),
+                            member.email(),
                             member.isVip()
                     );
                 })
@@ -67,13 +67,13 @@ public class OwnerReservationBffService {
         reservationClient.confirmReservation(reservationId);
 
         ReservationDTO reservation = reservationClient.getReservation(reservationId);
-        MemberDTO member = memberClient.getMember(reservation.getMemberId());
-        RestaurantDTO restaurant = restaurantClient.getRestaurant(reservation.getRestaurantId());
+        MemberDTO member = memberClient.getMember(reservation.memberId());
+        RestaurantDTO restaurant = restaurantClient.getRestaurant(reservation.restaurantId());
         AvailableDateDTO availableDate = restaurantClient.getAvailableDate(
-                reservation.getRestaurantId(), reservation.getAvailableDateId());
-        LocalDateTime dateTime = LocalDateTime.of(availableDate.getDate(), availableDate.getTime());
+                reservation.restaurantId(), reservation.availableDateId());
+        LocalDateTime dateTime = LocalDateTime.of(availableDate.date(), availableDate.time());
         ReservationConfirmedEvent event = new ReservationConfirmedEvent(
-                reservation, member.getName(), restaurant.getName(), dateTime);
+                reservation, member.name(), restaurant.name(), dateTime);
         eventPublishService.publishReservationConfirmedEvent(event);
     }
 }

@@ -3,10 +3,10 @@ package com.wellmeet.restaurant;
 import com.wellmeet.client.RestaurantAvailableDateFeignClient;
 import com.wellmeet.client.MemberFavoriteRestaurantFeignClient;
 import com.wellmeet.client.RestaurantFeignClient;
-import com.wellmeet.client.dto.AvailableDateDTO;
-import com.wellmeet.client.dto.MenuDTO;
-import com.wellmeet.client.dto.RestaurantDTO;
 import com.wellmeet.client.dto.ReviewDTO;
+import com.wellmeet.common.dto.AvailableDateDTO;
+import com.wellmeet.common.dto.MenuDTO;
+import com.wellmeet.common.dto.RestaurantDTO;
 import com.wellmeet.common.util.DistanceCalculator;
 import com.wellmeet.restaurant.dto.AvailableDateResponse;
 import com.wellmeet.restaurant.dto.NearbyRestaurantResponse;
@@ -33,7 +33,7 @@ public class UserRestaurantBffService {
                 .filter(restaurant -> {
                     double distance = DistanceCalculator.calculateDistance(
                             latitude, longitude,
-                            restaurant.getLatitude(), restaurant.getLongitude()
+                            restaurant.latitude(), restaurant.longitude()
                     );
                     return distance <= SEARCH_RADIUS_M;
                 })
@@ -43,11 +43,11 @@ public class UserRestaurantBffService {
 
     private NearbyRestaurantResponse getNearbyRestaurantResponse(RestaurantDTO restaurant, double latitude,
                                                                  double longitude) {
-        Double rating = restaurantClient.getAverageRating(restaurant.getId());
+        Double rating = restaurantClient.getAverageRating(restaurant.id());
         double ratingValue = (rating != null) ? rating : 0.0;
         double distance = DistanceCalculator.calculateDistance(
                 latitude, longitude,
-                restaurant.getLatitude(), restaurant.getLongitude()
+                restaurant.latitude(), restaurant.longitude()
         );
         return new NearbyRestaurantResponse(restaurant, distance, ratingValue);
     }
@@ -58,17 +58,17 @@ public class UserRestaurantBffService {
 
         RestaurantDTO restaurant = restaurantClient.getRestaurant(restaurantId);
 
-        List<ReviewDTO> reviewDTOs = restaurantClient.getReviewsByRestaurant(restaurant.getId());
+        List<ReviewDTO> reviewDTOs = restaurantClient.getReviewsByRestaurant(restaurant.id());
         List<RepresentativeReviewResponse> reviews = reviewDTOs.stream()
                 .map(RepresentativeReviewResponse::new)
                 .toList();
 
-        List<MenuDTO> menuDTOs = restaurantClient.getMenusByRestaurant(restaurant.getId());
+        List<MenuDTO> menuDTOs = restaurantClient.getMenusByRestaurant(restaurant.id());
         List<RepresentativeMenuResponse> menus = menuDTOs.stream()
                 .map(RepresentativeMenuResponse::new)
                 .toList();
 
-        Double rating = restaurantClient.getAverageRating(restaurant.getId());
+        Double rating = restaurantClient.getAverageRating(restaurant.id());
         double ratingValue = (rating != null) ? rating : 0.0;
 
         return new RestaurantResponse(restaurant, reviews, menus, isFavoriteValue, ratingValue);

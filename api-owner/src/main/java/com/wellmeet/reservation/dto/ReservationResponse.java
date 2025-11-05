@@ -1,7 +1,7 @@
 package com.wellmeet.reservation.dto;
 
-import com.wellmeet.client.dto.AvailableDateDTO;
-import com.wellmeet.client.dto.ReservationDTO;
+import com.wellmeet.common.dto.AvailableDateDTO;
+import com.wellmeet.common.dto.ReservationDTO;
 import com.wellmeet.restaurant.dto.ReservationStatus;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,22 +28,22 @@ public class ReservationResponse {
     public ReservationResponse(ReservationDTO reservation, AvailableDateDTO availableDate, String memberName,
                                String memberPhone, String memberEmail, boolean memberVip) {
         CustomerSummaryResponse customerResponse = new CustomerSummaryResponse(
-                reservation.getMemberId(),
+                reservation.memberId(),
                 memberName,
                 memberPhone,
                 memberEmail,
                 memberVip
         );
 
-        this.id = reservation.getId();
+        this.id = reservation.id();
         this.customer = customerResponse;
-        this.date = availableDate.getDate();
-        this.time = availableDate.getTime();
-        this.party = reservation.getPartySize();
-        this.status = ReservationStatus.valueOf(reservation.getStatus());
-        this.note = reservation.getSpecialRequest();
-        this.createdAt = reservation.getCreatedAt();
-        this.updatedAt = reservation.getUpdatedAt();
+        this.date = availableDate.date();
+        this.time = availableDate.time();
+        this.party = reservation.partySize();
+        this.status = ReservationStatus.valueOf(reservation.status().name());
+        this.note = reservation.specialRequest();
+        this.createdAt = reservation.createdAt();
+        this.updatedAt = reservation.updatedAt();
     }
 
     @Getter

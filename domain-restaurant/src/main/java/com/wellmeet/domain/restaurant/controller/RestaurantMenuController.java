@@ -1,6 +1,6 @@
 package com.wellmeet.domain.restaurant.controller;
 
-import com.wellmeet.domain.restaurant.dto.MenuResponse;
+import com.wellmeet.common.dto.MenuDTO;
 import com.wellmeet.domain.restaurant.service.RestaurantMenuApplicationService;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +20,10 @@ public class RestaurantMenuController {
     }
 
     @GetMapping("/restaurant/{restaurantId}")
-    public ResponseEntity<List<MenuResponse>> getMenusByRestaurant(
+    public ResponseEntity<List<MenuDTO>> getMenusByRestaurant(
             @PathVariable String restaurantId
     ) {
-        List<MenuResponse> menus = menuService.getMenusByRestaurantId(restaurantId);
+        List<MenuDTO> menus = menuService.getMenusByRestaurantId(restaurantId);
         return ResponseEntity.ok(menus);
     }
 }

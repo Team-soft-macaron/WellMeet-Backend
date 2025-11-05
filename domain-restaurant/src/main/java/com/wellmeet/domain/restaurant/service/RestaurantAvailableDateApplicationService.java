@@ -1,7 +1,8 @@
 package com.wellmeet.domain.restaurant.service;
 
+import com.wellmeet.common.dto.AvailableDateDTO;
+import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
 import com.wellmeet.domain.restaurant.availabledate.repository.AvailableDateRepository;
-import com.wellmeet.domain.restaurant.dto.AvailableDateResponse;
 import com.wellmeet.domain.restaurant.exception.RestaurantErrorCode;
 import com.wellmeet.domain.restaurant.exception.RestaurantException;
 import java.util.List;
@@ -18,17 +19,17 @@ public class RestaurantAvailableDateApplicationService {
         this.availableDateRepository = availableDateRepository;
     }
 
-    public List<AvailableDateResponse> getAvailableDatesByRestaurantId(String restaurantId) {
+    public List<AvailableDateDTO> getAvailableDatesByRestaurantId(String restaurantId) {
         return availableDateRepository.findAllByRestaurantId(restaurantId)
                 .stream()
-                .map(AvailableDateResponse::from)
+                .map(this::toDTO)
                 .toList();
     }
 
-    public List<AvailableDateResponse> getAvailableDatesByIds(List<Long> availableDateIds) {
+    public List<AvailableDateDTO> getAvailableDatesByIds(List<Long> availableDateIds) {
         return availableDateRepository.findAllByIdIn(availableDateIds)
                 .stream()
-                .map(AvailableDateResponse::from)
+                .map(this::toDTO)
                 .toList();
     }
 
@@ -44,5 +45,18 @@ public class RestaurantAvailableDateApplicationService {
     @Transactional
     public void increaseCapacity(Long availableDateId, int partySize) {
         availableDateRepository.increaseCapacity(availableDateId, partySize);
+    }
+
+    private AvailableDateDTO toDTO(AvailableDate availableDate) {
+        return new AvailableDateDTO(
+                availableDate.getId(),
+                availableDate.getDate(),
+                availableDate.getTime(),
+                availableDate.getMaxCapacity(),
+                availableDate.isAvailable(),
+                availableDate.getRestaurant().getId(),
+                availableDate.getCreatedAt(),
+                availableDate.getUpdatedAt()
+        );
     }
 }

@@ -4,15 +4,15 @@ import com.wellmeet.client.RestaurantAvailableDateFeignClient;
 import com.wellmeet.client.MemberFeignClient;
 import com.wellmeet.client.ReservationFeignClient;
 import com.wellmeet.client.RestaurantFeignClient;
-import com.wellmeet.client.dto.AvailableDateDTO;
-import com.wellmeet.client.dto.MemberDTO;
-import com.wellmeet.client.dto.ReservationDTO;
-import com.wellmeet.client.dto.RestaurantDTO;
-import com.wellmeet.client.dto.request.CreateReservationDTO;
 import com.wellmeet.client.dto.request.DecreaseCapacityRequest;
 import com.wellmeet.client.dto.request.IncreaseCapacityRequest;
 import com.wellmeet.client.dto.request.RestaurantIdsRequest;
 import com.wellmeet.client.dto.request.UpdateReservationDTO;
+import com.wellmeet.common.dto.AvailableDateDTO;
+import com.wellmeet.common.dto.MemberDTO;
+import com.wellmeet.common.dto.ReservationDTO;
+import com.wellmeet.common.dto.RestaurantDTO;
+import com.wellmeet.common.dto.request.CreateReservationDTO;
 import com.wellmeet.global.event.UserEventPublishBffService;
 import com.wellmeet.global.event.event.ReservationCanceledEvent;
 import com.wellmeet.global.event.event.ReservationCreatedEvent;
@@ -47,9 +47,9 @@ public class UserReservationBffService {
         // 2. 중복 예약 체크 (BFF에서 직접 처리)
         List<ReservationDTO> memberReservations = reservationClient.getReservationsByMember(memberId);
         boolean alreadyReserved = memberReservations.stream()
-                .anyMatch(r -> r.getRestaurantId().equals(request.getRestaurantId())
-                        && r.getAvailableDateId().equals(request.getAvailableDateId())
-                        && r.getStatus().equals("CONFIRMED"));
+                .anyMatch(r -> r.restaurantId().equals(request.getRestaurantId())
+                        && r.availableDateId().equals(request.getAvailableDateId())
+                        && r.status().equals("CONFIRMED"));
         if (alreadyReserved) {
             throw new IllegalStateException("이미 예약된 날짜입니다.");
         }
@@ -76,12 +76,12 @@ public class UserReservationBffService {
         ReservationDTO savedReservation = reservationClient.createReservation(createRequest);
 
         // 6. 이벤트 발행
-        LocalDateTime dateTime = LocalDateTime.of(availableDate.getDate(), availableDate.getTime());
+        LocalDateTime dateTime = LocalDateTime.of(availableDate.date(), availableDate.time());
         ReservationCreatedEvent event = new ReservationCreatedEvent(
-                savedReservation, member.getName(), restaurant.getName(), dateTime);
+                savedReservation, member.name(), restaurant.name(), dateTime);
         eventPublishService.publishReservationCreatedEvent(event);
 
-        return new CreateReservationResponse(savedReservation, restaurant.getName(), availableDate);
+        return new CreateReservationResponse(savedReservation, restaurant.name(), availableDate);
     }
 
     public List<SummaryReservationResponse> getReservations(String memberId) {
@@ -92,7 +92,7 @@ public class UserReservationBffService {
         }
 
         List<String> restaurantIds = reservations.stream()
-                .map(ReservationDTO::getRestaurantId)
+                .map(ReservationDTO::restaurantId)
                 .distinct()
                 .toList();
 
@@ -100,19 +100,19 @@ public class UserReservationBffService {
         Map<String, RestaurantDTO> restaurantsById = restaurantClient
                 .getRestaurantsByIds(new RestaurantIdsRequest(restaurantIds))
                 .stream()
-                .collect(Collectors.toMap(RestaurantDTO::getId, Function.identity()));
+                .collect(Collectors.toMap(RestaurantDTO::id, Function.identity()));
 
         return reservations.stream()
                 .map(reservation -> {
-                    RestaurantDTO restaurant = restaurantsById.get(reservation.getRestaurantId());
+                    RestaurantDTO restaurant = restaurantsById.get(reservation.restaurantId());
                     // AvailableDate는 각 Restaurant에서 개별 조회
                     AvailableDateDTO availableDate = restaurantClient.getAvailableDate(
-                            reservation.getRestaurantId(),
-                            reservation.getAvailableDateId()
+                            reservation.restaurantId(),
+                            reservation.availableDateId()
                     );
                     return new SummaryReservationResponse(
                             reservation,
-                            restaurant.getName(),
+                            restaurant.name(),
                             availableDate
                     );
                 })
@@ -123,17 +123,17 @@ public class UserReservationBffService {
         ReservationDTO reservation = reservationClient.getReservation(reservationId);
 
         // memberId 검증 (BFF에서 처리)
-        if (!reservation.getMemberId().equals(memberId)) {
+        if (!reservation.memberId().equals(memberId)) {
             throw new IllegalArgumentException("권한이 없습니다.");
         }
 
-        RestaurantDTO restaurant = restaurantClient.getRestaurant(reservation.getRestaurantId());
+        RestaurantDTO restaurant = restaurantClient.getRestaurant(reservation.restaurantId());
         AvailableDateDTO availableDate = restaurantClient.getAvailableDate(
-                reservation.getRestaurantId(),
-                reservation.getAvailableDateId()
+                reservation.restaurantId(),
+                reservation.availableDateId()
         );
 
-        Double rating = restaurantClient.getAverageRating(reservation.getRestaurantId());
+        Double rating = restaurantClient.getAverageRating(reservation.restaurantId());
         double ratingValue = (rating != null) ? rating : 0.0;
 
         return new ReservationResponse(reservation, restaurant, availableDate, ratingValue);
@@ -149,21 +149,21 @@ public class UserReservationBffService {
 
         // 2. 현재 예약 정보 조회
         ReservationDTO reservation = reservationClient.getReservation(reservationId);
-        if (!reservation.getMemberId().equals(memberId)) {
+        if (!reservation.memberId().equals(memberId)) {
             throw new IllegalArgumentException("권한이 없습니다.");
         }
 
         // 3. 중복 수정 체크 (BFF에서 직접 처리)
-        boolean alreadyUpdated = reservation.getRestaurantId().equals(request.getRestaurantId())
-                && reservation.getAvailableDateId().equals(request.getAvailableDateId())
-                && reservation.getPartySize() == request.getPartySize();
+        boolean alreadyUpdated = reservation.restaurantId().equals(request.getRestaurantId())
+                && reservation.availableDateId().equals(request.getAvailableDateId())
+                && reservation.partySize() == request.getPartySize();
         if (alreadyUpdated) {
-            RestaurantDTO restaurant = restaurantClient.getRestaurant(reservation.getRestaurantId());
+            RestaurantDTO restaurant = restaurantClient.getRestaurant(reservation.restaurantId());
             AvailableDateDTO currentAvailableDate = restaurantClient.getAvailableDate(
-                    reservation.getRestaurantId(),
-                    reservation.getAvailableDateId()
+                    reservation.restaurantId(),
+                    reservation.availableDateId()
             );
-            return new CreateReservationResponse(reservation, restaurant.getName(), currentAvailableDate);
+            return new CreateReservationResponse(reservation, restaurant.name(), currentAvailableDate);
         }
 
         // 4. 새로운 AvailableDate 조회
@@ -174,11 +174,11 @@ public class UserReservationBffService {
 
         // 5. 보상 트랜잭션: 기존 Capacity 복구 + 새로운 Capacity 감소
         AvailableDateDTO oldAvailableDate = restaurantClient.getAvailableDate(
-                reservation.getRestaurantId(),
-                reservation.getAvailableDateId()
+                reservation.restaurantId(),
+                reservation.availableDateId()
         );
         availableDateClient.increaseCapacity(new IncreaseCapacityRequest(
-                reservation.getAvailableDateId(), reservation.getPartySize()));
+                reservation.availableDateId(), reservation.partySize()));
         availableDateClient.decreaseCapacity(new DecreaseCapacityRequest(
                 request.getAvailableDateId(), request.getPartySize()));
 
@@ -193,41 +193,41 @@ public class UserReservationBffService {
 
         // 7. 이벤트 발행
         MemberDTO member = memberClient.getMember(memberId);
-        RestaurantDTO restaurant = restaurantClient.getRestaurant(reservation.getRestaurantId());
-        LocalDateTime dateTime = LocalDateTime.of(newAvailableDate.getDate(), newAvailableDate.getTime());
+        RestaurantDTO restaurant = restaurantClient.getRestaurant(reservation.restaurantId());
+        LocalDateTime dateTime = LocalDateTime.of(newAvailableDate.date(), newAvailableDate.time());
         ReservationUpdatedEvent event = new ReservationUpdatedEvent(
-                updatedReservation, member.getName(), restaurant.getName(), dateTime);
+                updatedReservation, member.name(), restaurant.name(), dateTime);
         eventPublishService.publishReservationUpdatedEvent(event);
 
-        return new CreateReservationResponse(updatedReservation, restaurant.getName(), newAvailableDate);
+        return new CreateReservationResponse(updatedReservation, restaurant.name(), newAvailableDate);
     }
 
     public void cancel(Long reservationId, String memberId) {
         // 1. 예약 정보 조회 및 권한 검증
         ReservationDTO reservation = reservationClient.getReservation(reservationId);
-        if (!reservation.getMemberId().equals(memberId)) {
+        if (!reservation.memberId().equals(memberId)) {
             throw new IllegalArgumentException("권한이 없습니다.");
         }
 
         // 2. AvailableDate 조회
         AvailableDateDTO availableDate = restaurantClient.getAvailableDate(
-                reservation.getRestaurantId(),
-                reservation.getAvailableDateId()
+                reservation.restaurantId(),
+                reservation.availableDateId()
         );
 
         // 3. 보상 트랜잭션: Capacity 복구
         availableDateClient.increaseCapacity(new IncreaseCapacityRequest(
-                reservation.getAvailableDateId(), reservation.getPartySize()));
+                reservation.availableDateId(), reservation.partySize()));
 
         // 4. Reservation 취소
         reservationClient.cancelReservation(reservationId);
 
         // 5. 이벤트 발행
         MemberDTO member = memberClient.getMember(memberId);
-        RestaurantDTO restaurant = restaurantClient.getRestaurant(reservation.getRestaurantId());
-        LocalDateTime dateTime = LocalDateTime.of(availableDate.getDate(), availableDate.getTime());
+        RestaurantDTO restaurant = restaurantClient.getRestaurant(reservation.restaurantId());
+        LocalDateTime dateTime = LocalDateTime.of(availableDate.date(), availableDate.time());
         ReservationCanceledEvent event = new ReservationCanceledEvent(
-                reservation, member.getName(), restaurant.getName(), dateTime);
+                reservation, member.name(), restaurant.name(), dateTime);
         eventPublishService.publishReservationCanceledEvent(event);
     }
 }

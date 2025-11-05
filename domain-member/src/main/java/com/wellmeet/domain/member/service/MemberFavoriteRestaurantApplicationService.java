@@ -1,7 +1,7 @@
 package com.wellmeet.domain.member.service;
 
+import com.wellmeet.common.dto.FavoriteRestaurantDTO;
 import com.wellmeet.domain.member.FavoriteRestaurantDomainService;
-import com.wellmeet.domain.member.dto.FavoriteRestaurantResponse;
 import com.wellmeet.domain.member.entity.FavoriteRestaurant;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -19,18 +19,18 @@ public class MemberFavoriteRestaurantApplicationService {
         return favoriteRestaurantDomainService.isFavorite(memberId, restaurantId);
     }
 
-    public List<FavoriteRestaurantResponse> getFavoritesByMemberId(String memberId) {
+    public List<FavoriteRestaurantDTO> getFavoritesByMemberId(String memberId) {
         return favoriteRestaurantDomainService.findAllByMemberId(memberId)
                 .stream()
-                .map(FavoriteRestaurantResponse::from)
+                .map(this::toDTO)
                 .toList();
     }
 
     @Transactional
-    public FavoriteRestaurantResponse addFavorite(String memberId, String restaurantId) {
+    public FavoriteRestaurantDTO addFavorite(String memberId, String restaurantId) {
         FavoriteRestaurant favoriteRestaurant = new FavoriteRestaurant(memberId, restaurantId);
         favoriteRestaurantDomainService.save(favoriteRestaurant);
-        return FavoriteRestaurantResponse.from(favoriteRestaurant);
+        return toDTO(favoriteRestaurant);
     }
 
     @Transactional
@@ -38,5 +38,15 @@ public class MemberFavoriteRestaurantApplicationService {
         FavoriteRestaurant favoriteRestaurant =
                 favoriteRestaurantDomainService.getByMemberIdAndRestaurantId(memberId, restaurantId);
         favoriteRestaurantDomainService.delete(favoriteRestaurant);
+    }
+
+    private FavoriteRestaurantDTO toDTO(FavoriteRestaurant favoriteRestaurant) {
+        return new FavoriteRestaurantDTO(
+                favoriteRestaurant.getId(),
+                favoriteRestaurant.getMemberId(),
+                favoriteRestaurant.getRestaurantId(),
+                favoriteRestaurant.getCreatedAt(),
+                favoriteRestaurant.getUpdatedAt()
+        );
     }
 }

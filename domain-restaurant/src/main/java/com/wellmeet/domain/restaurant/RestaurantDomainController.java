@@ -1,7 +1,7 @@
 package com.wellmeet.domain.restaurant;
 
+import com.wellmeet.common.dto.RestaurantDTO;
 import com.wellmeet.domain.restaurant.dto.RestaurantIdsRequest;
-import com.wellmeet.domain.restaurant.dto.RestaurantResponse;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -23,22 +23,22 @@ public class RestaurantDomainController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RestaurantResponse> getRestaurant(@PathVariable String id) {
-        RestaurantResponse response = restaurantApplicationService.getRestaurantById(id);
+    public ResponseEntity<RestaurantDTO> getRestaurant(@PathVariable String id) {
+        RestaurantDTO response = restaurantApplicationService.getRestaurantById(id);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    public ResponseEntity<List<RestaurantResponse>> getAllRestaurants() {
-        List<RestaurantResponse> restaurants = restaurantApplicationService.getAllRestaurants();
+    public ResponseEntity<List<RestaurantDTO>> getAllRestaurants() {
+        List<RestaurantDTO> restaurants = restaurantApplicationService.getAllRestaurants();
         return ResponseEntity.ok(restaurants);
     }
 
     @PostMapping("/batch")
-    public ResponseEntity<List<RestaurantResponse>> getRestaurantsByIds(
+    public ResponseEntity<List<RestaurantDTO>> getRestaurantsByIds(
             @Valid @RequestBody RestaurantIdsRequest request
     ) {
-        List<RestaurantResponse> restaurants = restaurantApplicationService.getRestaurantsByIds(request.restaurantIds());
+        List<RestaurantDTO> restaurants = restaurantApplicationService.getRestaurantsByIds(request.restaurantIds());
         return ResponseEntity.ok(restaurants);
     }
 }
