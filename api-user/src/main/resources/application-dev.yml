@@ -7,6 +7,11 @@ spring:
       - classpath:application-infra-redis-dev.yml
       - classpath:application-infra-kafka-dev.yml
 
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
 server:
   port: 8086
 
