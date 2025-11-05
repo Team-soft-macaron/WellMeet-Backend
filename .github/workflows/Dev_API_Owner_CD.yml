@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - "develop"
+      - "feat/#71"
     paths:
       - 'api-owner/**'
-      - 'domain-common/**'
       - 'infra-redis/**'
       - 'infra-kafka/**'
       - 'build.gradle'
