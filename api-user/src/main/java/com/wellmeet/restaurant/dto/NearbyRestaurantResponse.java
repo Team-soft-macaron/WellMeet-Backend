@@ -1,6 +1,6 @@
 package com.wellmeet.restaurant.dto;
 
-import com.wellmeet.domain.restaurant.entity.Restaurant;
+import com.wellmeet.client.dto.RestaurantDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,7 +15,7 @@ public class NearbyRestaurantResponse {
     private double rating;
     private String thumbnail;
 
-    public NearbyRestaurantResponse(Restaurant restaurant, double distance, double rating) {
+    public NearbyRestaurantResponse(RestaurantDTO restaurant, double distance, double rating) {
         this.id = restaurant.getId();
         this.name = restaurant.getName();
         this.address = restaurant.getAddress();

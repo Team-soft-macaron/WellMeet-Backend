@@ -12,7 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 })
 @ExtendWith(DataBaseCleaner.class)
 @DataJpaTest
-@ActiveProfiles("domain-test")
+@ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public abstract class BaseRepositoryTest {
 }

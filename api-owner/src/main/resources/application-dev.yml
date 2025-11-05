@@ -8,14 +8,13 @@ spring:
   config:
     import:
       - classpath:dev-secret.yml
-      - classpath:application-domain-dev.yml
       - classpath:application-infra-redis-dev.yml
       - classpath:application-infra-kafka-dev.yml
 
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${secret.eureka.server-url}
     fetch-registry: true
     register-with-eureka: true
 

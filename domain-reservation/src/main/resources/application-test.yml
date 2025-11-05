@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: domain-reservation-service
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/wellmeet_reservation?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: password
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+    show-sql: true
+    open-in-view: false
+
+  flyway:
+    enabled: false
+
+server:
+  port: 8085
+
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: false
+    fetch-registry: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    root: INFO
+    com.wellmeet: DEBUG

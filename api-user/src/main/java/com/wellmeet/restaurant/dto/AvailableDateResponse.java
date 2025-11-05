@@ -1,6 +1,6 @@
 package com.wellmeet.restaurant.dto;
 
-import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
+import com.wellmeet.client.dto.AvailableDateDTO;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import lombok.Getter;
@@ -16,7 +16,7 @@ public class AvailableDateResponse {
     private int capacity;
     private boolean available;
 
-    public AvailableDateResponse(AvailableDate availableDate) {
+    public AvailableDateResponse(AvailableDateDTO availableDate) {
         this.id = availableDate.getId();
         this.date = availableDate.getDate();
         this.time = availableDate.getTime();

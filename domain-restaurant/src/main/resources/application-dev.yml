@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: domain-restaurant-service
+  config:
+    import:
+      - classpath:dev-secret.yml
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${secret.database.url}
+    username: ${secret.database.username}
+    password: ${secret.database.password}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+    show-sql: false
+    open-in-view: false
+
+  jackson:
+    time-zone: Asia/Seoul
+    serialization:
+      write-dates-as-timestamps: false
+
+server:
+  port: 8083
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${secret.eureka.server-url}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
