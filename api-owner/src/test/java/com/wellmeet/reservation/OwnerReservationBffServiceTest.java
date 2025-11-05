@@ -8,12 +8,12 @@ import static org.mockito.Mockito.when;
 import com.wellmeet.client.MemberFeignClient;
 import com.wellmeet.client.ReservationFeignClient;
 import com.wellmeet.client.RestaurantFeignClient;
-import com.wellmeet.client.dto.AvailableDateDTO;
-import com.wellmeet.client.dto.MemberDTO;
-import com.wellmeet.client.dto.ReservationDTO;
-import com.wellmeet.client.dto.RestaurantDTO;
-import com.wellmeet.client.dto.request.MemberIdsRequest;
-import com.wellmeet.global.event.UserEventPublishBffService;
+import com.wellmeet.common.dto.AvailableDateDTO;
+import com.wellmeet.common.dto.MemberDTO;
+import com.wellmeet.common.dto.ReservationDTO;
+import com.wellmeet.common.dto.RestaurantDTO;
+import com.wellmeet.common.dto.request.MemberIdsRequest;
+import com.wellmeet.global.event.OwnerEventPublishBffService;
 import com.wellmeet.global.event.event.ReservationConfirmedEvent;
 import com.wellmeet.reservation.dto.ReservationResponse;
 import java.time.LocalDateTime;
@@ -26,7 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class UserReservationBffServiceTest {
+class OwnerReservationBffServiceTest {
 
     @Mock
     private ReservationFeignClient reservationClient;
@@ -38,10 +38,10 @@ class UserReservationBffServiceTest {
     private RestaurantFeignClient restaurantClient;
 
     @Mock
-    private UserEventPublishBffService eventPublishService;
+    private OwnerEventPublishBffService eventPublishService;
 
     @InjectMocks
-    private UserReservationBffService reservationService;
+    private OwnerReservationBffService reservationService;
 
     @Nested
     class GetReservations {
@@ -52,9 +52,9 @@ class UserReservationBffServiceTest {
             AvailableDateDTO availableDate = createAvailableDateDTO(1L, LocalDateTime.now(), 10, restaurantId);
             MemberDTO member1 = createMemberDTO("member-1", "Test");
             MemberDTO member2 = createMemberDTO("member-2", "Test2");
-            ReservationDTO reservation1 = createReservationDTO(1L, restaurantId, availableDate.getId(), member1.getId(),
+            ReservationDTO reservation1 = createReservationDTO(1L, restaurantId, availableDate.id(), member1.id(),
                     4);
-            ReservationDTO reservation2 = createReservationDTO(2L, restaurantId, availableDate.getId(), member2.getId(),
+            ReservationDTO reservation2 = createReservationDTO(2L, restaurantId, availableDate.id(), member2.id(),
                     2);
             List<ReservationDTO> reservations = List.of(reservation1, reservation2);
 
@@ -62,7 +62,7 @@ class UserReservationBffServiceTest {
                     .thenReturn(reservations);
             when(memberClient.getMembersByIds(any(MemberIdsRequest.class)))
                     .thenReturn(List.of(member1, member2));
-            when(restaurantClient.getAvailableDate(restaurantId, availableDate.getId()))
+            when(restaurantClient.getAvailableDate(restaurantId, availableDate.id()))
                     .thenReturn(availableDate);
 
             List<ReservationResponse> expectedReservations = reservationService.getReservations(restaurantId);
@@ -107,55 +107,61 @@ class UserReservationBffServiceTest {
     }
 
     private RestaurantDTO createRestaurantDTO(String id, String name) {
-        return RestaurantDTO.builder()
-                .id(id)
-                .name(name)
-                .address("address")
-                .latitude(37.5)
-                .longitude(127.0)
-                .thumbnail("thumbnail")
-                .ownerId("owner-1")
-                .build();
+        return new RestaurantDTO(
+                id,
+                name,
+                "address",
+                37.5,
+                127.0,
+                "thumbnail",
+                "owner-1",
+                null,
+                null
+        );
     }
 
     private AvailableDateDTO createAvailableDateDTO(Long id, LocalDateTime dateTime, int capacity,
                                                     String restaurantId) {
-        return AvailableDateDTO.builder()
-                .id(id)
-                .date(dateTime.toLocalDate())
-                .time(dateTime.toLocalTime())
-                .maxCapacity(capacity)
-                .isAvailable(true)
-                .restaurantId(restaurantId)
-                .build();
+        return new AvailableDateDTO(
+                id,
+                dateTime.toLocalDate(),
+                dateTime.toLocalTime(),
+                capacity,
+                true,
+                restaurantId,
+                null,
+                null
+        );
     }
 
     private MemberDTO createMemberDTO(String id, String name) {
-        return MemberDTO.builder()
-                .id(id)
-                .name(name)
-                .nickname("nickname")
-                .email("email@email.com")
-                .phone("010-1234-5678")
-                .reservationEnabled(true)
-                .remindEnabled(true)
-                .reviewEnabled(true)
-                .isVip(false)
-                .build();
+        return new MemberDTO(
+                id,
+                name,
+                "nickname",
+                "email@email.com",
+                "010-1234-5678",
+                true,
+                true,
+                true,
+                false,
+                null,
+                null
+        );
     }
 
     private ReservationDTO createReservationDTO(Long id, String restaurantId, Long availableDateId, String memberId,
                                                 int partySize) {
-        return ReservationDTO.builder()
-                .id(id)
-                .status("PENDING")
-                .restaurantId(restaurantId)
-                .availableDateId(availableDateId)
-                .memberId(memberId)
-                .partySize(partySize)
-                .specialRequest("request")
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
+        return new ReservationDTO(
+                id,
+                com.wellmeet.common.dto.ReservationStatus.PENDING,
+                restaurantId,
+                memberId,
+                availableDateId,
+                partySize,
+                "request",
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
     }
 }

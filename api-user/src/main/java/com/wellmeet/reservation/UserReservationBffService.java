@@ -11,6 +11,7 @@ import com.wellmeet.client.dto.request.UpdateReservationDTO;
 import com.wellmeet.common.dto.AvailableDateDTO;
 import com.wellmeet.common.dto.MemberDTO;
 import com.wellmeet.common.dto.ReservationDTO;
+import com.wellmeet.common.dto.ReservationStatus;
 import com.wellmeet.common.dto.RestaurantDTO;
 import com.wellmeet.common.dto.request.CreateReservationDTO;
 import com.wellmeet.global.event.UserEventPublishBffService;
@@ -49,7 +50,7 @@ public class UserReservationBffService {
         boolean alreadyReserved = memberReservations.stream()
                 .anyMatch(r -> r.restaurantId().equals(request.getRestaurantId())
                         && r.availableDateId().equals(request.getAvailableDateId())
-                        && r.status().equals("CONFIRMED"));
+                        && r.status().equals(ReservationStatus.CONFIRMED));
         if (alreadyReserved) {
             throw new IllegalStateException("이미 예약된 날짜입니다.");
         }

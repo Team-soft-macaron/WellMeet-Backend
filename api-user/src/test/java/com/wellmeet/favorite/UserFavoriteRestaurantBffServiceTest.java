@@ -8,8 +8,8 @@ import static org.mockito.Mockito.when;
 
 import com.wellmeet.client.MemberFavoriteRestaurantFeignClient;
 import com.wellmeet.client.RestaurantFeignClient;
-import com.wellmeet.client.dto.FavoriteRestaurantDTO;
-import com.wellmeet.client.dto.RestaurantDTO;
+import com.wellmeet.common.dto.FavoriteRestaurantDTO;
+import com.wellmeet.common.dto.RestaurantDTO;
 import com.wellmeet.favorite.dto.FavoriteRestaurantResponse;
 import java.util.List;
 import org.junit.jupiter.api.Nested;
@@ -114,18 +114,20 @@ class UserFavoriteRestaurantBffServiceTest {
     }
 
     private FavoriteRestaurantDTO createFavoriteRestaurantDTO(String memberId, String restaurantId) {
-        return new FavoriteRestaurantDTO(1L, memberId, restaurantId);
+        return new FavoriteRestaurantDTO(1L, memberId, restaurantId, null, null);
     }
 
     private RestaurantDTO createRestaurantDTO(String id, String name) {
-        return RestaurantDTO.builder()
-                .id(id)
-                .name(name)
-                .address("서울시 강남구")
-                .latitude(37.5)
-                .longitude(127.0)
-                .thumbnail("thumbnail.jpg")
-                .ownerId("owner-1")
-                .build();
+        return new RestaurantDTO(
+                id,
+                name,
+                "서울시 강남구",
+                37.5,
+                127.0,
+                "thumbnail.jpg",
+                "owner-1",
+                null,
+                null
+        );
     }
 }

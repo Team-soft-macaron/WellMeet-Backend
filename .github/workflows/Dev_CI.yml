@@ -25,7 +25,7 @@ jobs:
           MYSQL_DATABASE: wellmeet_reservation
           MYSQL_ROOT_PASSWORD: password
         ports:
-          - 3306:3306
+          - 3310:3306
         options: >-
           --health-cmd="mysqladmin ping -ppassword"
           --health-interval=10s

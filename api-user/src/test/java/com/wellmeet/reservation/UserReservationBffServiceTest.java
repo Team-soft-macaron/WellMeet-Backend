@@ -11,13 +11,14 @@ import com.wellmeet.client.RestaurantAvailableDateFeignClient;
 import com.wellmeet.client.MemberFeignClient;
 import com.wellmeet.client.ReservationFeignClient;
 import com.wellmeet.client.RestaurantFeignClient;
-import com.wellmeet.client.dto.AvailableDateDTO;
-import com.wellmeet.client.dto.MemberDTO;
-import com.wellmeet.client.dto.ReservationDTO;
-import com.wellmeet.client.dto.RestaurantDTO;
-import com.wellmeet.client.dto.request.CreateReservationDTO;
 import com.wellmeet.client.dto.request.DecreaseCapacityRequest;
 import com.wellmeet.client.dto.request.UpdateReservationDTO;
+import com.wellmeet.common.dto.AvailableDateDTO;
+import com.wellmeet.common.dto.MemberDTO;
+import com.wellmeet.common.dto.ReservationDTO;
+import com.wellmeet.common.dto.ReservationStatus;
+import com.wellmeet.common.dto.RestaurantDTO;
+import com.wellmeet.common.dto.request.CreateReservationDTO;
 import com.wellmeet.global.event.UserEventPublishBffService;
 import com.wellmeet.reservation.dto.CreateReservationRequest;
 import com.wellmeet.reservation.dto.CreateReservationResponse;
@@ -303,50 +304,61 @@ class UserReservationBffServiceTest {
     }
 
     private MemberDTO createMemberDTO(String id, String name) {
-        return MemberDTO.builder()
-                .id(id)
-                .name(name)
-                .nickname(name + "_nick")
-                .email(name + "@test.com")
-                .phone("010-1234-5678")
-                .build();
+        return new MemberDTO(
+                id,
+                name,
+                name + "_nick",
+                name + "@test.com",
+                "010-1234-5678",
+                true,
+                true,
+                true,
+                false,
+                null,
+                null
+        );
     }
 
     private RestaurantDTO createRestaurantDTO(String id, String name) {
-        return RestaurantDTO.builder()
-                .id(id)
-                .name(name)
-                .address("서울시 강남구")
-                .latitude(37.5)
-                .longitude(127.0)
-                .thumbnail("thumbnail.jpg")
-                .ownerId("owner-1")
-                .build();
+        return new RestaurantDTO(
+                id,
+                name,
+                "서울시 강남구",
+                37.5,
+                127.0,
+                "thumbnail.jpg",
+                "owner-1",
+                null,
+                null
+        );
     }
 
     private AvailableDateDTO createAvailableDateDTO(Long id, LocalDate date, LocalTime time, int capacity) {
-        return AvailableDateDTO.builder()
-                .id(id)
-                .date(date)
-                .time(time)
-                .maxCapacity(capacity)
-                .restaurantId("restaurant-1")
-                .build();
+        return new AvailableDateDTO(
+                id,
+                date,
+                time,
+                capacity,
+                true,
+                "restaurant-1",
+                null,
+                null
+        );
     }
 
     private ReservationDTO createReservationDTO(
             Long id, String memberId, String restaurantId, Long availableDateId, int partySize, String status
     ) {
-        return ReservationDTO.builder()
-                .id(id)
-                .memberId(memberId)
-                .restaurantId(restaurantId)
-                .availableDateId(availableDateId)
-                .partySize(partySize)
-                .specialRequest("요청사항")
-                .status(status)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
+        return new ReservationDTO(
+                id,
+                ReservationStatus.valueOf(status),
+                restaurantId,
+                memberId,
+                availableDateId,
+                partySize,
+                "요청사항",
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
     }
 }

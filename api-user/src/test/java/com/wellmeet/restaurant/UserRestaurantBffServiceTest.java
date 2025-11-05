@@ -7,10 +7,10 @@ import static org.mockito.Mockito.when;
 import com.wellmeet.client.RestaurantAvailableDateFeignClient;
 import com.wellmeet.client.MemberFavoriteRestaurantFeignClient;
 import com.wellmeet.client.RestaurantFeignClient;
-import com.wellmeet.client.dto.AvailableDateDTO;
-import com.wellmeet.client.dto.MenuDTO;
-import com.wellmeet.client.dto.RestaurantDTO;
 import com.wellmeet.client.dto.ReviewDTO;
+import com.wellmeet.common.dto.AvailableDateDTO;
+import com.wellmeet.common.dto.MenuDTO;
+import com.wellmeet.common.dto.RestaurantDTO;
 import com.wellmeet.restaurant.dto.AvailableDateResponse;
 import com.wellmeet.restaurant.dto.NearbyRestaurantResponse;
 import com.wellmeet.restaurant.dto.RestaurantResponse;
@@ -46,24 +46,28 @@ class UserRestaurantBffServiceTest {
         void 주변_식당을_조회한다() {
             double latitude = 37.5;
             double longitude = 127.0;
-            RestaurantDTO restaurant1 = RestaurantDTO.builder()
-                    .id("restaurant-1")
-                    .name("식당1")
-                    .address("서울시")
-                    .latitude(37.501)
-                    .longitude(127.001)
-                    .thumbnail("thumbnail.jpg")
-                    .ownerId("owner-1")
-                    .build();
-            RestaurantDTO restaurant2 = RestaurantDTO.builder()
-                    .id("restaurant-2")
-                    .name("식당2")
-                    .address("서울시")
-                    .latitude(37.502)
-                    .longitude(127.002)
-                    .thumbnail("thumbnail.jpg")
-                    .ownerId("owner-1")
-                    .build();
+            RestaurantDTO restaurant1 = new RestaurantDTO(
+                    "restaurant-1",
+                    "식당1",
+                    "서울시",
+                    37.501,
+                    127.001,
+                    "thumbnail.jpg",
+                    "owner-1",
+                    null,
+                    null
+            );
+            RestaurantDTO restaurant2 = new RestaurantDTO(
+                    "restaurant-2",
+                    "식당2",
+                    "서울시",
+                    37.502,
+                    127.002,
+                    "thumbnail.jpg",
+                    "owner-1",
+                    null,
+                    null
+            );
             List<RestaurantDTO> restaurants = List.of(restaurant1, restaurant2);
 
             when(restaurantClient.getAllRestaurants())
@@ -105,17 +109,19 @@ class UserRestaurantBffServiceTest {
         void 식당_상세_정보를_조회한다() {
             String restaurantId = "restaurant-1";
             String memberId = "member-1";
-            RestaurantDTO restaurant = RestaurantDTO.builder()
-                    .id(restaurantId)
-                    .name("식당1")
-                    .address("서울시")
-                    .latitude(37.5)
-                    .longitude(127.0)
-                    .thumbnail("thumbnail.jpg")
-                    .ownerId("owner-1")
-                    .build();
+            RestaurantDTO restaurant = new RestaurantDTO(
+                    restaurantId,
+                    "식당1",
+                    "서울시",
+                    37.5,
+                    127.0,
+                    "thumbnail.jpg",
+                    "owner-1",
+                    null,
+                    null
+            );
             ReviewDTO review = new ReviewDTO(1L, "맛있어요", 4.5, "DATE", restaurantId, memberId);
-            MenuDTO menu = new MenuDTO(1L, "메뉴1", "맛있는 메뉴", 10000, restaurantId);
+            MenuDTO menu = new MenuDTO(1L, "메뉴1", "맛있는 메뉴", 10000, restaurantId, null, null);
 
             when(favoriteRestaurantClient.isFavorite(memberId, restaurantId))
                     .thenReturn(true);
@@ -141,15 +147,17 @@ class UserRestaurantBffServiceTest {
         void 즐겨찾기하지_않은_식당을_조회한다() {
             String restaurantId = "restaurant-1";
             String memberId = "member-1";
-            RestaurantDTO restaurant = RestaurantDTO.builder()
-                    .id(restaurantId)
-                    .name("식당1")
-                    .address("서울시")
-                    .latitude(37.5)
-                    .longitude(127.0)
-                    .thumbnail("thumbnail.jpg")
-                    .ownerId("owner-1")
-                    .build();
+            RestaurantDTO restaurant = new RestaurantDTO(
+                    restaurantId,
+                    "식당1",
+                    "서울시",
+                    37.5,
+                    127.0,
+                    "thumbnail.jpg",
+                    "owner-1",
+                    null,
+                    null
+            );
 
             when(favoriteRestaurantClient.isFavorite(memberId, restaurantId))
                     .thenReturn(false);
@@ -174,22 +182,26 @@ class UserRestaurantBffServiceTest {
         @Test
         void 식당의_예약_가능한_날짜를_조회한다() {
             String restaurantId = "restaurant-1";
-            AvailableDateDTO availableDate1 = AvailableDateDTO.builder()
-                    .id(1L)
-                    .date(LocalDate.now().plusDays(1))
-                    .time(LocalTime.of(18, 0))
-                    .maxCapacity(10)
-                    .isAvailable(true)
-                    .restaurantId(restaurantId)
-                    .build();
-            AvailableDateDTO availableDate2 = AvailableDateDTO.builder()
-                    .id(2L)
-                    .date(LocalDate.now().plusDays(2))
-                    .time(LocalTime.of(19, 0))
-                    .maxCapacity(5)
-                    .isAvailable(true)
-                    .restaurantId(restaurantId)
-                    .build();
+            AvailableDateDTO availableDate1 = new AvailableDateDTO(
+                    1L,
+                    LocalDate.now().plusDays(1),
+                    LocalTime.of(18, 0),
+                    10,
+                    true,
+                    restaurantId,
+                    null,
+                    null
+            );
+            AvailableDateDTO availableDate2 = new AvailableDateDTO(
+                    2L,
+                    LocalDate.now().plusDays(2),
+                    LocalTime.of(19, 0),
+                    5,
+                    true,
+                    restaurantId,
+                    null,
+                    null
+            );
 
             when(availableDateClient.getAvailableDatesByRestaurant(restaurantId))
                     .thenReturn(List.of(availableDate1, availableDate2));

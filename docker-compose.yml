@@ -9,7 +9,7 @@ services:
       MYSQL_DATABASE: wellmeet_reservation
       MYSQL_ROOT_PASSWORD: password
     ports:
-      - "3306:3306"
+      - "3310:3306"
     volumes:
       - mysql-reservation-data:/var/lib/mysql
     networks:

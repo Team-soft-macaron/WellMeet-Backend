@@ -7,11 +7,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.wellmeet.client.RestaurantFeignClient;
-import com.wellmeet.client.dto.BusinessHourDTO;
-import com.wellmeet.client.dto.RestaurantDTO;
-import com.wellmeet.client.dto.request.UpdateOperatingHoursDTO;
-import com.wellmeet.client.dto.request.UpdateRestaurantDTO;
-import com.wellmeet.global.event.UserEventPublishBffService;
+import com.wellmeet.common.dto.BusinessHourDTO;
+import com.wellmeet.common.dto.RestaurantDTO;
+import com.wellmeet.common.dto.request.UpdateOperatingHoursDTO;
+import com.wellmeet.common.dto.request.UpdateRestaurantDTO;
+import com.wellmeet.global.event.OwnerEventPublishBffService;
 import com.wellmeet.global.event.event.RestaurantUpdatedEvent;
 import com.wellmeet.reservation.dto.DayOfWeek;
 import com.wellmeet.restaurant.dto.OperatingHoursResponse;
@@ -29,16 +29,16 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class UserRestaurantBffServiceTest {
+class OwnerRestaurantBffServiceTest {
 
     @Mock
     private RestaurantFeignClient restaurantClient;
 
     @Mock
-    private UserEventPublishBffService eventPublishService;
+    private OwnerEventPublishBffService eventPublishService;
 
     @InjectMocks
-    private UserRestaurantBffService restaurantService;
+    private OwnerRestaurantBffService restaurantService;
 
     @Nested
     class GetOperatingHours {
@@ -114,15 +114,17 @@ class UserRestaurantBffServiceTest {
                     "new-thumbnail.jpg"
             );
 
-            RestaurantDTO restaurantDTO = RestaurantDTO.builder()
-                    .id(restaurantId)
-                    .name("수정된 식당")
-                    .address("서울시 강남구")
-                    .latitude(37.5)
-                    .longitude(127.0)
-                    .thumbnail("new-thumbnail.jpg")
-                    .ownerId("owner-1")
-                    .build();
+            RestaurantDTO restaurantDTO = new RestaurantDTO(
+                    restaurantId,
+                    "수정된 식당",
+                    "서울시 강남구",
+                    37.5,
+                    127.0,
+                    "new-thumbnail.jpg",
+                    "owner-1",
+                    null,
+                    null
+            );
 
             when(restaurantClient.updateRestaurant(eq(restaurantId), any(UpdateRestaurantDTO.class)))
                     .thenReturn(restaurantDTO);
@@ -148,15 +150,17 @@ class UserRestaurantBffServiceTest {
                     "new-thumbnail.jpg"
             );
 
-            RestaurantDTO restaurantDTO = RestaurantDTO.builder()
-                    .id(restaurantId)
-                    .name("수정된 식당")
-                    .address("서울시 강남구")
-                    .latitude(37.5)
-                    .longitude(127.0)
-                    .thumbnail("new-thumbnail.jpg")
-                    .ownerId("owner-1")
-                    .build();
+            RestaurantDTO restaurantDTO = new RestaurantDTO(
+                    restaurantId,
+                    "수정된 식당",
+                    "서울시 강남구",
+                    37.5,
+                    127.0,
+                    "new-thumbnail.jpg",
+                    "owner-1",
+                    null,
+                    null
+            );
 
             when(restaurantClient.updateRestaurant(eq(restaurantId), any(UpdateRestaurantDTO.class)))
                     .thenReturn(restaurantDTO);
@@ -169,69 +173,25 @@ class UserRestaurantBffServiceTest {
 
     private List<BusinessHourDTO> createBusinessHourDTOList() {
         return List.of(
-                BusinessHourDTO.builder()
-                        .id(1L)
-                        .dayOfWeek("MONDAY")
-                        .isOperating(true)
-                        .open(LocalTime.of(9, 0))
-                        .close(LocalTime.of(22, 0))
-                        .breakStart(LocalTime.of(15, 0))
-                        .breakEnd(LocalTime.of(17, 0))
-                        .build(),
-                BusinessHourDTO.builder()
-                        .id(2L)
-                        .dayOfWeek("TUESDAY")
-                        .isOperating(true)
-                        .open(LocalTime.of(9, 0))
-                        .close(LocalTime.of(22, 0))
-                        .breakStart(LocalTime.of(15, 0))
-                        .breakEnd(LocalTime.of(17, 0))
-                        .build(),
-                BusinessHourDTO.builder()
-                        .id(3L)
-                        .dayOfWeek("WEDNESDAY")
-                        .isOperating(true)
-                        .open(LocalTime.of(9, 0))
-                        .close(LocalTime.of(22, 0))
-                        .breakStart(LocalTime.of(15, 0))
-                        .breakEnd(LocalTime.of(17, 0))
-                        .build(),
-                BusinessHourDTO.builder()
-                        .id(4L)
-                        .dayOfWeek("THURSDAY")
-                        .isOperating(true)
-                        .open(LocalTime.of(9, 0))
-                        .close(LocalTime.of(22, 0))
-                        .breakStart(LocalTime.of(15, 0))
-                        .breakEnd(LocalTime.of(17, 0))
-                        .build(),
-                BusinessHourDTO.builder()
-                        .id(5L)
-                        .dayOfWeek("FRIDAY")
-                        .isOperating(true)
-                        .open(LocalTime.of(9, 0))
-                        .close(LocalTime.of(22, 0))
-                        .breakStart(LocalTime.of(15, 0))
-                        .breakEnd(LocalTime.of(17, 0))
-                        .build(),
-                BusinessHourDTO.builder()
-                        .id(6L)
-                        .dayOfWeek("SATURDAY")
-                        .isOperating(false)
-                        .open(null)
-                        .close(null)
-                        .breakStart(null)
-                        .breakEnd(null)
-                        .build(),
-                BusinessHourDTO.builder()
-                        .id(7L)
-                        .dayOfWeek("SUNDAY")
-                        .isOperating(false)
-                        .open(null)
-                        .close(null)
-                        .breakStart(null)
-                        .breakEnd(null)
-                        .build()
+                new BusinessHourDTO(1L, java.time.DayOfWeek.MONDAY, true,
+                        LocalTime.of(9, 0), LocalTime.of(22, 0),
+                        LocalTime.of(15, 0), LocalTime.of(17, 0), null, null, null),
+                new BusinessHourDTO(2L, java.time.DayOfWeek.TUESDAY, true,
+                        LocalTime.of(9, 0), LocalTime.of(22, 0),
+                        LocalTime.of(15, 0), LocalTime.of(17, 0), null, null, null),
+                new BusinessHourDTO(3L, java.time.DayOfWeek.WEDNESDAY, true,
+                        LocalTime.of(9, 0), LocalTime.of(22, 0),
+                        LocalTime.of(15, 0), LocalTime.of(17, 0), null, null, null),
+                new BusinessHourDTO(4L, java.time.DayOfWeek.THURSDAY, true,
+                        LocalTime.of(9, 0), LocalTime.of(22, 0),
+                        LocalTime.of(15, 0), LocalTime.of(17, 0), null, null, null),
+                new BusinessHourDTO(5L, java.time.DayOfWeek.FRIDAY, true,
+                        LocalTime.of(9, 0), LocalTime.of(22, 0),
+                        LocalTime.of(15, 0), LocalTime.of(17, 0), null, null, null),
+                new BusinessHourDTO(6L, java.time.DayOfWeek.SATURDAY, false,
+                        null, null, null, null, null, null, null),
+                new BusinessHourDTO(7L, java.time.DayOfWeek.SUNDAY, false,
+                        null, null, null, null, null, null, null)
         );
     }
 }

@@ -15,10 +15,10 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-class UserReservationBffControllerTest extends BaseControllerTest {
+class OwnerReservationBffControllerTest extends BaseControllerTest {
 
     @MockitoBean
-    private UserReservationBffService reservationService;
+    private OwnerReservationBffService reservationService;
 
     @Nested
     class GetReservations {

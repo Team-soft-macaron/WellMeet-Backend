@@ -2,7 +2,8 @@ package com.wellmeet.global.event;
 
 import static org.mockito.Mockito.verify;
 
-import com.wellmeet.client.dto.ReservationDTO;
+import com.wellmeet.common.dto.ReservationDTO;
+import com.wellmeet.common.dto.ReservationStatus;
 import com.wellmeet.global.event.event.ReservationCanceledEvent;
 import com.wellmeet.global.event.event.ReservationCreatedEvent;
 import com.wellmeet.global.event.event.ReservationUpdatedEvent;
@@ -76,16 +77,16 @@ class UserEventPublishBffServiceTest {
     }
 
     private ReservationDTO createReservationDTO() {
-        return ReservationDTO.builder()
-                .id(1L)
-                .restaurantId("restaurant-1")
-                .availableDateId(1L)
-                .memberId("member-1")
-                .partySize(4)
-                .specialRequest("창가 자리 부탁드립니다")
-                .status("CONFIRMED")
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
+        return new ReservationDTO(
+                1L,
+                ReservationStatus.CONFIRMED,
+                "restaurant-1",
+                "member-1",
+                1L,
+                4,
+                "창가 자리 부탁드립니다",
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
     }
 }

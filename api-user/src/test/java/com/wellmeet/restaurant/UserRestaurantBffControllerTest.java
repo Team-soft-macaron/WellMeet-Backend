@@ -4,10 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import com.wellmeet.BaseControllerTest;
-import com.wellmeet.client.dto.AvailableDateDTO;
-import com.wellmeet.client.dto.MenuDTO;
-import com.wellmeet.client.dto.RestaurantDTO;
 import com.wellmeet.client.dto.ReviewDTO;
+import com.wellmeet.common.dto.AvailableDateDTO;
+import com.wellmeet.common.dto.MenuDTO;
+import com.wellmeet.common.dto.RestaurantDTO;
 import com.wellmeet.restaurant.dto.AvailableDateResponse;
 import com.wellmeet.restaurant.dto.NearbyRestaurantResponse;
 import com.wellmeet.restaurant.dto.RepresentativeMenuResponse;
@@ -35,24 +35,28 @@ class UserRestaurantBffControllerTest extends BaseControllerTest {
 
         @Test
         void 주변_레스토랑_조회() {
-            RestaurantDTO restaurant1 = RestaurantDTO.builder()
-                    .id("restaurant-1")
-                    .name("식당1")
-                    .address("서울시")
-                    .latitude(LATITUDE)
-                    .longitude(LONGITUDE)
-                    .thumbnail("thumbnail1.jpg")
-                    .ownerId("owner-1")
-                    .build();
-            RestaurantDTO restaurant2 = RestaurantDTO.builder()
-                    .id("restaurant-2")
-                    .name("식당2")
-                    .address("서울시")
-                    .latitude(LATITUDE)
-                    .longitude(LONGITUDE)
-                    .thumbnail("thumbnail2.jpg")
-                    .ownerId("owner-1")
-                    .build();
+            RestaurantDTO restaurant1 = new RestaurantDTO(
+                    "restaurant-1",
+                    "식당1",
+                    "서울시",
+                    LATITUDE,
+                    LONGITUDE,
+                    "thumbnail1.jpg",
+                    "owner-1",
+                    null,
+                    null
+            );
+            RestaurantDTO restaurant2 = new RestaurantDTO(
+                    "restaurant-2",
+                    "식당2",
+                    "서울시",
+                    LATITUDE,
+                    LONGITUDE,
+                    "thumbnail2.jpg",
+                    "owner-1",
+                    null,
+                    null
+            );
 
             NearbyRestaurantResponse response1 = new NearbyRestaurantResponse(restaurant1, 0.5, 4.5);
             NearbyRestaurantResponse response2 = new NearbyRestaurantResponse(restaurant2, 0.8, 4.0);
@@ -78,18 +82,20 @@ class UserRestaurantBffControllerTest extends BaseControllerTest {
             String restaurantId = "restaurant-1";
             String memberId = "member-1";
 
-            RestaurantDTO restaurant = RestaurantDTO.builder()
-                    .id(restaurantId)
-                    .name("테스트 식당")
-                    .address("서울시 강남구")
-                    .latitude(37.5)
-                    .longitude(127.0)
-                    .thumbnail("thumbnail.jpg")
-                    .ownerId("owner-1")
-                    .build();
+            RestaurantDTO restaurant = new RestaurantDTO(
+                    restaurantId,
+                    "테스트 식당",
+                    "서울시 강남구",
+                    37.5,
+                    127.0,
+                    "thumbnail.jpg",
+                    "owner-1",
+                    null,
+                    null
+            );
 
-            MenuDTO menu1 = new MenuDTO(1L, "메뉴1", "설명1", 10000, restaurantId);
-            MenuDTO menu2 = new MenuDTO(2L, "메뉴2", "설명2", 15000, restaurantId);
+            MenuDTO menu1 = new MenuDTO(1L, "메뉴1", "설명1", 10000, restaurantId, null, null);
+            MenuDTO menu2 = new MenuDTO(2L, "메뉴2", "설명2", 15000, restaurantId, null, null);
             List<RepresentativeMenuResponse> menus = List.of(
                     new RepresentativeMenuResponse(menu1),
                     new RepresentativeMenuResponse(menu2)
@@ -133,22 +139,26 @@ class UserRestaurantBffControllerTest extends BaseControllerTest {
         void 예약_가능_시간_조회() {
             String restaurantId = "restaurant-1";
 
-            AvailableDateDTO availableDate1 = AvailableDateDTO.builder()
-                    .id(1L)
-                    .date(LocalDate.now().plusDays(1))
-                    .time(LocalTime.of(18, 0))
-                    .maxCapacity(10)
-                    .isAvailable(true)
-                    .restaurantId(restaurantId)
-                    .build();
-            AvailableDateDTO availableDate2 = AvailableDateDTO.builder()
-                    .id(2L)
-                    .date(LocalDate.now().plusDays(2))
-                    .time(LocalTime.of(19, 0))
-                    .maxCapacity(20)
-                    .isAvailable(true)
-                    .restaurantId(restaurantId)
-                    .build();
+            AvailableDateDTO availableDate1 = new AvailableDateDTO(
+                    1L,
+                    LocalDate.now().plusDays(1),
+                    LocalTime.of(18, 0),
+                    10,
+                    true,
+                    restaurantId,
+                    null,
+                    null
+            );
+            AvailableDateDTO availableDate2 = new AvailableDateDTO(
+                    2L,
+                    LocalDate.now().plusDays(2),
+                    LocalTime.of(19, 0),
+                    20,
+                    true,
+                    restaurantId,
+                    null,
+                    null
+            );
 
             List<AvailableDateResponse> availableDateResponses = List.of(
                     new AvailableDateResponse(availableDate1),
