@@ -6,6 +6,7 @@ on:
       - "develop"
       - "feat/#71"
     paths:
+      - 'common-client/**'
       - 'domain-member/**'
       - 'domain-common/**'
       - 'build.gradle'
