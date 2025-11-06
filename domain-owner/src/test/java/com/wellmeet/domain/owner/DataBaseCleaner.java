@@ -1,7 +1,10 @@
 package com.wellmeet.domain.owner;
 
 import jakarta.persistence.EntityManager;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.springframework.context.ApplicationContext;
@@ -10,10 +13,26 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 public class DataBaseCleaner implements BeforeEachCallback {
 
+    private String databaseName;
+
     @Override
     public void beforeEach(ExtensionContext extensionContext) throws Exception {
         ApplicationContext context = SpringExtension.getApplicationContext(extensionContext);
+
+        if (databaseName == null) {
+            extractDatabaseName(context);
+        }
+
         cleanup(context);
+    }
+
+    private void extractDatabaseName(ApplicationContext context) {
+        DataSource dataSource = context.getBean(DataSource.class);
+        try (Connection conn = dataSource.getConnection()) {
+            databaseName = conn.getCatalog();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to extract database name", e);
+        }
     }
 
     private void cleanup(ApplicationContext context) {
@@ -37,12 +56,12 @@ public class DataBaseCleaner implements BeforeEachCallback {
 
     @SuppressWarnings("unchecked")
     private List<String> findTableNames(EntityManager em) {
-        String tableNameSelectQuery = """
+        String tableNameSelectQuery = String.format("""
                 SELECT TABLE_NAME
                 FROM INFORMATION_SCHEMA.TABLES
-                WHERE TABLE_SCHEMA = 'test'
+                WHERE TABLE_SCHEMA = '%s'
                 AND TABLE_TYPE = 'BASE TABLE'
-                """;
+                """, databaseName);
 
         return em.createNativeQuery(tableNameSelectQuery)
                 .getResultList();
