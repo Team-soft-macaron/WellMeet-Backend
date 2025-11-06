@@ -7,9 +7,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${secret.database.url}
-    username: ${secret.database.username}
-    password: ${secret.database.password}
+    url: jdbc:mysql://${secret.datasource.url}:${secret.datasource.port}/${secret.datasource.database}
+    username: ${secret.datasource.username}
+    password: ${secret.datasource.password}
 
   jpa:
     hibernate:
