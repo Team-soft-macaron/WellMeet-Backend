@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - "develop"
-      - "feat/#71"
     paths:
       - 'common-client/**'
       - 'domain-member/**'
