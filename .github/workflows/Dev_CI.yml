@@ -136,3 +136,12 @@ jobs:
 
       - name: Validate Flyway Schema
         run: ./gradlew :domain-reservation:test --tests FlywaySchemaValidationTest
+
+      - name: Validate Flyway Schema
+        run: ./gradlew :domain-restaurant:test --tests FlywaySchemaValidationTest
+
+      - name: Validate Flyway Schema
+        run: ./gradlew :domain-owner:test --tests FlywaySchemaValidationTest
+
+      - name: Validate Flyway Schema
+        run: ./gradlew :domain-member:test --tests FlywaySchemaValidationTest
