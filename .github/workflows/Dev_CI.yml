@@ -133,3 +133,6 @@ jobs:
 
       - name: Run Tests With Gradle
         run: ./gradlew test
+
+      - name: Validate Flyway Schema
+        run: ./gradlew :domain-reservation:test --tests FlywaySchemaValidationTest

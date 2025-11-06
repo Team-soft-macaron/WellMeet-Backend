@@ -1,4 +1,4 @@
-package com.wellmeet.domain.member;
+package com.wellmeet;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

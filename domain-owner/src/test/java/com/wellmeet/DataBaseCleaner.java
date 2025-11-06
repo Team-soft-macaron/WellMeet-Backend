@@ -1,4 +1,4 @@
-package com.wellmeet.domain.member;
+package com.wellmeet;
 
 import jakarta.persistence.EntityManager;
 import java.sql.Connection;

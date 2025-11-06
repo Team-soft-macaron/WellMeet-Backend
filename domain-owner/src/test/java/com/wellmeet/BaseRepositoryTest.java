@@ -1,4 +1,4 @@
-package com.wellmeet.domain.member;
+package com.wellmeet;
 
 import com.wellmeet.domain.config.JpaAuditingConfig;
 import org.junit.jupiter.api.extension.ExtendWith;
