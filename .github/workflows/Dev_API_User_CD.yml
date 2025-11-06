@@ -12,7 +12,7 @@ on:
       - 'infra-kafka/**'
       - 'build.gradle'
       - 'settings.gradle'
-      - 'Dev_API_User_CD.yml'
+      - '.github/workflows/Dev_API_User_CD.yml'
 
 permissions:
   contents: read

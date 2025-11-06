@@ -11,7 +11,7 @@ on:
       - 'domain-common/**'
       - 'build.gradle'
       - 'settings.gradle'
-      - 'Dev_Domain_Member_CD.yml'
+      - '.github/workflows/Dev_Domain_Member_CD.yml'
 
 permissions:
   contents: read
@@ -33,7 +33,7 @@ jobs:
 
       - name: Setting dev-secret.yml
         run: |
-          echo "${{ secrets.DOMAIN_MEMBER_DEV_SECRET_YML }}" > ./api-user/src/main/resources/dev-secret.yml
+          echo "${{ secrets.DOMAIN_MEMBER_DEV_SECRET_YML }}" > ./domain-member/src/main/resources/dev-secret.yml
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
