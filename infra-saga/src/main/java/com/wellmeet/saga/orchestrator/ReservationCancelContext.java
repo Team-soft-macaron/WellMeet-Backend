@@ -4,6 +4,6 @@ public record ReservationCancelContext(
         Long reservationId,
         String memberId,
         String restaurantId,
-        String availableDateId,
+        Long availableDateId,
         int partySize
 ) {}

@@ -3,7 +3,7 @@ package com.wellmeet.saga.executor;
 import com.wellmeet.saga.core.SagaAction;
 import com.wellmeet.saga.core.SagaContext;
 import com.wellmeet.saga.core.SagaStep;
-import com.wellmeet.saga.store.EventStoreService;
+import com.wellmeet.saga.logging.LoggingEventService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -13,12 +13,12 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class SagaExecutor {
 
-    private final EventStoreService eventStoreService;
+    private final LoggingEventService loggingEventService;
 
     public void executeStep(String sagaId, String sagaType, SagaStep step, SagaContext context, int sequence) throws Exception {
         String stepName = step.getName();
 
-        eventStoreService.saveStepStarted(sagaId, stepName, sequence, sagaType, "Executing step: " + stepName, context.getData());
+        loggingEventService.saveStepStarted(sagaId, stepName, sequence, sagaType, "Executing step: " + stepName, context.getData());
         log.info("Executing step: sagaId={}, stepName={}", sagaId, stepName);
 
         Exception lastException = executeWithRetry(
@@ -32,10 +32,10 @@ public class SagaExecutor {
         );
 
         if (lastException == null) {
-            eventStoreService.saveStepCompleted(sagaId, stepName, context.getStepResults());
+            loggingEventService.saveStepCompleted(sagaId, stepName, context.getStepResults());
             log.info("Step completed successfully: sagaId={}, stepName={}", sagaId, stepName);
         } else {
-            eventStoreService.saveStepFailed(sagaId, stepName, getErrorMessage(lastException));
+            loggingEventService.saveStepFailed(sagaId, stepName, getErrorMessage(lastException));
             log.error("Step failed after retries: sagaId={}, stepName={}", sagaId, stepName);
             throw lastException;
         }
@@ -59,10 +59,10 @@ public class SagaExecutor {
         );
 
         if (lastException == null) {
-            eventStoreService.saveStepCompensated(sagaId, stepName);
+            loggingEventService.saveStepCompensated(sagaId, stepName);
             log.info("Compensation completed successfully: sagaId={}, stepName={}", sagaId, stepName);
         } else {
-            eventStoreService.saveStepFailed(sagaId, stepName, "Compensation failed: " + getErrorMessage(lastException));
+            loggingEventService.saveStepFailed(sagaId, stepName, "Compensation failed: " + getErrorMessage(lastException));
             log.error("Compensation failed after retries: sagaId={}, stepName={}", sagaId, stepName);
             throw lastException;
         }

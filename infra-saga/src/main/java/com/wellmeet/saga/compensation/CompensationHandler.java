@@ -2,7 +2,7 @@ package com.wellmeet.saga.compensation;
 
 import com.wellmeet.saga.core.SagaContext;
 import com.wellmeet.saga.core.SagaStep;
-import com.wellmeet.saga.dlq.DeadLetterQueueService;
+import com.wellmeet.saga.logging.InMemoryDLQService;
 import com.wellmeet.saga.executor.SagaExecutor;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 public class CompensationHandler {
 
     private final SagaExecutor sagaExecutor;
-    private final DeadLetterQueueService deadLetterQueueService;
+    private final InMemoryDLQService inMemoryDLQService;
 
     public void compensate(String sagaId, List<SagaStep> steps, SagaContext context, int failedStepIndex) {
         log.info("Starting compensation: sagaId={}, failedStepIndex={}", sagaId, failedStepIndex);
@@ -32,7 +32,7 @@ public class CompensationHandler {
                 sagaExecutor.executeCompensation(sagaId, step, context);
             } catch (Exception e) {
                 log.error("Compensation failed, saving to DLQ: sagaId={}, stepName={}", sagaId, step.getName(), e);
-                deadLetterQueueService.save(sagaId, step.getName(), e, context);
+                inMemoryDLQService.save(sagaId, step.getName(), e, context);
             }
         }
 

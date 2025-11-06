@@ -4,10 +4,10 @@ public record ReservationUpdateContext(
         Long reservationId,
         String memberId,
         String oldRestaurantId,
-        String oldAvailableDateId,
+        Long oldAvailableDateId,
         int oldPartySize,
         String newRestaurantId,
-        String newAvailableDateId,
+        Long newAvailableDateId,
         int newPartySize,
         String specialRequest
 ) {}

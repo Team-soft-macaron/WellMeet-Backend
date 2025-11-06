@@ -6,7 +6,7 @@ import com.wellmeet.saga.core.SagaDefinition;
 import com.wellmeet.saga.core.SagaStep;
 import com.wellmeet.saga.executor.SagaExecutor;
 import com.wellmeet.saga.idempotency.IdempotencyKeyManager;
-import com.wellmeet.saga.store.EventStoreService;
+import com.wellmeet.saga.logging.LoggingEventService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ public class SagaOrchestrator {
 
     private final SagaExecutor sagaExecutor;
     private final CompensationHandler compensationHandler;
-    private final EventStoreService eventStoreService;
+    private final LoggingEventService loggingEventService;
     private final IdempotencyKeyManager idempotencyKeyManager;
 
     public void execute(SagaDefinition<?> definition, SagaContext context) throws SagaExecutionException {
@@ -28,7 +28,7 @@ public class SagaOrchestrator {
 
         checkIdempotency(sagaId, idempotencyKey);
 
-        eventStoreService.saveSagaStarted(sagaId, definition.getSagaType(), context.getData());
+        loggingEventService.saveSagaStarted(sagaId, definition.getSagaType(), context.getData());
         log.info("Starting saga execution: sagaId={}, sagaType={}", sagaId, definition.getSagaType());
 
         List<SagaStep> steps = definition.getSteps();
@@ -62,7 +62,7 @@ public class SagaOrchestrator {
     }
 
     private void handleSuccess(String sagaId, String idempotencyKey, SagaContext context) {
-        eventStoreService.saveSagaCompleted(sagaId);
+        loggingEventService.saveSagaCompleted(sagaId);
         log.info("Saga completed successfully: sagaId={}", sagaId);
 
         if (idempotencyKey != null) {
@@ -71,12 +71,12 @@ public class SagaOrchestrator {
     }
 
     private void handleFailure(String sagaId, String idempotencyKey, List<SagaStep> steps, SagaContext context, int failedStepIndex) throws SagaExecutionException {
-        eventStoreService.saveSagaCompensating(sagaId);
+        loggingEventService.saveSagaCompensating(sagaId);
         log.error("Saga failed, starting compensation: sagaId={}, failedStep={}", sagaId, steps.get(failedStepIndex).getName());
 
         compensationHandler.compensate(sagaId, steps, context, failedStepIndex);
 
-        eventStoreService.saveSagaCompensated(sagaId);
+        loggingEventService.saveSagaCompensated(sagaId);
         log.info("Saga compensated: sagaId={}", sagaId);
 
         if (idempotencyKey != null) {
