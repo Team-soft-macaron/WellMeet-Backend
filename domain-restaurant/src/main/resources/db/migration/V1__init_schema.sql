@@ -78,8 +78,20 @@ CREATE TABLE review
     created_at    DATETIME(6) NOT NULL,
     updated_at    DATETIME(6) NOT NULL,
     CONSTRAINT fk_review_restaurant FOREIGN KEY (restaurant_id) REFERENCES restaurant (id) ON DELETE CASCADE,
-    CHECK (situation IN ('DATE', 'BUSINESS', 'FAMILY', 'FRIEND', 'SOLO')),
+    CHECK (situation IN ('DATE', 'FAMILY', 'BUSINESS')),
     CHECK (rating >= 0.0 AND rating <= 5.0),
     INDEX idx_review_restaurant (restaurant_id),
     INDEX idx_review_member (member_id)
+);
+
+-- ReviewTag 테이블
+CREATE TABLE review_tag
+(
+    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
+    review_id  BIGINT       NOT NULL,
+    name       VARCHAR(255) NOT NULL,
+    created_at DATETIME(6) NOT NULL,
+    updated_at DATETIME(6) NOT NULL,
+    CONSTRAINT fk_review_tag_review FOREIGN KEY (review_id) REFERENCES review (id) ON DELETE CASCADE,
+    INDEX idx_review_tag_review (review_id)
 );
