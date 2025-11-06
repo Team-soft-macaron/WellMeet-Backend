@@ -1,7 +1,7 @@
 package com.wellmeet.domain.member.service;
 
+import com.wellmeet.common.dto.MemberDTO;
 import com.wellmeet.domain.member.MemberDomainService;
-import com.wellmeet.domain.member.dto.MemberResponse;
 import com.wellmeet.domain.member.entity.Member;
 import com.wellmeet.domain.member.repository.MemberRepository;
 import java.util.List;
@@ -18,21 +18,21 @@ public class MemberApplicationService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public MemberResponse createMember(String name, String nickname, String email, String phone) {
+    public MemberDTO createMember(String name, String nickname, String email, String phone) {
         Member member = new Member(name, nickname, email, phone);
         Member savedMember = memberRepository.save(member);
-        return MemberResponse.from(savedMember);
+        return toDTO(savedMember);
     }
 
-    public MemberResponse getMemberById(String memberId) {
+    public MemberDTO getMemberById(String memberId) {
         Member member = memberDomainService.getById(memberId);
-        return MemberResponse.from(member);
+        return toDTO(member);
     }
 
-    public List<MemberResponse> getMembersByIds(List<String> memberIds) {
+    public List<MemberDTO> getMembersByIds(List<String> memberIds) {
         return memberDomainService.findAllByIds(memberIds)
                 .stream()
-                .map(MemberResponse::from)
+                .map(this::toDTO)
                 .toList();
     }
 
@@ -40,5 +40,21 @@ public class MemberApplicationService {
     public void deleteMember(String memberId) {
         Member member = memberDomainService.getById(memberId);
         memberRepository.delete(member);
+    }
+
+    private MemberDTO toDTO(Member member) {
+        return new MemberDTO(
+                member.getId(),
+                member.getName(),
+                member.getNickname(),
+                member.getEmail(),
+                member.getPhone(),
+                member.isReservationEnabled(),
+                member.isRemindEnabled(),
+                member.isReviewEnabled(),
+                member.isVip(),
+                member.getCreatedAt(),
+                member.getUpdatedAt()
+        );
     }
 }

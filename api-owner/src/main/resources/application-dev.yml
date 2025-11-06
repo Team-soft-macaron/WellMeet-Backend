@@ -1,23 +1,46 @@
-server:
-  port: 8087
-
 spring:
   application:
     name: api-owner-service
-
   config:
     import:
       - classpath:dev-secret.yml
-      - classpath:application-domain-dev.yml
       - classpath:application-infra-redis-dev.yml
       - classpath:application-infra-kafka-dev.yml
 
+  jackson:
+    time-zone: Asia/Seoul
+    serialization:
+      write-dates-as-timestamps: false
+
+server:
+  port: 8087
+  shutdown: graceful
+
 eureka:
   client:
+    enabled: true
     service-url:
-      defaultZone: http://localhost:8761/eureka/
-    fetch-registry: true
+      defaultZone: ${secret.eureka.server-url}
     register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    lease-renewal-interval-in-seconds: 30
+    lease-expiration-duration-in-seconds: 90
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
 
 feign:
   client:
@@ -29,3 +52,12 @@ feign:
 
 cors:
   origin: ${secret.cors.origin}
+
+logging:
+  level:
+    root: INFO
+    com.wellmeet: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.cloud: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

@@ -1,11 +1,13 @@
 package com.wellmeet.favorite.dto;
 
-import com.wellmeet.domain.restaurant.entity.Restaurant;
+import com.wellmeet.common.dto.RestaurantDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
+@lombok.Builder
+@lombok.AllArgsConstructor
 public class FavoriteRestaurantResponse {
 
     private String id;
@@ -14,11 +16,11 @@ public class FavoriteRestaurantResponse {
     private double rating;
     private String thumbnail;
 
-    public FavoriteRestaurantResponse(Restaurant restaurant, double rating) {
-        this.id = restaurant.getId();
-        this.name = restaurant.getName();
-        this.address = restaurant.getAddress();
+    public FavoriteRestaurantResponse(RestaurantDTO restaurant, double rating) {
+        this.id = restaurant.id();
+        this.name = restaurant.name();
+        this.address = restaurant.address();
         this.rating = rating;
-        this.thumbnail = restaurant.getThumbnail();
+        this.thumbnail = restaurant.thumbnail();
     }
 }

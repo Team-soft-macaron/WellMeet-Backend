@@ -4,11 +4,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
-import com.wellmeet.domain.member.entity.Member;
-import com.wellmeet.domain.owner.entity.Owner;
-import com.wellmeet.domain.reservation.entity.Reservation;
-import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
-import com.wellmeet.domain.restaurant.entity.Restaurant;
+import com.wellmeet.common.dto.ReservationDTO;
+import com.wellmeet.common.dto.ReservationStatus;
 import com.wellmeet.global.event.event.ReservationCanceledEvent;
 import com.wellmeet.global.event.event.ReservationCreatedEvent;
 import com.wellmeet.global.event.event.ReservationUpdatedEvent;
@@ -38,16 +35,16 @@ class ReservationEventListenerTest {
 
         @Test
         void 예약_생성_이벤트를_처리하여_Kafka로_알림_메시지를_발송한다() {
-            Reservation reservation = createReservation();
-            Restaurant restaurant = getRestaurant();
-            AvailableDate availableDate = getAvailableDate(restaurant);
-            LocalDateTime dateTime = LocalDateTime.of(availableDate.getDate(), availableDate.getTime());
-            ReservationCreatedEvent event = new ReservationCreatedEvent(reservation, "member", restaurant.getName(), dateTime);
+            ReservationDTO reservation = createReservationDTO();
+            LocalDateTime dateTime = LocalDateTime.now().plusDays(1);
+            ReservationCreatedEvent event = new ReservationCreatedEvent(
+                    reservation, "홍길동", "맛집", dateTime
+            );
 
             reservationEventListener.handleReservationCreated(event);
 
             verify(kafkaProducerService).sendNotificationMessage(
-                    eq(restaurant.getId()),
+                    eq(reservation.restaurantId()),
                     any(ReservationCreatedPayload.class)
             );
         }
@@ -58,16 +55,16 @@ class ReservationEventListenerTest {
 
         @Test
         void 예약_수정_이벤트를_처리하여_Kafka로_알림_메시지를_발송한다() {
-            Reservation reservation = createReservation();
-            Restaurant restaurant = getRestaurant();
-            AvailableDate availableDate = getAvailableDate(restaurant);
-            LocalDateTime dateTime = LocalDateTime.of(availableDate.getDate(), availableDate.getTime());
-            ReservationUpdatedEvent event = new ReservationUpdatedEvent(reservation, "member", restaurant.getName(), dateTime);
+            ReservationDTO reservation = createReservationDTO();
+            LocalDateTime dateTime = LocalDateTime.now().plusDays(1);
+            ReservationUpdatedEvent event = new ReservationUpdatedEvent(
+                    reservation, "홍길동", "맛집", dateTime
+            );
 
             reservationEventListener.handleReservationUpdated(event);
 
             verify(kafkaProducerService).sendNotificationMessage(
-                    eq(restaurant.getId()),
+                    eq(reservation.restaurantId()),
                     any(ReservationUpdatedPayload.class)
             );
         }
@@ -78,48 +75,32 @@ class ReservationEventListenerTest {
 
         @Test
         void 예약_취소_이벤트를_처리하여_Kafka로_알림_메시지를_발송한다() {
-            Reservation reservation = createReservation();
-            Restaurant restaurant = getRestaurant();
-            AvailableDate availableDate = getAvailableDate(restaurant);
-            LocalDateTime dateTime = LocalDateTime.of(availableDate.getDate(), availableDate.getTime());
-            ReservationCanceledEvent event = new ReservationCanceledEvent(reservation, "member", restaurant.getName(), dateTime);
+            ReservationDTO reservation = createReservationDTO();
+            LocalDateTime dateTime = LocalDateTime.now().plusDays(1);
+            ReservationCanceledEvent event = new ReservationCanceledEvent(
+                    reservation, "홍길동", "맛집", dateTime
+            );
 
             reservationEventListener.handleReservationCanceled(event);
 
             verify(kafkaProducerService).sendNotificationMessage(
-                    eq(restaurant.getId()),
+                    eq(reservation.restaurantId()),
                     any(ReservationCanceledPayload.class)
             );
         }
     }
 
-    private Restaurant getRestaurant() {
-        Owner owner = new Owner("owner", "owner@test.com");
-        return new Restaurant(
-                "식당",
-                "description",
-                "서울시 강남구",
-                37.5,
-                127.0,
-                "thumbnail.jpg",
-                owner.getId()
+    private ReservationDTO createReservationDTO() {
+        return new ReservationDTO(
+                1L,
+                ReservationStatus.CONFIRMED,
+                "restaurant-1",
+                "member-1",
+                1L,
+                4,
+                "창가 자리 부탁드립니다",
+                LocalDateTime.now(),
+                LocalDateTime.now()
         );
-    }
-
-    private AvailableDate getAvailableDate(Restaurant restaurant) {
-        LocalDateTime dateTime = LocalDateTime.now().plusDays(1);
-        return new AvailableDate(
-                dateTime.toLocalDate(),
-                dateTime.toLocalTime(),
-                10,
-                restaurant
-        );
-    }
-
-    private Reservation createReservation() {
-        Restaurant restaurant = getRestaurant();
-        AvailableDate availableDate = getAvailableDate(restaurant);
-        Member member = new Member("member", "nickname", "email@test.com", "010-1234-5678");
-        return new Reservation(restaurant.getId(), availableDate.getId(), member.getId(), 4, "요청사항");
     }
 }

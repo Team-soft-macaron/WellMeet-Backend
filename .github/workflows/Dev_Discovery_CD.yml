@@ -1,0 +1,78 @@
+name: dev-discovery-cd
+
+on:
+  push:
+    branches:
+      - "develop"
+    paths:
+      - 'discovery-server/**'
+      - 'build.gradle'
+      - 'settings.gradle'
+      - '.github/workflows/Dev_Discovery_CD.yml'
+
+permissions:
+  contents: read
+  checks: write
+  actions: read
+  pull-requests: write
+
+jobs:
+  test:
+    uses: ./.github/workflows/Dev_CI.yml
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: bootJar with Gradle
+        run: ./gradlew :discovery-server:bootJar --info
+
+      - name: Change artifact file name
+        run: mv discovery-server/build/libs/*.jar discovery-server/build/libs/app.jar
+
+      - name: Upload artifact file
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-artifact
+          path: ./discovery-server/build/libs/app.jar
+          if-no-files-found: error
+
+      - name: Upload deploy scripts
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-scripts
+          path: ./scripts/dev/
+          if-no-files-found: error
+
+  deploy:
+    needs: build
+    runs-on: dev-discovery-server
+
+    steps:
+      - name: Download artifact file
+        uses: actions/download-artifact@v4
+        with:
+          name: app-artifact
+          path: ~/app
+
+      - name: Download deploy scripts
+        uses: actions/download-artifact@v4
+        with:
+          name: deploy-scripts
+          path: ~/app/scripts
+
+      - name: Replace application to latest
+        run: sudo sh ~/app/scripts/replace-new-version.sh

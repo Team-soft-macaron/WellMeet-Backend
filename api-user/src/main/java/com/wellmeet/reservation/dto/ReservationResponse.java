@@ -1,15 +1,16 @@
 package com.wellmeet.reservation.dto;
 
-import com.wellmeet.domain.reservation.entity.Reservation;
-import com.wellmeet.domain.reservation.entity.ReservationStatus;
-import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
-import com.wellmeet.domain.restaurant.entity.Restaurant;
+import com.wellmeet.common.dto.AvailableDateDTO;
+import com.wellmeet.common.dto.ReservationDTO;
+import com.wellmeet.common.dto.RestaurantDTO;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
+@lombok.Builder
+@lombok.AllArgsConstructor
 public class ReservationResponse {
 
     private Long id;
@@ -24,17 +25,17 @@ public class ReservationResponse {
     private String specialRequest;
     private ReservationStatus status;
 
-    public ReservationResponse(Reservation reservation, Restaurant restaurant, AvailableDate availableDate, double rating) {
-        this.id = reservation.getId();
-        this.restaurantId = restaurant.getId();
-        this.restaurantName = restaurant.getName();
-        this.restaurantAddress = restaurant.getAddress();
+    public ReservationResponse(ReservationDTO reservation, RestaurantDTO restaurant, AvailableDateDTO availableDate, double rating) {
+        this.id = reservation.id();
+        this.restaurantId = restaurant.id();
+        this.restaurantName = restaurant.name();
+        this.restaurantAddress = restaurant.address();
         this.restaurantRating = rating;
-        this.latitude = restaurant.getLatitude();
-        this.longitude = restaurant.getLongitude();
-        this.dateTime = LocalDateTime.of(availableDate.getDate(), availableDate.getTime());
-        this.partySize = reservation.getPartySize();
-        this.specialRequest = reservation.getSpecialRequest();
-        this.status = reservation.getStatus();
+        this.latitude = restaurant.latitude();
+        this.longitude = restaurant.longitude();
+        this.dateTime = LocalDateTime.of(availableDate.date(), availableDate.time());
+        this.partySize = reservation.partySize();
+        this.specialRequest = reservation.specialRequest();
+        this.status = ReservationStatus.valueOf(reservation.status().name());
     }
 }

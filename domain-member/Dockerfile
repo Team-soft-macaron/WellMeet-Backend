@@ -5,7 +5,7 @@ COPY . .
 RUN gradle :domain-member:bootJar --no-daemon
 
 # Stage 2: Runtime
-FROM openjdk:21-jdk-slim
+FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 COPY --from=build /app/domain-member/build/libs/*.jar app.jar
 

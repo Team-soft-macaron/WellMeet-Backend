@@ -1,11 +1,26 @@
 spring:
+  application:
+    name: api-user-service
   config:
     import:
-      - classpath:application-domain-local.yml
       - classpath:application-infra-redis-local.yml
       - classpath:application-infra-kafka-local.yml
-  application:
-    name: WellMeet-Backend
+
+server:
+  port: 8086
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: BASIC
 
 cors:
   origin: http://localhost:5173

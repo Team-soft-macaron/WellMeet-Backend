@@ -1,6 +1,6 @@
 package com.wellmeet.restaurant.dto;
 
-import com.wellmeet.client.dto.BusinessHourDTO;
+import com.wellmeet.common.dto.BusinessHourDTO;
 import com.wellmeet.reservation.dto.DayOfWeek;
 import java.time.LocalTime;
 import java.util.List;
@@ -30,10 +30,10 @@ public class OperatingHoursResponse {
         private BreakTime breakTime;
 
         public DayHours(BusinessHourDTO dto) {
-            this.dayOfWeek = DayOfWeek.valueOf(dto.getDayOfWeek());
-            this.open = dto.getOpen();
-            this.close = dto.getClose();
-            this.operating = dto.isOperating();
+            this.dayOfWeek = DayOfWeek.valueOf(dto.dayOfWeek().name());
+            this.open = dto.openTime();
+            this.close = dto.closeTime();
+            this.operating = dto.isOpen();
             this.breakTime = new BreakTime(dto);
         }
     }
@@ -46,8 +46,8 @@ public class OperatingHoursResponse {
         private LocalTime end;
 
         public BreakTime(BusinessHourDTO dto) {
-            this.start = dto.getBreakStart();
-            this.end = dto.getBreakEnd();
+            this.start = dto.breakStartTime();
+            this.end = dto.breakEndTime();
         }
     }
 }
