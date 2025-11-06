@@ -25,23 +25,23 @@ public class SagaStepEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(name = "saga_id", nullable = false, length = 255)
+    @Column(name = "saga_id", nullable = false)
     private String sagaId;
     
-    @Column(name = "step_name", nullable = false, length = 100)
+    @Column(name = "step_name", nullable = false)
     private String stepName;
     
     @Column(name = "step_order", nullable = false)
     private Integer stepOrder;
     
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, length = 50)
+    @Column(name = "status", nullable = false)
     private StepStatus status;
     
-    @Column(name = "forward_action", nullable = false, length = 255)
+    @Column(name = "forward_action", nullable = false)
     private String forwardAction;
     
-    @Column(name = "compensation_action", length = 255)
+    @Column(name = "compensation_action")
     private String compensationAction;
     
     @JdbcTypeCode(SqlTypes.JSON)
