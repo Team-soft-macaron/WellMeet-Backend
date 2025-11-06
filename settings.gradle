@@ -10,6 +10,7 @@ include 'api-owner'
 include 'api-user'
 include 'infra-redis'
 include 'infra-kafka'
+include 'infra-saga'
 include 'batch-reminder'
 include 'discovery-server'
 
