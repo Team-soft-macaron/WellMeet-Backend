@@ -1,5 +1,6 @@
 package com.wellmeet.reservation.saga;
 
+import com.wellmeet.saga.core.SagaContext;
 import com.wellmeet.saga.core.SagaDefinition;
 import com.wellmeet.saga.core.SagaStep;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,7 @@ public class ReservationCreateSagaFactory {
             }
 
             @Override
-            public String buildResult(com.wellmeet.saga.core.SagaContext context) {
+            public String buildResult(SagaContext context) {
                 Long reservationId = (Long) context.getData().get("reservationId");
                 return reservationId != null ? reservationId.toString() : null;
             }
