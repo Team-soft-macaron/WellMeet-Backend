@@ -1,0 +1,12 @@
+spring:
+  config:
+    import:
+      - classpath:application-infra-redis-test.yml
+
+saga:
+  enabled: true
+
+logging:
+  level:
+    com.wellmeet.saga: DEBUG
+    org.hibernate.SQL: DEBUG

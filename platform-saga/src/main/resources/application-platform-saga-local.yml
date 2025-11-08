@@ -1,0 +1,11 @@
+spring:
+  config:
+    import:
+      - classpath:application-infra-redis-local.yml
+
+saga:
+  enabled: true  # Saga 기능 활성화
+
+logging:
+  level:
+    com.wellmeet.saga: DEBUG

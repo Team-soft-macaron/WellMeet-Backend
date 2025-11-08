@@ -1,11 +1,11 @@
-package com.wellmeet.saga;
+package com.wellmeet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-@SpringBootApplication(scanBasePackages = {"com.wellmeet.saga", "com.wellmeet.config"})
+@SpringBootApplication
 public class TestSagaApplication {
 
     @Bean
