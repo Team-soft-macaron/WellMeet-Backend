@@ -2,6 +2,7 @@ package com.wellmeet.domain.member.entity;
 
 import static org.assertj.core.api.Assertions.*;
 
+import com.wellmeet.domain.favorite.entity.FavoriteRestaurant;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 

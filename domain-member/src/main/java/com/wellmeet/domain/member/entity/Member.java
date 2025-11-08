@@ -1,8 +1,8 @@
 package com.wellmeet.domain.member.entity;
 
 import com.wellmeet.domain.common.BaseEntity;
-import com.wellmeet.domain.member.exception.MemberErrorCode;
-import com.wellmeet.domain.member.exception.MemberException;
+import com.wellmeet.domain.exception.MemberErrorCode;
+import com.wellmeet.domain.exception.MemberException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;

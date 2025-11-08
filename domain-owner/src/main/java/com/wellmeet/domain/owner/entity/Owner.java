@@ -1,8 +1,8 @@
 package com.wellmeet.domain.owner.entity;
 
 import com.wellmeet.domain.common.BaseEntity;
-import com.wellmeet.domain.owner.exception.OwnerErrorCode;
-import com.wellmeet.domain.owner.exception.OwnerException;
+import com.wellmeet.domain.exception.OwnerErrorCode;
+import com.wellmeet.domain.exception.OwnerException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;

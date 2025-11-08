@@ -2,8 +2,8 @@ package com.wellmeet.domain.reservation.entity;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.wellmeet.domain.reservation.exception.ReservationErrorCode;
-import com.wellmeet.domain.reservation.exception.ReservationException;
+import com.wellmeet.domain.exception.ReservationErrorCode;
+import com.wellmeet.domain.exception.ReservationException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 

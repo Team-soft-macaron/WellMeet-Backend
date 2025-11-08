@@ -1,8 +1,8 @@
 package com.wellmeet.domain.fixture;
 
 import com.wellmeet.domain.restaurant.entity.Restaurant;
-import com.wellmeet.domain.restaurant.menu.entity.Menu;
-import com.wellmeet.domain.restaurant.menu.repository.MenuRepository;
+import com.wellmeet.domain.menu.entity.Menu;
+import com.wellmeet.domain.menu.repository.MenuRepository;
 import org.springframework.stereotype.Component;
 
 @Component

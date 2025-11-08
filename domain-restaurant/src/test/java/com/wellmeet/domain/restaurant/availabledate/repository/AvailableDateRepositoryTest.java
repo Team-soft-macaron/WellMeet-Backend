@@ -4,7 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.wellmeet.BaseRepositoryTest;
 
-import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
+import com.wellmeet.domain.availabledate.entity.AvailableDate;
+import com.wellmeet.domain.availabledate.repository.AvailableDateRepository;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.domain.restaurant.repository.RestaurantRepository;
 import jakarta.persistence.EntityManager;

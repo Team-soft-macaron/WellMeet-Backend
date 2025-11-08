@@ -5,11 +5,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.wellmeet.BaseRepositoryTest;
 
-import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
-import com.wellmeet.domain.restaurant.availabledate.repository.AvailableDateRepository;
+import com.wellmeet.domain.availabledate.domainservice.AvailableDateDomainService;
+import com.wellmeet.domain.availabledate.entity.AvailableDate;
+import com.wellmeet.domain.availabledate.repository.AvailableDateRepository;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
-import com.wellmeet.domain.restaurant.exception.RestaurantErrorCode;
-import com.wellmeet.domain.restaurant.exception.RestaurantException;
+import com.wellmeet.domain.exception.RestaurantErrorCode;
+import com.wellmeet.domain.exception.RestaurantException;
 import com.wellmeet.domain.restaurant.repository.RestaurantRepository;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDate;

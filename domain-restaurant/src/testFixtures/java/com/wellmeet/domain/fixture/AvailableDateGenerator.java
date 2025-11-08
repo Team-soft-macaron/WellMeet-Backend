@@ -1,7 +1,7 @@
 package com.wellmeet.domain.fixture;
 
-import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
-import com.wellmeet.domain.restaurant.availabledate.repository.AvailableDateRepository;
+import com.wellmeet.domain.availabledate.entity.AvailableDate;
+import com.wellmeet.domain.availabledate.repository.AvailableDateRepository;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
 import java.time.LocalDateTime;
 import org.springframework.stereotype.Component;

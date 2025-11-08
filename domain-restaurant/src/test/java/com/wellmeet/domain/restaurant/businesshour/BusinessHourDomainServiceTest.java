@@ -4,10 +4,11 @@ import static org.assertj.core.api.Assertions.*;
 
 import com.wellmeet.BaseRepositoryTest;
 
-import com.wellmeet.domain.restaurant.businesshour.entity.BusinessHour;
-import com.wellmeet.domain.restaurant.businesshour.entity.BusinessHours;
-import com.wellmeet.domain.restaurant.businesshour.entity.DayOfWeek;
-import com.wellmeet.domain.restaurant.businesshour.repository.BusinessHourRepository;
+import com.wellmeet.domain.businesshour.domainservice.BusinessHourDomainService;
+import com.wellmeet.domain.businesshour.entity.BusinessHour;
+import com.wellmeet.domain.businesshour.entity.BusinessHours;
+import com.wellmeet.domain.businesshour.entity.DayOfWeek;
+import com.wellmeet.domain.businesshour.repository.BusinessHourRepository;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.domain.restaurant.repository.RestaurantRepository;
 import java.time.LocalTime;
@@ -74,7 +75,8 @@ class BusinessHourDomainServiceTest extends BaseRepositoryTest {
     }
 
     private BusinessHour createAndSaveBusinessHour(DayOfWeek dayOfWeek, Restaurant restaurant) {
-        BusinessHour businessHour = new BusinessHour(dayOfWeek, true, LocalTime.of(9, 0), LocalTime.of(22, 0), LocalTime.of(14, 0), LocalTime.of(15, 0), restaurant);
+        BusinessHour businessHour = new BusinessHour(dayOfWeek, true, LocalTime.of(9, 0), LocalTime.of(22, 0),
+                LocalTime.of(14, 0), LocalTime.of(15, 0), restaurant);
         return businessHourRepository.save(businessHour);
     }
 }

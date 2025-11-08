@@ -1,9 +1,9 @@
 package com.wellmeet.batch.job;
 
-import com.wellmeet.domain.member.MemberDomainService;
+import com.wellmeet.domain.member.domainservice.MemberDomainService;
 import com.wellmeet.domain.member.entity.Member;
 import com.wellmeet.domain.reservation.entity.Reservation;
-import com.wellmeet.domain.restaurant.RestaurantDomainService;
+import com.wellmeet.domain.restaurant.domainservice.RestaurantDomainService;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import com.wellmeet.kafka.dto.payload.ReservationReminderPayload;

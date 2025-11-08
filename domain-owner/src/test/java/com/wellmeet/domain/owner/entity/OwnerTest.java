@@ -3,8 +3,8 @@ package com.wellmeet.domain.owner.entity;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.wellmeet.domain.fixture.NullAndEmptyAndBlankSource;
-import com.wellmeet.domain.owner.exception.OwnerErrorCode;
-import com.wellmeet.domain.owner.exception.OwnerException;
+import com.wellmeet.domain.exception.OwnerErrorCode;
+import com.wellmeet.domain.exception.OwnerException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

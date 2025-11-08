@@ -1,8 +1,8 @@
 package com.wellmeet.domain.reservation.entity;
 
 import com.wellmeet.domain.common.BaseEntity;
-import com.wellmeet.domain.reservation.exception.ReservationErrorCode;
-import com.wellmeet.domain.reservation.exception.ReservationException;
+import com.wellmeet.domain.exception.ReservationErrorCode;
+import com.wellmeet.domain.exception.ReservationException;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

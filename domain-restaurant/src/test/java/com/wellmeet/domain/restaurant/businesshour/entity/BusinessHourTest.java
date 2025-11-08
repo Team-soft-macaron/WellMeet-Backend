@@ -3,8 +3,10 @@ package com.wellmeet.domain.restaurant.businesshour.entity;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import com.wellmeet.domain.restaurant.exception.RestaurantErrorCode;
-import com.wellmeet.domain.restaurant.exception.RestaurantException;
+import com.wellmeet.domain.businesshour.entity.BusinessHour;
+import com.wellmeet.domain.businesshour.entity.DayOfWeek;
+import com.wellmeet.domain.exception.RestaurantErrorCode;
+import com.wellmeet.domain.exception.RestaurantException;
 import java.time.LocalTime;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

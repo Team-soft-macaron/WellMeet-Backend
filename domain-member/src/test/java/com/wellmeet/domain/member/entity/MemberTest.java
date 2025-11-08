@@ -3,8 +3,8 @@ package com.wellmeet.domain.member.entity;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.wellmeet.domain.fixture.NullAndEmptyAndBlankSource;
-import com.wellmeet.domain.member.exception.MemberErrorCode;
-import com.wellmeet.domain.member.exception.MemberException;
+import com.wellmeet.domain.exception.MemberErrorCode;
+import com.wellmeet.domain.exception.MemberException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

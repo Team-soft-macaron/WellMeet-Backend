@@ -3,8 +3,9 @@ package com.wellmeet.domain.member;
 import static org.assertj.core.api.Assertions.*;
 
 import com.wellmeet.BaseRepositoryTest;
+import com.wellmeet.domain.member.domainservice.MemberDomainService;
 import com.wellmeet.domain.member.entity.Member;
-import com.wellmeet.domain.member.exception.MemberException;
+import com.wellmeet.domain.exception.MemberException;
 import com.wellmeet.domain.member.repository.MemberRepository;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

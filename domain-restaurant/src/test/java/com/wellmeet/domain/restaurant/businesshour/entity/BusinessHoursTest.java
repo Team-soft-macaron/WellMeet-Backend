@@ -2,6 +2,9 @@ package com.wellmeet.domain.restaurant.businesshour.entity;
 
 import static org.assertj.core.api.Assertions.*;
 
+import com.wellmeet.domain.businesshour.entity.BusinessHour;
+import com.wellmeet.domain.businesshour.entity.BusinessHours;
+import com.wellmeet.domain.businesshour.entity.DayOfWeek;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
 import java.time.LocalTime;
 import java.util.List;
@@ -43,6 +46,7 @@ class BusinessHoursTest {
     }
 
     private BusinessHour createBusinessHour(DayOfWeek dayOfWeek, Restaurant restaurant) {
-        return new BusinessHour(dayOfWeek, true, LocalTime.of(9, 0), LocalTime.of(22, 0), LocalTime.of(14, 0), LocalTime.of(15, 0), restaurant);
+        return new BusinessHour(dayOfWeek, true, LocalTime.of(9, 0), LocalTime.of(22, 0), LocalTime.of(14, 0),
+                LocalTime.of(15, 0), restaurant);
     }
 }

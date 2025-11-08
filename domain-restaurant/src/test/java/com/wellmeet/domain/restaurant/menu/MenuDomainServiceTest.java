@@ -4,9 +4,10 @@ import static org.assertj.core.api.Assertions.*;
 
 import com.wellmeet.BaseRepositoryTest;
 
+import com.wellmeet.domain.menu.domainservice.MenuDomainService;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
-import com.wellmeet.domain.restaurant.menu.entity.Menu;
-import com.wellmeet.domain.restaurant.menu.repository.MenuRepository;
+import com.wellmeet.domain.menu.entity.Menu;
+import com.wellmeet.domain.menu.repository.MenuRepository;
 import com.wellmeet.domain.restaurant.repository.RestaurantRepository;
 import java.util.List;
 import org.junit.jupiter.api.Nested;

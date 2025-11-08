@@ -6,9 +6,10 @@ import com.wellmeet.BaseRepositoryTest;
 
 import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.domain.restaurant.repository.RestaurantRepository;
-import com.wellmeet.domain.restaurant.review.entity.Review;
-import com.wellmeet.domain.restaurant.review.entity.Situation;
-import com.wellmeet.domain.restaurant.review.repository.ReviewRepository;
+import com.wellmeet.domain.review.domainservice.ReviewDomainService;
+import com.wellmeet.domain.review.entity.Review;
+import com.wellmeet.domain.review.entity.Situation;
+import com.wellmeet.domain.review.repository.ReviewRepository;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Nested;

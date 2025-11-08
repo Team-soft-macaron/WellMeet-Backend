@@ -393,7 +393,7 @@ import static org.mockito.Mockito.*;
 
 import com.wellmeet.domain.member.entity.Member;
 import com.wellmeet.domain.owner.entity.Owner;
-import com.wellmeet.domain.reservation.ReservationDomainService;
+import com.wellmeet.domain.reservation.domainservice.ReservationDomainService;
 import com.wellmeet.domain.reservation.entity.Reservation;
 import com.wellmeet.domain.restaurant.availabledate.entity.AvailableDate;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
@@ -583,7 +583,7 @@ package com.wellmeet.favorite;
 import static org.assertj.core.api.Assertions.*;
 
 import com.wellmeet.BaseControllerTest;
-import com.wellmeet.domain.member.entity.FavoriteRestaurant;
+import com.wellmeet.domain.favorite.entity.FavoriteRestaurant;
 import com.wellmeet.domain.member.entity.Member;
 import com.wellmeet.domain.owner.entity.Owner;
 import com.wellmeet.domain.restaurant.entity.Restaurant;

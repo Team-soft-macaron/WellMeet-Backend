@@ -2,8 +2,8 @@ package com.wellmeet.domain.restaurant.entity;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.wellmeet.domain.restaurant.exception.RestaurantErrorCode;
-import com.wellmeet.domain.restaurant.exception.RestaurantException;
+import com.wellmeet.domain.exception.RestaurantErrorCode;
+import com.wellmeet.domain.exception.RestaurantException;
 import java.util.UUID;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;

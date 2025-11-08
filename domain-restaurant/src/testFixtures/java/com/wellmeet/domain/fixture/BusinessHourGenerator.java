@@ -1,8 +1,8 @@
 package com.wellmeet.domain.fixture;
 
-import com.wellmeet.domain.restaurant.businesshour.entity.BusinessHour;
-import com.wellmeet.domain.restaurant.businesshour.entity.DayOfWeek;
-import com.wellmeet.domain.restaurant.businesshour.repository.BusinessHourRepository;
+import com.wellmeet.domain.businesshour.entity.BusinessHour;
+import com.wellmeet.domain.businesshour.entity.DayOfWeek;
+import com.wellmeet.domain.businesshour.repository.BusinessHourRepository;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
 import java.time.LocalTime;
 import org.springframework.stereotype.Component;

@@ -2,6 +2,7 @@ package com.wellmeet.domain.restaurant.availabledate.entity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.wellmeet.domain.availabledate.entity.AvailableDate;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.Nested;

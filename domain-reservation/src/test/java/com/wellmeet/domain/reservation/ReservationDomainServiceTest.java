@@ -6,9 +6,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.wellmeet.BaseRepositoryTest;
 
+import com.wellmeet.domain.reservation.domainservice.ReservationDomainService;
 import com.wellmeet.domain.reservation.entity.Reservation;
-import com.wellmeet.domain.reservation.exception.ReservationErrorCode;
-import com.wellmeet.domain.reservation.exception.ReservationException;
+import com.wellmeet.domain.exception.ReservationErrorCode;
+import com.wellmeet.domain.exception.ReservationException;
 import com.wellmeet.domain.reservation.repository.ReservationRepository;
 
 import java.util.List;

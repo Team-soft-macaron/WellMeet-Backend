@@ -1,7 +1,7 @@
 package com.wellmeet.domain.restaurant.model;
 
-import com.wellmeet.domain.restaurant.exception.RestaurantErrorCode;
-import com.wellmeet.domain.restaurant.exception.RestaurantException;
+import com.wellmeet.domain.exception.RestaurantErrorCode;
+import com.wellmeet.domain.exception.RestaurantException;
 import lombok.Getter;
 
 @Getter

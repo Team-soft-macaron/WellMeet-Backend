@@ -1,8 +1,8 @@
 package com.wellmeet.domain.restaurant.entity;
 
 import com.wellmeet.domain.common.BaseEntity;
-import com.wellmeet.domain.restaurant.exception.RestaurantErrorCode;
-import com.wellmeet.domain.restaurant.exception.RestaurantException;
+import com.wellmeet.domain.exception.RestaurantErrorCode;
+import com.wellmeet.domain.exception.RestaurantException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
