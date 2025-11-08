@@ -1,10 +1,8 @@
 package com.wellmeet.domain.restaurant;
 
 import com.wellmeet.common.dto.RestaurantDTO;
-import com.wellmeet.domain.exception.RestaurantErrorCode;
-import com.wellmeet.domain.exception.RestaurantException;
+import com.wellmeet.domain.restaurant.domainservice.RestaurantDomainService;
 import com.wellmeet.domain.restaurant.entity.Restaurant;
-import com.wellmeet.domain.restaurant.repository.RestaurantRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,24 +11,23 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RestaurantApplicationService {
 
-    private final RestaurantRepository restaurantRepository;
+    private final RestaurantDomainService restaurantDomainService;
 
     public RestaurantDTO getRestaurantById(String id) {
-        Restaurant restaurant = restaurantRepository.findById(id)
-                .orElseThrow(() -> new RestaurantException(RestaurantErrorCode.RESTAURANT_NOT_FOUND));
+        Restaurant restaurant = restaurantDomainService.getById(id);
 
         return toDTO(restaurant);
     }
 
     public List<RestaurantDTO> getAllRestaurants() {
-        return restaurantRepository.findAll()
+        return restaurantDomainService.findAll()
                 .stream()
                 .map(this::toDTO)
                 .toList();
     }
 
     public List<RestaurantDTO> getRestaurantsByIds(List<String> restaurantIds) {
-        return restaurantRepository.findAllByIdIn(restaurantIds)
+        return restaurantDomainService.findAllByIdIn(restaurantIds)
                 .stream()
                 .map(this::toDTO)
                 .toList();

@@ -1,9 +1,10 @@
 package com.wellmeet.domain.businesshour;
 
 import com.wellmeet.common.dto.BusinessHourDTO;
+import com.wellmeet.domain.businesshour.domainservice.BusinessHourDomainService;
 import com.wellmeet.domain.businesshour.entity.BusinessHour;
+import com.wellmeet.domain.businesshour.entity.BusinessHours;
 import com.wellmeet.domain.businesshour.entity.DayOfWeek;
-import com.wellmeet.domain.businesshour.repository.BusinessHourRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,10 +13,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RestaurantBusinessHourApplicationService {
 
-    private final BusinessHourRepository businessHourRepository;
+    private final BusinessHourDomainService businessHourDomainService;
 
     public List<BusinessHourDTO> getBusinessHoursByRestaurantId(String restaurantId) {
-        return businessHourRepository.findAllByRestaurantId(restaurantId)
+        BusinessHours operatingHours = businessHourDomainService.getOperatingHours(restaurantId);
+        return operatingHours.getValue()
                 .stream()
                 .map(this::toDTO)
                 .toList();

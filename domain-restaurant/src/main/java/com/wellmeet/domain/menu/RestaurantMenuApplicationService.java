@@ -1,8 +1,8 @@
 package com.wellmeet.domain.menu;
 
 import com.wellmeet.common.dto.MenuDTO;
+import com.wellmeet.domain.menu.domainservice.MenuDomainService;
 import com.wellmeet.domain.menu.entity.Menu;
-import com.wellmeet.domain.menu.repository.MenuRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RestaurantMenuApplicationService {
 
-    private final MenuRepository menuRepository;
+    private final MenuDomainService menuDomainService;
 
     public List<MenuDTO> getMenusByRestaurantId(String restaurantId) {
-        return menuRepository.findByRestaurantId(restaurantId)
+        return menuDomainService.getByRestaurantId(restaurantId)
                 .stream()
                 .map(this::toDTO)
                 .toList();

@@ -3,7 +3,6 @@ package com.wellmeet.domain.owner;
 import com.wellmeet.common.dto.OwnerDTO;
 import com.wellmeet.domain.owner.domainservice.OwnerDomainService;
 import com.wellmeet.domain.owner.entity.Owner;
-import com.wellmeet.domain.owner.repository.OwnerRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,12 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class OwnerApplicationService {
 
     private final OwnerDomainService ownerDomainService;
-    private final OwnerRepository ownerRepository;
 
     @Transactional
     public OwnerDTO createOwner(String name, String email) {
         Owner owner = new Owner(name, email);
-        Owner saved = ownerRepository.save(owner);
+        Owner saved = ownerDomainService.save(owner);
         return toDTO(saved);
     }
 
@@ -37,7 +35,7 @@ public class OwnerApplicationService {
     @Transactional
     public void deleteOwner(String ownerId) {
         Owner owner = ownerDomainService.getById(ownerId);
-        ownerRepository.delete(owner);
+        ownerDomainService.delete(owner);
     }
 
     private OwnerDTO toDTO(Owner owner) {

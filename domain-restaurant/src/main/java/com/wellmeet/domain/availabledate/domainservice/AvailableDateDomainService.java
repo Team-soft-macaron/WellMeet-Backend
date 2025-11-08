@@ -23,15 +23,15 @@ public class AvailableDateDomainService {
                 .orElseThrow(() -> new RestaurantException(RestaurantErrorCode.AVAILABLE_DATE_NOT_FOUND));
     }
 
-    public void decreaseCapacity(AvailableDate availableDate, int partySize) {
-        int row = availableDateRepository.decreaseCapacity(availableDate.getId(), partySize);
+    public void decreaseCapacity(Long availableDateId, int partySize) {
+        int row = availableDateRepository.decreaseCapacity(availableDateId, partySize);
         if (row == 0) {
             throw new RestaurantException(RestaurantErrorCode.NOT_ENOUGH_CAPACITY);
         }
     }
 
-    public void increaseCapacity(AvailableDate availableDate, int partySize) {
-        availableDateRepository.increaseCapacity(availableDate.getId(), partySize);
+    public void increaseCapacity(Long availableDateId, int partySize) {
+        availableDateRepository.increaseCapacity(availableDateId, partySize);
     }
 
     public List<AvailableDate> findAllByIds(List<Long> availableDateIds) {

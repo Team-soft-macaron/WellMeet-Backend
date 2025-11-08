@@ -1,18 +1,10 @@
 package com.wellmeet.domain.restaurant.domainservice;
 
-import com.wellmeet.domain.availabledate.domainservice.AvailableDateDomainService;
-import com.wellmeet.domain.availabledate.entity.AvailableDate;
-import com.wellmeet.domain.businesshour.domainservice.BusinessHourDomainService;
-import com.wellmeet.domain.businesshour.entity.BusinessHours;
-import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.domain.exception.RestaurantErrorCode;
 import com.wellmeet.domain.exception.RestaurantException;
-import com.wellmeet.domain.menu.domainservice.MenuDomainService;
-import com.wellmeet.domain.menu.entity.Menu;
+import com.wellmeet.domain.restaurant.entity.Restaurant;
 import com.wellmeet.domain.restaurant.model.BoundingBox;
 import com.wellmeet.domain.restaurant.repository.RestaurantRepository;
-import com.wellmeet.domain.review.domainservice.ReviewDomainService;
-import com.wellmeet.domain.review.entity.Review;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,61 +14,22 @@ import org.springframework.stereotype.Service;
 public class RestaurantDomainService {
 
     private final RestaurantRepository restaurantRepository;
-    private final ReviewDomainService reviewDomainService;
-    private final AvailableDateDomainService availableDateDomainService;
-    private final MenuDomainService menuDomainService;
-    private final BusinessHourDomainService businessHourDomainService;
 
     public Restaurant getById(String id) {
         return restaurantRepository.findById(id)
                 .orElseThrow(() -> new RestaurantException(RestaurantErrorCode.RESTAURANT_NOT_FOUND));
     }
 
-    public List<Restaurant> findWithBoundBox(double latitude, double longitude) {
-        BoundingBox boundingBox = new BoundingBox(latitude, longitude);
-        return restaurantRepository.findWithBoundBox(boundingBox);
+    public List<Restaurant> findAll() {
+        return restaurantRepository.findAll();
     }
 
-    public double getAverageRating(String restaurantId) {
-        return reviewDomainService.getAverageRating(restaurantId);
-    }
-
-    public List<AvailableDate> getRestaurantAvailableDates(String restaurantId) {
-        return availableDateDomainService.getAvailableDatesByRestaurantId(restaurantId);
-    }
-
-    public List<Review> getReviewByRestaurantId(String restaurantId) {
-        return reviewDomainService.getByRestaurantId(restaurantId);
-    }
-
-    public List<Menu> getMenuByRestaurantId(String restaurantId) {
-        return menuDomainService.getByRestaurantId(restaurantId);
-    }
-
-    public AvailableDate getAvailableDate(Long availableDateId, String restaurantId) {
-        return availableDateDomainService.getByIdAndRestaurantId(availableDateId, restaurantId);
-    }
-
-    public void decreaseAvailableDateCapacity(AvailableDate availableDate, int partySize) {
-        if (availableDate.canNotReserve(partySize)) {
-            throw new RestaurantException(RestaurantErrorCode.NOT_ENOUGH_CAPACITY);
-        }
-        availableDateDomainService.decreaseCapacity(availableDate, partySize);
-    }
-
-    public void increaseAvailableDateCapacity(AvailableDate availableDate, int partySize) {
-        availableDateDomainService.increaseCapacity(availableDate, partySize);
-    }
-
-    public BusinessHours getOperatingHours(String restaurantId) {
-        return businessHourDomainService.getOperatingHours(restaurantId);
-    }
-
-    public List<Restaurant> findAllByIds(List<String> restaurantIds) {
+    public List<Restaurant> findAllByIdIn(List<String> restaurantIds) {
         return restaurantRepository.findAllByIdIn(restaurantIds);
     }
 
-    public List<AvailableDate> findAllAvailableDatesByIds(List<Long> availableDateIds) {
-        return availableDateDomainService.findAllByIds(availableDateIds);
+    public List<Restaurant> findWithBoundBox(double latitude, double longitude) {
+        BoundingBox boundingBox = new BoundingBox(latitude, longitude);
+        return restaurantRepository.findWithBoundBox(boundingBox);
     }
 }
