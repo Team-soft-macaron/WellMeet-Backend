@@ -1,0 +1,31 @@
+package com.wellmeet.reservation.saga;
+
+import com.wellmeet.client.ReservationFeignClient;
+import com.wellmeet.client.dto.request.UpdateReservationDTO;
+import com.wellmeet.saga.core.SagaAction;
+import com.wellmeet.saga.core.SagaContext;
+import com.wellmeet.saga.orchestrator.ReservationUpdateContext;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+@Component
+@RequiredArgsConstructor
+public class RestoreOldReservationCompensation implements SagaAction<Void> {
+
+    private final ReservationFeignClient reservationClient;
+
+    @Override
+    public Void execute(SagaContext context) {
+        ReservationUpdateContext ctx = (ReservationUpdateContext) context.getData().get("updateContext");
+
+        UpdateReservationDTO request = new UpdateReservationDTO(
+                ctx.oldRestaurantId(),
+                ctx.oldAvailableDateId(),
+                ctx.oldPartySize(),
+                ctx.specialRequest()
+        );
+
+        reservationClient.updateReservation(ctx.reservationId(), request);
+        return null;
+    }
+}

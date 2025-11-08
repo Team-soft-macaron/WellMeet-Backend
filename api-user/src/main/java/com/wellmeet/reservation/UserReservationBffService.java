@@ -22,10 +22,14 @@ import com.wellmeet.reservation.dto.CreateReservationRequest;
 import com.wellmeet.reservation.dto.CreateReservationResponse;
 import com.wellmeet.reservation.dto.ReservationResponse;
 import com.wellmeet.reservation.dto.SummaryReservationResponse;
+import com.wellmeet.reservation.saga.ReservationCancelSagaFactory;
 import com.wellmeet.reservation.saga.ReservationCreateSagaFactory;
+import com.wellmeet.reservation.saga.ReservationUpdateSagaFactory;
 import com.wellmeet.saga.core.SagaContext;
 import com.wellmeet.saga.core.SagaDefinition;
+import com.wellmeet.saga.orchestrator.ReservationCancelContext;
 import com.wellmeet.saga.orchestrator.ReservationCreateContext;
+import com.wellmeet.saga.orchestrator.ReservationUpdateContext;
 import com.wellmeet.saga.orchestrator.SagaExecutionException;
 import com.wellmeet.saga.orchestrator.SagaOrchestrator;
 import java.time.LocalDateTime;
@@ -51,6 +55,8 @@ public class UserReservationBffService {
     private final UserEventPublishBffService eventPublishService;
     private final SagaOrchestrator sagaOrchestrator;
     private final ReservationCreateSagaFactory sagaFactory;
+    private final ReservationUpdateSagaFactory updateSagaFactory;
+    private final ReservationCancelSagaFactory cancelSagaFactory;
 
     public CreateReservationResponse reserve(String memberId, CreateReservationRequest request) {
         // 1. Redis 분산 락 획득
@@ -188,40 +194,48 @@ public class UserReservationBffService {
             return new CreateReservationResponse(reservation, restaurant.name(), currentAvailableDate);
         }
 
-        // 4. 새로운 AvailableDate 조회
-        AvailableDateDTO newAvailableDate = restaurantClient.getAvailableDate(
-                request.getRestaurantId(),
-                request.getAvailableDateId()
-        );
+        // 4. Saga 실행 (기존 Capacity 복구 → 새 Capacity 감소 → Reservation 업데이트 → 이벤트 발행)
+        String sagaId = UUID.randomUUID().toString();
+        String idempotencyKey = String.format("reservation:update:%s:%s",
+                reservationId, request.getAvailableDateId());
 
-        // 5. 보상 트랜잭션: 기존 Capacity 복구 + 새로운 Capacity 감소
-        AvailableDateDTO oldAvailableDate = restaurantClient.getAvailableDate(
+        ReservationUpdateContext updateContext = new ReservationUpdateContext(
+                reservationId,
+                memberId,
                 reservation.restaurantId(),
-                reservation.availableDateId()
-        );
-        availableDateClient.increaseCapacity(new IncreaseCapacityRequest(
-                reservation.availableDateId(), reservation.partySize()));
-        availableDateClient.decreaseCapacity(new DecreaseCapacityRequest(
-                request.getAvailableDateId(), request.getPartySize()));
-
-        // 6. Reservation 업데이트
-        UpdateReservationDTO updateRequest = new UpdateReservationDTO(
+                reservation.availableDateId(),
+                reservation.partySize(),
                 request.getRestaurantId(),
                 request.getAvailableDateId(),
                 request.getPartySize(),
                 request.getSpecialRequest()
         );
-        ReservationDTO updatedReservation = reservationClient.updateReservation(reservationId, updateRequest);
 
-        // 7. 이벤트 발행
-        MemberDTO member = memberClient.getMember(memberId);
-        RestaurantDTO restaurant = restaurantClient.getRestaurant(reservation.restaurantId());
-        LocalDateTime dateTime = LocalDateTime.of(newAvailableDate.date(), newAvailableDate.time());
-        ReservationUpdatedEvent event = new ReservationUpdatedEvent(
-                updatedReservation, member.name(), restaurant.name(), dateTime);
-        eventPublishService.publishReservationUpdatedEvent(event);
+        SagaContext context = SagaContext.builder()
+                .sagaId(sagaId)
+                .idempotencyKey(idempotencyKey)
+                .put("updateContext", updateContext)
+                .build();
 
-        return new CreateReservationResponse(updatedReservation, restaurant.name(), newAvailableDate);
+        SagaDefinition<String> saga = updateSagaFactory.createSaga();
+
+        try {
+            sagaOrchestrator.execute(saga, context);
+
+            // 5. 응답 생성
+            ReservationDTO updatedReservation = (ReservationDTO) context.getData().get("reservation");
+            RestaurantDTO restaurant = restaurantClient.getRestaurant(request.getRestaurantId());
+            AvailableDateDTO availableDate = restaurantClient.getAvailableDate(
+                    request.getRestaurantId(),
+                    request.getAvailableDateId()
+            );
+
+            return new CreateReservationResponse(updatedReservation, restaurant.name(), availableDate);
+
+        } catch (SagaExecutionException e) {
+            log.error("Saga execution failed: sagaId={}, error={}", sagaId, e.getMessage());
+            throw new RuntimeException("예약 수정 중 오류가 발생했습니다.", e);
+        }
     }
 
     public void cancel(Long reservationId, String memberId) {
@@ -231,25 +245,32 @@ public class UserReservationBffService {
             throw new IllegalArgumentException("권한이 없습니다.");
         }
 
-        // 2. AvailableDate 조회
-        AvailableDateDTO availableDate = restaurantClient.getAvailableDate(
+        // 2. Saga 실행 (Capacity 복구 → Reservation 취소 → 이벤트 발행)
+        String sagaId = UUID.randomUUID().toString();
+        String idempotencyKey = String.format("reservation:cancel:%s", reservationId);
+
+        ReservationCancelContext cancelContext = new ReservationCancelContext(
+                reservationId,
+                memberId,
                 reservation.restaurantId(),
-                reservation.availableDateId()
+                reservation.availableDateId(),
+                reservation.partySize()
         );
 
-        // 3. 보상 트랜잭션: Capacity 복구
-        availableDateClient.increaseCapacity(new IncreaseCapacityRequest(
-                reservation.availableDateId(), reservation.partySize()));
+        SagaContext context = SagaContext.builder()
+                .sagaId(sagaId)
+                .idempotencyKey(idempotencyKey)
+                .put("cancelContext", cancelContext)
+                .put("reservation", reservation)
+                .build();
 
-        // 4. Reservation 취소
-        reservationClient.cancelReservation(reservationId);
+        SagaDefinition<String> saga = cancelSagaFactory.createSaga();
 
-        // 5. 이벤트 발행
-        MemberDTO member = memberClient.getMember(memberId);
-        RestaurantDTO restaurant = restaurantClient.getRestaurant(reservation.restaurantId());
-        LocalDateTime dateTime = LocalDateTime.of(availableDate.date(), availableDate.time());
-        ReservationCanceledEvent event = new ReservationCanceledEvent(
-                reservation, member.name(), restaurant.name(), dateTime);
-        eventPublishService.publishReservationCanceledEvent(event);
+        try {
+            sagaOrchestrator.execute(saga, context);
+        } catch (SagaExecutionException e) {
+            log.error("Saga execution failed: sagaId={}, error={}", sagaId, e.getMessage());
+            throw new RuntimeException("예약 취소 중 오류가 발생했습니다.", e);
+        }
     }
 }
