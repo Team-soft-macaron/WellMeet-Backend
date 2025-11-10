@@ -9,19 +9,6 @@
 3. [체크리스트](#체크리스트)
 4. [참고 자료](#참고-자료)
 
-## 📖 상세 가이드 문서
-
-프로젝트의 상세한 가이드는 별도 문서로 분리되어 있습니다:
-
-- **[클래스 네이밍 규칙](./claudedocs/guides/naming-conventions.md)** - Domain/BFF 모듈 네이밍 패턴
-- **[BFF 패턴 및 분산 트랜잭션 처리 전략](./claudedocs/guides/bff-transaction-strategy.md)** - BFF 책임과 Phase별 전략
-- **[로컬 개발 환경](./claudedocs/guides/local-development.md)** - Docker Compose, Eureka Server 설정
-- **[테스트 레이어별 구성](./claudedocs/guides/test-layer-guide.md)** - 8개 테스트 레이어 상세 가이드
-- **[모듈별 테스트 전략](./claudedocs/guides/module-test-strategies.md)** - 각 모듈의 테스트 타입과 커버리지 목표
-- **[테스트 작성 규칙](./claudedocs/guides/test-writing-rules.md)** - 네이밍, AssertJ, ParameterizedTest 규칙
-- **[테스트 인프라](./claudedocs/guides/test-infrastructure.md)** - Gradle, application-test.yml, testFixtures 설정
-- **[인프라 통합](./claudedocs/guides/infrastructure-integration.md)** - Flyway, AWS MSK (Kafka) 통합 가이드
-
 ---
 
 ## 프로젝트 구조
