@@ -84,6 +84,14 @@ public class ReservationApplicationService {
         reservationDomainService.save(reservation);
     }
 
+    public List<ReservationDTO> getReservationsByStatus(com.wellmeet.common.dto.ReservationStatus status) {
+        ReservationStatus domainStatus = convertToDomainStatus(status);
+        List<Reservation> reservations = reservationDomainService.findAllByStatus(domainStatus);
+        return reservations.stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
     private ReservationDTO toDTO(Reservation reservation) {
         return new ReservationDTO(
                 reservation.getId(),
@@ -105,6 +113,15 @@ public class ReservationApplicationService {
             case PENDING -> com.wellmeet.common.dto.ReservationStatus.PENDING;
             case CONFIRMED -> com.wellmeet.common.dto.ReservationStatus.CONFIRMED;
             case CANCELED -> com.wellmeet.common.dto.ReservationStatus.CANCELLED;
+        };
+    }
+
+    private ReservationStatus convertToDomainStatus(com.wellmeet.common.dto.ReservationStatus status) {
+        return switch (status) {
+            case PENDING -> ReservationStatus.PENDING;
+            case CONFIRMED -> ReservationStatus.CONFIRMED;
+            case CANCELLED -> ReservationStatus.CANCELED;
+            case COMPLETED -> throw new IllegalArgumentException("COMPLETED status is not supported in domain");
         };
     }
 }

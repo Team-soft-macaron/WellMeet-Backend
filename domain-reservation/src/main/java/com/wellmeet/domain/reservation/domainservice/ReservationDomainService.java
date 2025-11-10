@@ -57,4 +57,8 @@ public class ReservationDomainService {
         return reservationRepository.existsByMemberIdAndRestaurantIdAndAvailableDateIdAndPartySize(
                 memberId, restaurantId, availableDateId, partySize);
     }
+
+    public List<Reservation> findAllByStatus(com.wellmeet.domain.reservation.entity.ReservationStatus status) {
+        return reservationRepository.findAllByStatusOrderByAvailableDateIdAsc(status);
+    }
 }

@@ -1,6 +1,7 @@
 package com.wellmeet.domain.reservation;
 
 import com.wellmeet.common.dto.ReservationDTO;
+import com.wellmeet.common.dto.ReservationStatus;
 import com.wellmeet.domain.reservation.dto.CreateReservationRequest;
 import com.wellmeet.domain.reservation.dto.UpdateReservationRequest;
 import jakarta.validation.Valid;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -69,5 +71,13 @@ public class ReservationDomainController {
     public ResponseEntity<Void> cancelReservation(@PathVariable Long id) {
         reservationApplicationService.cancelReservation(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ReservationDTO>> getReservationsByStatus(
+            @RequestParam ReservationStatus status
+    ) {
+        List<ReservationDTO> responses = reservationApplicationService.getReservationsByStatus(status);
+        return ResponseEntity.ok(responses);
     }
 }
